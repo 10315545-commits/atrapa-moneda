@@ -1,309 +1,172 @@
 <!DOCTYPE html>
-<html>
+<html lang="es">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Atrapa la Moneda 2.0</title>
-
+<title>¡Atrapa la Gaseosa Arcade! 🥤 - Beta 2.1</title>
 <style>
-body{
-  margin:0;
+body {
+  text-align: center;
+  font-family: sans-serif;
+  background: #222;
+  color: #fff;
+  transition: all 0.5s;
+}
+h1 { color: #ffdd00; }
+#moneda {
+  font-size: 50px;
+  margin: 20px;
+  display: inline-block;
+  transition: transform 0.3s;
+}
+#mensaje, #puntaje { font-size: 20px; margin: 10px; }
+
+/* BOTONES */
+button {
+  padding: 8px 16px;
+  margin: 5px;
+  font-size: 16px;
+  cursor: pointer;
+}
+
+/* TEMAS */
+.tema-oscuro{
   background:#111;
   color:white;
-  font-family:Arial;
-  text-align:center;
-  overflow:hidden;
 }
-
-h1{
+.tema-neon{
+  background:black;
   color:#00ffcc;
-  text-shadow:0 0 15px #00ffcc;
 }
-
-button{
-  padding:12px 25px;
-  margin:8px;
-  font-size:18px;
-  background:#00ffcc;
-  border:none;
-  border-radius:10px;
-  cursor:pointer;
+.tema-neon h1{
+  color:#ff00ff;
+  text-shadow:0 0 20px #ff00ff;
 }
-
-#game,#config{
-  display:none;
+.tema-neon button{
+  background:#ff00ff;
+  color:black;
 }
-
-#zona{
-  position:relative;
-  width:100%;
-  height:300px;
-  overflow:hidden;
-  margin-top:20px;
-  border-top:2px solid #00ffcc;
+.tema-fuego{
+  background:linear-gradient(180deg,#200000,#600000);
+  color:#ffcc00;
 }
-
-#moneda{
-  position:absolute;
-  font-size:70px;
+.tema-fuego h1{
+  color:#ff3300;
+  text-shadow:0 0 20px #ff0000;
 }
-
-#botones{
-  position:fixed;
-  bottom:20px;
-  width:100%;
-  display:flex;
-  justify-content:space-around;
-}
-
-#botones button{
-  width:90px;
-  height:90px;
-  font-size:28px;
-  border-radius:20px;
-}
-
-select{
-  padding:8px;
-  font-size:16px;
+.tema-fuego button{
+  background:#ff3300;
+  color:white;
 }
 </style>
 </head>
 <body>
+<h1>¡Atrapa la Gaseosa Arcade! 🥤</h1>
+<p id="puntaje">Pesos: 0 | Vidas: 5</p>
+<p id="mensaje">Presiona L, C o R para atrapar la moneda</p>
+<p id="moneda">💰</p>
 
-<h1>🎮 ATRAPA LA MONEDA 2.0</h1>
-
+<!-- MENÚ CONFIG -->
 <div id="menu">
-  <button onclick="iniciar()">INICIAR</button>
-  <button onclick="abrirConfig()">CONFIGURACIÓN</button>
-</div>
-
-<div id="config">
   <h2>⚙ Configuración</h2>
-
-  <p>🔊 Sonido:
+  <p>🔊 Sonido: 
     <select id="sonidoOpt">
-      <option value="true">Activado</option>
-      <option value="false">Desactivado</option>
+      <option value="true">On</option>
+      <option value="false">Off</option>
     </select>
   </p>
-
-  <p>📳 Vibración:
-    <select id="vibracionOpt">
-      <option value="true">Activada</option>
-      <option value="false">Desactivada</option>
-    </select>
-  </p>
-
-  <p>⚡ Dificultad:
+  <p>🎮 Dificultad:
     <select id="dificultadOpt">
-      <option value="facil">Fácil</option>
       <option value="normal">Normal</option>
-      <option value="extremo">Extremo</option>
+      <option value="difícil">Difícil</option>
     </select>
   </p>
-
-  <button onclick="guardarConfig()">Guardar</button>
-  <button onclick="cerrarConfig()">Volver</button>
+  <p>🎨 Tema:
+    <select id="temaOpt">
+      <option value="oscuro">Oscuro</option>
+      <option value="neon">Neón</option>
+      <option value="fuego">Fuego</option>
+    </select>
+  </p>
+  <button onclick="guardarConfig()">Guardar Configuración</button>
 </div>
 
-<div id="game">
-
-  <div id="zona">
-    <div id="moneda">🪙</div>
-  </div>
-
-  <div id="stats"></div>
-
-  <div id="botones">
-    <button onclick="respuesta('L')">L</button>
-    <button onclick="respuesta('C')">C</button>
-    <button onclick="respuesta('R')">R</button>
-  </div>
-
-</div>
+<!-- SONIDO -->
+<audio id="sonidoMoneda" src="https://www.soundjay.com/button/sounds/button-16.mp3"></audio>
 
 <script>
-
 let pesos = 0;
 let vidas = 5;
-let velocidadBase = 2;
-let velocidadCaida = 2;
-let monedaActual = "";
-let y = -80;
-let animacion;
-let audioContext;
+let posiciones = ['L','R','C','L','R','C','R']; // tu orden personalizado
+let indice = 0;
+
+const monedaEl = document.getElementById('moneda');
+const mensajeEl = document.getElementById('mensaje');
+const puntajeEl = document.getElementById('puntaje');
+const sonidoMoneda = document.getElementById('sonidoMoneda');
 
 let config = {
   sonido: true,
-  vibracion: true,
-  dificultad: "normal"
+  dificultad: 'normal',
+  tema: 'oscuro'
 };
 
-const monedaEl = document.getElementById("moneda");
-const statsEl = document.getElementById("stats");
-
-let posiciones = ["L","C","R"];
-
-cargarConfig();
-
-function iniciar(){
-  aplicarDificultad();
-  document.getElementById("menu").style.display="none";
-  document.getElementById("game").style.display="block";
-  resetGame();
+// Función para aplicar tema
+function aplicarTema(){
+  document.body.classList.remove('tema-oscuro','tema-neon','tema-fuego');
+  document.body.classList.add('tema-' + config.tema);
 }
 
-function resetGame(){
-  pesos = 0;
-  vidas = 5;
-  velocidadCaida = velocidadBase;
-  nuevaMoneda();
-  actualizarStats();
+// Función para guardar configuración
+function guardarConfig(){
+  config.sonido = document.getElementById('sonidoOpt').value === 'true';
+  config.dificultad = document.getElementById('dificultadOpt').value;
+  config.tema = document.getElementById('temaOpt').value;
+  aplicarTema();
+  alert('Configuración guardada ✅');
 }
 
+// Nueva moneda según tu secuencia
 function nuevaMoneda(){
-  monedaActual = posiciones[Math.floor(Math.random()*3)];
-  let posX = {L:"15%",C:"45%",R:"75%"};
-  monedaEl.style.left = posX[monedaActual];
-
-  y = -80;
-  monedaEl.style.top = y+"px";
-
-  cancelAnimationFrame(animacion);
-  animacion = requestAnimationFrame(caer);
+  if(indice >= posiciones.length) indice = 0;
+  let pos = posiciones[indice];
+  indice++;
+  monedaEl.innerText = '💰 ' + pos;
+  monedaEl.style.transform = 'scale(1.5)';
+  setTimeout(()=>{monedaEl.style.transform='scale(1)';},200);
+  return pos;
 }
 
-function caer(){
-  y += velocidadCaida;
-  monedaEl.style.top = y+"px";
+let monedaActual = nuevaMoneda();
 
-  if(y > 250){
-    perderVida();
-    return;
-  }
-
-  animacion = requestAnimationFrame(caer);
-}
-
-function respuesta(eleccion){
+// Escucha las teclas
+document.addEventListener('keydown', function(e){
+  const eleccion = e.key.toUpperCase();
+  if(!['L','C','R'].includes(eleccion)) return;
 
   if(eleccion === monedaActual){
-    cancelAnimationFrame(animacion);
     pesos++;
-    velocidadCaida += 0.3;
-
-    if(config.sonido) sonidoAcierto();
-    nuevaMoneda();
-  }else{
-    perderVida();
+    mensajeEl.innerText = `¡Atrapaste la moneda en ${eleccion}!`;
+    if(config.sonido) sonidoMoneda.play();
+  } else {
+    vidas--;
+    mensajeEl.innerText = `Fallaste, la moneda estaba en ${monedaActual}`;
   }
 
-  actualizarStats();
-}
+  puntajeEl.innerText = `Pesos: ${pesos} | Vidas: ${vidas}`;
 
-function perderVida(){
-  cancelAnimationFrame(animacion);
-  vidas--;
-
-  if(config.sonido) sonidoError();
-  if(config.vibracion && navigator.vibrate){
-    navigator.vibrate(200);
+  if(pesos >= 7){
+    alert('¡Felicidades! Ganaste tu gaseosa 🥤');
+    pesos=0; vidas=5;
+  } else if(vidas <= 0){
+    alert('Perdiste todas tus vidas 😢');
+    pesos=0; vidas=5;
   }
 
-  if(vidas <= 0){
-    alert("GAME OVER\nPuntaje: "+pesos);
-    document.getElementById("game").style.display="none";
-    document.getElementById("menu").style.display="block";
-  }else{
-    nuevaMoneda();
-  }
-
-  actualizarStats();
-}
-
-function actualizarStats(){
-  statsEl.innerText = "Pesos: "+pesos+" | Vidas: "+vidas;
-}
-
-function sonidoAcierto(){
-  initAudio();
-  const osc = audioContext.createOscillator();
-  const gain = audioContext.createGain();
-  osc.type="square";
-  osc.frequency.value=700;
-  gain.gain.value=0.1;
-  osc.connect(gain);
-  gain.connect(audioContext.destination);
-  osc.start();
-  osc.stop(audioContext.currentTime+0.2);
-}
-
-function sonidoError(){
-  initAudio();
-  const osc = audioContext.createOscillator();
-  const gain = audioContext.createGain();
-  osc.type="sawtooth";
-  osc.frequency.value=200;
-  gain.gain.value=0.1;
-  osc.connect(gain);
-  gain.connect(audioContext.destination);
-  osc.start();
-  osc.stop(audioContext.currentTime+0.3);
-}
-
-function initAudio(){
-  if(!audioContext){
-    audioContext = new (window.AudioContext || window.webkitAudioContext)();
-  }
-}
-
-function abrirConfig(){
-  document.getElementById("menu").style.display="none";
-  document.getElementById("config").style.display="block";
-}
-
-function cerrarConfig(){
-  document.getElementById("config").style.display="none";
-  document.getElementById("menu").style.display="block";
-}
-
-function guardarConfig(){
-  config.sonido = document.getElementById("sonidoOpt").value==="true";
-  config.vibracion = document.getElementById("vibracionOpt").value==="true";
-  config.dificultad = document.getElementById("dificultadOpt").value;
-
-  localStorage.setItem("configJuego", JSON.stringify(config));
-  aplicarDificultad();
-  cerrarConfig();
-}
-
-function cargarConfig(){
-  let guardado = localStorage.getItem("configJuego");
-  if(guardado){
-    config = JSON.parse(guardado);
-  }
-}
-
-function aplicarDificultad(){
-  if(config.dificultad==="facil"){
-    velocidadBase=1.5;
-  }
-  if(config.dificultad==="normal"){
-    velocidadBase=2;
-  }
-  if(config.dificultad==="extremo"){
-    velocidadBase=3.5;
-  }
-}
-
-document.addEventListener("keydown",function(e){
-  const t=e.key.toUpperCase();
-  if(["L","C","R"].includes(t)){
-    respuesta(t);
-  }
+  monedaActual = nuevaMoneda();
 });
 
+// Cargar configuración inicial
+aplicarTema();
 </script>
 </body>
 </html>
