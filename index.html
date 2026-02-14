@@ -2,131 +2,150 @@
 <html lang="es">
 <head>
 <meta charset="UTF-8">
-<title>¡Atrapa la Gaseosa Arcade! - Mega Update 6.0</title>
+<title>¡Atrapa la Gaseosa Arcade - Mega Update!</title>
 <style>
-  body { text-align:center; font-family:sans-serif; background:#222; color:#fff; overflow:hidden; height:100vh; margin:0; }
-  h1 { color:#ffdd00; margin-top:10px; }
-  #puntaje, #mensaje { font-size:20px; margin:10px; }
-  #adminPanel { margin-top:20px; border:1px solid #fff; padding:10px; display:inline-block; }
-  button { margin:5px; padding:10px; font-size:16px; cursor:pointer; }
-  .moneda { font-size:40px; position:absolute; top:0; transition: transform 0.5s linear; }
+  body {
+    text-align: center;
+    font-family: sans-serif;
+    background: #222;
+    color: #fff;
+    overflow: hidden;
+    position: relative;
+    height: 100vh;
+  }
+  h1 { color: #ffdd00; }
+  #puntaje { font-size: 20px; margin: 10px; }
+  #mensaje { font-size: 18px; margin: 10px; min-height: 24px; }
+  .moneda {
+    font-size: 40px;
+    position: absolute;
+    transition: transform 0.3s;
+    cursor: pointer;
+  }
+  #adminPanel {
+    position: fixed;
+    top: 10px;
+    right: 10px;
+    background: #333;
+    padding: 10px;
+    border-radius: 8px;
+    text-align: left;
+    z-index: 1000;
+  }
+  #adminPanel button {
+    margin: 3px 0;
+    width: 100%;
+    cursor: pointer;
+  }
 </style>
 </head>
 <body>
 
 <h1>¡Atrapa la Gaseosa Arcade! 🥤</h1>
 <p id="puntaje">Pesos: 0 | Vidas: 5</p>
-<p id="mensaje">Presiona L, C o R para atrapar la moneda</p>
+<p id="mensaje">Presiona L, C o R o atrapa las monedas del cielo</p>
 
 <div id="adminPanel">
-  <h3>Admin Panel</h3>
-  <button onclick="comandoParty()">Party (Caen monedas)</button>
-  <button onclick="comandoClear()">Clear (Limpiar monedas)</button>
-  <button onclick="comandoRainDiamonds()">Rain Diamonds 💎</button>
-  <button onclick="reiniciar()">Reiniciar Juego</button>
+  <strong>Admin Panel</strong><br>
+  <button onclick="rainMonedas()">Party</button>
+  <button onclick="clearMonedas()">Clear</button>
+  <button onclick="rainDiamonds()">Rain Diamonds</button>
 </div>
 
 <script>
-// Variables principales
 let pesos = 0;
 let vidas = 5;
-const opciones = ['L','C','R'];
+const opciones = ['L', 'C', 'R'];
+let monedaActual = opciones[Math.floor(Math.random()*3)];
+const monedaEl = document.createElement('div');
 const mensajeEl = document.getElementById('mensaje');
 const puntajeEl = document.getElementById('puntaje');
 
-// Función para mostrar mensajes
-function mostrarMensaje(texto) {
-  mensajeEl.innerText = texto;
+monedaEl.id = 'moneda';
+monedaEl.innerText = '💰';
+document.body.appendChild(monedaEl);
+posMoneda(monedaActual);
+
+function posMoneda(pos){
+  const width = window.innerWidth;
+  const left = pos === 'L' ? width*0.2 : pos === 'C' ? width*0.5 : width*0.8;
+  monedaEl.style.left = left + 'px';
+  monedaEl.style.top = '100px';
 }
 
-// Generar nueva moneda con animación de caída
-function crearMoneda(pos) {
-  const moneda = document.createElement('div');
-  moneda.className = 'moneda';
-  moneda.innerText = '💰';
-  
-  // Posición horizontal según L, C, R
-  let left;
-  if(pos==='L') left = '20%';
-  else if(pos==='C') left = '50%';
-  else left = '80%';
-  
-  moneda.style.left = left;
-  document.body.appendChild(moneda);
+// Función de lluvia de monedas
+function crearMonedaCielo(emoji='💰'){
+  const mon = document.createElement('div');
+  mon.className = 'moneda';
+  mon.innerText = emoji;
+  mon.style.left = Math.random()*window.innerWidth + 'px';
+  mon.style.top = '-50px';
+  document.body.appendChild(mon);
 
-  // Animación de caída
-  setTimeout(()=> { moneda.style.top = '80%'; }, 50);
+  const audio = new Audio('https://freesound.org/data/previews/331/331912_3248244-lq.mp3'); // sonido click
+  audio.volume = 0.3;
 
-  // Detectar click/touch en moneda
-  moneda.addEventListener('click', ()=> {
+  function caer(){
+    let top = parseInt(mon.style.top);
+    top += 5;
+    mon.style.top = top + 'px';
+    if(top < window.innerHeight-50) requestAnimationFrame(caer);
+    else mon.remove();
+  }
+  mon.addEventListener('click', ()=>{
     pesos++;
-    mostrarMensaje(`¡Atrapaste la moneda!`);
-    new Audio('https://www.soundjay.com/button/beep-07.wav').play();
-    moneda.remove();
+    mensajeEl.innerText = `¡Atrapaste la moneda del cielo!`;
+    audio.play();
+    mon.remove();
     actualizarPuntaje();
   });
-
-  // Remover moneda al llegar al final
-  setTimeout(()=> {
-    if(document.body.contains(moneda)) {
-      vidas--;
-      mostrarMensaje(`Fallaste una moneda`);
-      moneda.remove();
-      actualizarPuntaje();
-      if(vidas <= 0) {
-        alert('Perdiste todas tus vidas 😢');
-        reiniciar();
-      }
-    }
-  }, 3000);
+  caer();
 }
 
-// Función para generar una moneda aleatoria
-function nuevaMoneda() {
-  const pos = opciones[Math.floor(Math.random()*3)];
-  crearMoneda(pos);
-}
-
-// Actualizar puntaje en pantalla
-function actualizarPuntaje() {
+// Actualiza el puntaje y vidas
+function actualizarPuntaje(){
   puntajeEl.innerText = `Pesos: ${pesos} | Vidas: ${vidas}`;
+  if(pesos >= 20){ 
+    alert('¡Felicidades! Ganaste la gaseosa 🥤');
+    pesos = 0; vidas = 5;
+    actualizarPuntaje();
+  }
 }
 
-// Comandos admin
-function comandoParty() {
-  mostrarMensaje('¡Party activado! Caen monedas extra 🎉');
-  for(let i=0;i<3;i++) nuevaMoneda();
+// Funciones de admin
+function rainMonedas(){
+  for(let i=0;i<10;i++){
+    setTimeout(()=>crearMonedaCielo('💰'), i*200);
+  }
 }
 
-function comandoClear() {
-  mostrarMensaje('¡Monedas limpiadas! 🧹');
-  pesos = 0;
-  actualizarPuntaje();
+function clearMonedas(){
+  document.querySelectorAll('.moneda').forEach(m=>m.remove());
+  mensajeEl.innerText = 'Monedas limpiadas';
 }
 
-function comandoRainDiamonds() {
-  mostrarMensaje('¡Rain Diamonds activado! 💎💎💎');
-  for(let i=0;i<5;i++) nuevaMoneda();
+function rainDiamonds(){
+  for(let i=0;i<10;i++){
+    setTimeout(()=>crearMonedaCielo('💎'), i*300);
+  }
 }
 
-// Reiniciar juego
-function reiniciar() {
-  pesos = 0;
-  vidas = 5;
-  actualizarPuntaje();
-  mostrarMensaje('Presiona L, C o R para atrapar la moneda');
-}
-
-// Detectar teclas (para atrapar monedas fijas si quieres añadir)
+// Captura de teclas para juego normal
 document.addEventListener('keydown', function(e){
   const eleccion = e.key.toUpperCase();
-  if(opciones.includes(eleccion)) {
-    mostrarMensaje(`Presionaste ${eleccion} (usa click en monedas para atraparlas)`);
+  if(!opciones.includes(eleccion)) return;
+  if(eleccion === monedaActual){
+    pesos++;
+    mensajeEl.innerText = `¡Atrapaste la moneda en ${eleccion}!`;
+  } else {
+    vidas--;
+    mensajeEl.innerText = `Fallaste, la moneda estaba en ${monedaActual}`;
   }
+  actualizarPuntaje();
+  monedaActual = opciones[Math.floor(Math.random()*3)];
+  posMoneda(monedaActual);
 });
-
-// Generación automática de monedas cada 2 segundos
-setInterval(nuevaMoneda, 2000);
 </script>
+
 </body>
 </html>
