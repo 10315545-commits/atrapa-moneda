@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Atrapa la Moneda 2.0</title>
+<title>Atrapa la Moneda 1.5</title>
 
 <style>
 body{
@@ -35,21 +35,21 @@ button{
 
 #game{
   display:none;
-  margin-top:20px;
 }
 
 #zona{
   position:relative;
   width:100%;
-  height:200px;
+  height:300px;
+  overflow:hidden;
   margin-top:20px;
+  border-top:2px solid #00ffcc;
 }
 
 #moneda{
   position:absolute;
-  top:50px;
-  font-size:80px;
-  transition: left 0.3s ease;
+  font-size:70px;
+  transition: transform 0.15s;
 }
 
 #botones{
@@ -103,18 +103,19 @@ let pesos = 0;
 let vidas = 5;
 let record = localStorage.getItem("record") || 0;
 
-let posiciones = {
-  "L": "10%",
-  "C": "40%",
-  "R": "70%"
+let posicionesX = {
+  "L": "15%",
+  "C": "45%",
+  "R": "75%"
 };
 
 let secuencia = ["R","L","C","L","R","C","R"];
 let indice = 0;
 
 let monedaActual = "";
-let velocidad = 1500;
-let intervalo;
+let velocidadCaida = 2;
+let animacion;
+let y = -80;
 
 const monedaEl = document.getElementById("moneda");
 const statsEl = document.getElementById("stats");
@@ -128,66 +129,88 @@ function iniciar(){
 function resetGame(){
   pesos = 0;
   vidas = 5;
-  velocidad = 1500;
+  velocidadCaida = 2;
   indice = 0;
   actualizarStats();
   nuevaMoneda();
-  clearInterval(intervalo);
-  intervalo = setInterval(tiempoAgotado, velocidad);
 }
 
 function nuevaMoneda(){
   monedaActual = secuencia[indice];
-  monedaEl.style.left = posiciones[monedaActual];
+  monedaEl.style.left = posicionesX[monedaActual];
+  y = -80;
+  monedaEl.style.top = y + "px";
 
   indice++;
   if(indice >= secuencia.length){
     indice = 0;
   }
+
+  cancelAnimationFrame(animacion);
+  animacion = requestAnimationFrame(caer);
+}
+
+function caer(){
+  y += velocidadCaida;
+  monedaEl.style.top = y + "px";
+
+  if(y > 250){
+    perderVida();
+    return;
+  }
+
+  animacion = requestAnimationFrame(caer);
 }
 
 function actualizarStats(){
-  statsEl.innerText = 
-    "Pesos: " + pesos + 
-    " | Vidas: " + vidas + 
+  statsEl.innerText =
+    "Pesos: " + pesos +
+    " | Vidas: " + vidas +
     " | Récord: " + record;
-}
-
-function tiempoAgotado(){
-  vidas--;
-  actualizarStats();
-
-  if(vidas <= 0){
-    gameOver();
-  }
-
-  nuevaMoneda();
 }
 
 function respuesta(eleccion){
 
   if(eleccion === monedaActual){
-    pesos++;
-    velocidad -= 50;
-    if(velocidad < 500) velocidad = 500;
 
-    clearInterval(intervalo);
-    intervalo = setInterval(tiempoAgotado, velocidad);
+    cancelAnimationFrame(animacion);
+
+    pesos++;
+    velocidadCaida += 0.3;
+
+    monedaEl.style.transform="scale(1.3)";
+    setTimeout(()=>monedaEl.style.transform="scale(1)",150);
+
+    sonidoAcierto();
+    nuevaMoneda();
+
   }else{
-    vidas--;
+    perderVida();
   }
 
   actualizarStats();
+}
+
+function perderVida(){
+  cancelAnimationFrame(animacion);
+  vidas--;
+
+  sonidoError();
+
+  if(navigator.vibrate){
+    navigator.vibrate(200);
+  }
 
   if(vidas <= 0){
     gameOver();
+  }else{
+    nuevaMoneda();
   }
 
-  nuevaMoneda();
+  actualizarStats();
 }
 
 function gameOver(){
-  clearInterval(intervalo);
 
   if(pesos > record){
     record = pesos;
@@ -198,7 +221,16 @@ function gameOver(){
   resetGame();
 }
 
-/* Soporte teclado */
+function sonidoAcierto(){
+  const audio = new Audio("https://actions.google.com/sounds/v1/cartoon/clang_and_wobble.ogg");
+  audio.play();
+}
+
+function sonidoError(){
+  const audio = new Audio("https://actions.google.com/sounds/v1/cartoon/boing.ogg");
+  audio.play();
+}
+
 document.addEventListener("keydown", function(e){
   const tecla = e.key.toUpperCase();
   if(["L","C","R"].includes(tecla)){
