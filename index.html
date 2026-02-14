@@ -2,7 +2,7 @@
 <html>
 <head>
 <meta charset="UTF-8">
-<title>Atrapa la Moneda Beta</title>
+<title>Atrapa la Moneda Mega</title>
 <style>
 body{
   margin:0;
@@ -10,6 +10,7 @@ body{
   color:white;
   font-family:Arial;
   text-align:center;
+  overflow:hidden;
 }
 h1{
   color:#00ffcc;
@@ -23,18 +24,30 @@ button{
   border-radius:10px;
   cursor:pointer;
 }
-#game{ display:none; }
+#game, #adminPanel{ display:none; }
 #moneda{
   font-size:80px;
   margin:20px;
   transition: transform 0.2s;
+  position: relative;
+  z-index: 2;
 }
-#moneda.anim{
-  transform: scale(1.5);
+#moneda.anim{ transform: scale(1.5); }
+.info{ font-size:20px; margin:10px; }
+
+.fallingCoin, .diamond{
+  position:absolute;
+  font-size:30px;
+  top:-50px;
+  animation-name:falling;
+  animation-timing-function: linear;
+  animation-duration: 3s;
 }
-.info{
-  font-size:20px;
-  margin:10px;
+.diamond{ color: #00ffff; font-size:25px; }
+
+@keyframes falling {
+  0%{ top:-50px; }
+  100%{ top:100vh; }
 }
 </style>
 </head>
@@ -44,12 +57,21 @@ button{
 
 <div id="menu">
   <button onclick="iniciar()">INICIAR JUEGO</button>
+  <button onclick="abrirAdmin()">ADMIN PANEL</button>
 </div>
 
 <div id="game">
   <h2 id="moneda">❓</h2>
   <p>Presiona L, C o R</p>
   <div class="info" id="stats"></div>
+</div>
+
+<div id="adminPanel">
+  <h2>Admin Panel</h2>
+  <button onclick="comandoParty()">Party 🎉</button>
+  <button onclick="comandoClear()">Clear 🧹</button>
+  <button onclick="comandoRainDiamonds()">Rain Diamonds 💎</button>
+  <button onclick="cerrarAdmin()">Cerrar Panel</button>
 </div>
 
 <audio id="coinSound" src="https://freesound.org/data/previews/341/341695_5260870-lq.mp3"></audio>
@@ -61,7 +83,6 @@ let record = localStorage.getItem("record") || 0;
 
 let secuencia = ["R","L","C","L","R","C","R"];
 let indice = 0;
-
 let monedaActual = "";
 let velocidad = 1500;
 let intervalo;
@@ -77,10 +98,7 @@ function iniciar(){
 }
 
 function resetGame(){
-  pesos = 0;
-  vidas = 5;
-  velocidad = 1500;
-  indice = 0;
+  pesos = 0; vidas = 5; velocidad = 1500; indice = 0;
   actualizarStats();
   nuevaMoneda();
   clearInterval(intervalo);
@@ -92,26 +110,17 @@ function nuevaMoneda(){
   monedaEl.innerText = monedaActual;
   monedaEl.classList.add("anim");
   setTimeout(()=> monedaEl.classList.remove("anim"), 200);
-
-  indice++;
-  if(indice >= secuencia.length){
-    indice = 0;
-  }
+  indice = (indice + 1) % secuencia.length;
 }
 
 function actualizarStats(){
-  statsEl.innerText =
-    "Pesos: " + pesos +
-    " | Vidas: " + vidas +
-    " | Récord: " + record;
+  statsEl.innerText = "Pesos: " + pesos + " | Vidas: " + vidas + " | Récord: " + record;
 }
 
 function tiempoAgotado(){
   vidas--;
   actualizarStats();
-  if(vidas <= 0){
-    gameOver();
-  }
+  if(vidas <= 0) gameOver();
   nuevaMoneda();
 }
 
@@ -129,35 +138,66 @@ function atraparMoneda(){
   pesos++;
   coinSound.currentTime = 0;
   coinSound.play();
-  velocidad -= 50;
-  if(velocidad < 500) velocidad = 500;
+  velocidad = Math.max(500, velocidad - 50);
   clearInterval(intervalo);
   intervalo = setInterval(tiempoAgotado, velocidad);
+  crearMonedaCayendo("💰");
 }
 
 document.addEventListener("keydown", function(e){
   const eleccion = e.key.toUpperCase();
   if(!["L","C","R"].includes(eleccion)) return;
-
-  if(eleccion === monedaActual){
-    atraparMoneda();
-  }else{
-    vidas--;
-  }
-
+  if(eleccion === monedaActual){ atraparMoneda(); }else{ vidas--; }
   actualizarStats();
-  if(vidas <= 0){
-    gameOver();
-  }
-
+  if(vidas <= 0) gameOver();
   nuevaMoneda();
 });
 
-// Para celular: toca la pantalla para simular la tecla correcta
+// Para celular
 monedaEl.addEventListener("click", ()=>{
   atraparMoneda();
   nuevaMoneda();
 });
+
+// Animación monedas cayendo
+function crearMonedaCayendo(simbolo){
+  const coin = document.createElement("div");
+  coin.className = "fallingCoin";
+  coin.innerText = simbolo;
+  coin.style.left = Math.random() * 90 + "vw";
+  coin.style.animationDuration = (2 + Math.random()*2) + "s";
+  document.body.appendChild(coin);
+  setTimeout(()=> coin.remove(), 3000);
+}
+
+// Admin panel
+function abrirAdmin(){
+  document.getElementById("adminPanel").style.display="block";
+}
+
+function cerrarAdmin(){
+  document.getElementById("adminPanel").style.display="none";
+}
+
+function comandoParty(){
+  for(let i=0;i<20;i++) crearMonedaCayendo("💰");
+}
+
+function comandoClear(){
+  document.querySelectorAll(".fallingCoin, .diamond").forEach(el=> el.remove());
+}
+
+function comandoRainDiamonds(){
+  for(let i=0;i<30;i++){
+    const dia = document.createElement("div");
+    dia.className="diamond";
+    dia.innerText="💎";
+    dia.style.left=Math.random()*90+"vw";
+    dia.style.animationDuration=(2+Math.random()*2)+"s";
+    document.body.appendChild(dia);
+    setTimeout(()=> dia.remove(), 3000);
+  }
+}
 </script>
 
 </body>
