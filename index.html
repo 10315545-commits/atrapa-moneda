@@ -2,11 +2,11 @@
 <html lang="es">
 <head>
 <meta charset="UTF-8">
-<title>¡Atrapa la Gaseosa Arcade!</title>
+<title>¡Atrapa la Gaseosa Arcade! - Estático</title>
 <style>
   body { text-align:center; font-family:sans-serif; background:#222; color:#fff; }
   h1 { color:#ffdd00; }
-  #moneda { font-size:50px; margin:20px; transition: transform 0.3s; }
+  #moneda { font-size:50px; margin:20px; }
   #mensaje, #puntaje { font-size:20px; margin:10px; }
   #menu { margin-top:20px; }
   button { margin:5px; padding:10px; font-size:16px; }
@@ -33,11 +33,11 @@ const monedaEl = document.getElementById('moneda');
 const mensajeEl = document.getElementById('mensaje');
 const puntajeEl = document.getElementById('puntaje');
 
-// Posiciones predefinidas (para admin si quieres)
+// Secuencia predefinida para admin
 let secuenciaMonedas = ['R','L','C','L','R','C','R']; 
 let indiceSecuencia = 0;
 
-// Función para nueva moneda (usa secuencia si admin, aleatorio si no)
+// Nueva moneda (estático: solo cambia el emoji y letra)
 function nuevaMoneda() {
   let pos;
   if (indiceSecuencia < secuenciaMonedas.length) {
@@ -46,10 +46,6 @@ function nuevaMoneda() {
   } else {
     pos = opciones[Math.floor(Math.random()*3)];
   }
-
-  // Animación de la moneda
-  monedaEl.style.transform = 'translateY(-50px)';
-  setTimeout(()=> { monedaEl.style.transform = 'translateY(0px)'; }, 100);
 
   monedaEl.innerText = pos==='L'? '💰 L' : pos==='C'? '💰 C' : '💰 R';
   return pos;
@@ -73,12 +69,12 @@ monedaEl.addEventListener('click', function(){
   checarMoneda(eleccion);
 });
 
-// Función común para checar moneda
+// Función para checar moneda
 function checarMoneda(eleccion) {
   if (eleccion === monedaActual) {
     pesos++;
     mensajeEl.innerText = `¡Atrapaste la moneda en ${eleccion}!`;
-    // Sonido (si el navegador lo permite)
+    // Sonido simple
     let audio = new Audio('https://www.soundjay.com/button/beep-07.wav');
     audio.play();
   } else {
@@ -109,6 +105,11 @@ function reiniciar() {
   mensajeEl.innerText = 'Presiona L, C o R para atrapar la moneda';
 }
 
-// Función admin (demo)
+// Función admin
 function modoAdmin() {
-  al
+  alert("Modo Admin activado: Secuencia de monedas fija activada");
+}
+
+</script>
+</body>
+</html>
