@@ -2,16 +2,14 @@
 <html>
 <head>
   <meta charset="UTF-8">
-  <title>Juego de la Moneda</title>
+  <title>Juego Secuencia Personal</title>
 </head>
 <body style="text-align:center; font-family:Arial; background:#111; color:white;">
 
-<h1>🎮 Atrapa la Moneda 🎮</h1>
+<h1>🎮 Atrapa la Moneda - Secuencia 🔥</h1>
 
 <h2 id="moneda">❓</h2>
-
-<p>Presiona:</p>
-<p><b>L</b> = Izquierda | <b>C</b> = Centro | <b>R</b> = Derecha</p>
+<p>Presiona L, C o R</p>
 
 <p id="mensaje"></p>
 <p id="puntaje">Pesos: 0 | Vidas: 5</p>
@@ -20,23 +18,33 @@
 
 let pesos = 0;
 let vidas = 5;
-const opciones = ['L','C','R'];
+
+// 🔥 TU SECUENCIA PERSONAL
+let secuencia = ["R","L","C","L","R","C","R"];
+let indice = 0;
 
 const monedaEl = document.getElementById('moneda');
 const mensajeEl = document.getElementById('mensaje');
 const puntajeEl = document.getElementById('puntaje');
 
 function nuevaMoneda() {
-  const pos = opciones[Math.floor(Math.random() * 3)];
-  monedaEl.innerText = "❓";
-  return pos;
+  monedaActual = secuencia[indice];
+  monedaEl.innerText = monedaActual;
+
+  indice++;
+
+  // si llega al final vuelve a empezar
+  if(indice >= secuencia.length){
+    indice = 0;
+  }
 }
 
-let monedaActual = nuevaMoneda();
+let monedaActual = "";
+nuevaMoneda();
 
 document.addEventListener('keydown', function(e){
   const eleccion = e.key.toUpperCase();
-  if(!opciones.includes(eleccion)) return;
+  if(!["L","C","R"].includes(eleccion)) return;
 
   if(eleccion === monedaActual) {
     pesos++;
@@ -48,19 +56,13 @@ document.addEventListener('keydown', function(e){
 
   puntajeEl.innerText = "Pesos: " + pesos + " | Vidas: " + vidas;
 
-  if(pesos >= 7){
-    alert("¡Ganaste tu gaseosa! 🥤🔥");
-    pesos = 0;
-    vidas = 5;
-  }
-
   if(vidas <= 0){
-    alert("Perdiste todas tus vidas 😢");
+    alert("Game Over");
     pesos = 0;
     vidas = 5;
   }
 
-  monedaActual = nuevaMoneda();
+  nuevaMoneda();
 });
 
 </script>
