@@ -1,158 +1,176 @@
 <!DOCTYPE html>
-<html lang="es">
+<html>
 <head>
-<meta charset="UTF-8">
-<title>¡Atrapa la moneda Arcade! - Update 3.0</title>
-<style>
-  body {
-    text-align: center;
-    font-family: sans-serif;
-    background: #222;
-    color: #fff;
-  }
-  h1 {
-    color: #ffdd00;
-  }
-  #moneda {
-    font-size: 50px;
-    margin: 20px;
-    display: inline-block;
-    transition: transform 0.2s ease;
-  }
-  #mensaje, #puntaje, #guia {
-    font-size: 18px;
-    margin: 10px;
-  }
-  #boss {
-    font-size: 40px;
-    color: #ff5555;
-    display: none;
-    margin: 20px;
-  }
-  #menu {
-    margin-top: 20px;
-    background: #333;
-    padding: 10px;
-    border-radius: 10px;
-    display: inline-block;
-  }
-  #menu label {
-    margin-right: 10px;
-  }
-  select, input[type=checkbox] {
-    margin-right: 20px;
-  }
-</style>
+  <meta charset="UTF-8">
+  <title>¡Atrapa la moneda Arcade! 🥤</title>
+  <style>
+    body {
+      text-align: center;
+      font-family: sans-serif;
+      background: #222;
+      color: #fff;
+      margin: 0;
+      overflow-x: hidden;
+    }
+    h1 { color: #ffdd00; margin-top: 20px; }
+    #moneda {
+      font-size: 50px;
+      margin: 20px;
+      display: inline-block;
+      transition: transform 0.3s ease;
+    }
+    #mensaje, #puntaje {
+      font-size: 20px;
+      margin: 10px;
+    }
+    #menu {
+      background: #333;
+      padding: 20px;
+      display: flex;
+      flex-direction: column;
+      width: 200px;
+      margin: 50px auto;
+      border-radius: 10px;
+    }
+    #menu button {
+      margin: 10px 0;
+      padding: 10px;
+      font-size: 16px;
+      border-radius: 5px;
+      border: none;
+      background: #ffdd00;
+      color: #222;
+      cursor: pointer;
+    }
+    #boss {
+      font-size: 60px;
+      color: red;
+      display: none;
+      margin-top: 20px;
+    }
+  </style>
 </head>
 <body>
 
-<h1>¡Atrapa la Gaseosa Arcade! 🥤</h1>
+  <div id="menu">
+    <h2>Menú</h2>
+    <button onclick="startGame()">Iniciar Juego</button>
+    <button onclick="alert('Opciones de juego próximamente')">Opciones</button>
+  </div>
 
-<div id="puntaje">Pesos: 0 | Vidas: 5</div>
-<div id="mensaje">Presiona L, C o R para atrapar la moneda</div>
-<div id="guia">Guía: Sube de puntaje para enfrentar al Boss</div>
-<div id="moneda">💰</div>
-<div id="boss">👾</div>
+  <h1>¡Atrapa la Gaseosa Arcade! 🥤</h1>
+  <p id="puntaje">Pesos: 0 | Vidas: 5</p>
+  <p id="mensaje">Presiona L, C o R para atrapar la moneda</p>
+  <p id="moneda">💰</p>
+  <p id="boss">👾 BOSS!</p>
 
-<div id="menu">
-  <label for="tema">Tema:</label>
-  <select id="tema">
-    <option value="#222,#fff">Normal</option>
-    <option value="#004400,#aaffaa">Verde</option>
-    <option value="#220044,#ddaaff">Morado</option>
-  </select>
-  <label><input type="checkbox" id="sonido" checked> Sonido</label>
-</div>
+  <audio id="sonidoMoneda" src="https://www.soundjay.com/button/beep-07.wav"></audio>
 
-<audio id="sonidoMoneda" src="https://www.soundjay.com/button/beep-07.wav"></audio>
-<audio id="sonidoBoss" src="https://www.soundjay.com/button/button-16.mp3"></audio>
+  <script>
+    let pesos = 0;
+    let vidas = 5;
+    const opciones = ['L','C','R'];
+    const monedaEl = document.getElementById('moneda');
+    const mensajeEl = document.getElementById('mensaje');
+    const puntajeEl = document.getElementById('puntaje');
+    const bossEl = document.getElementById('boss');
+    const sonidoMoneda = document.getElementById('sonidoMoneda');
 
-<script>
-let pesos = 0;
-let vidas = 5;
-const opciones = ['L','C','R'];
-let secuencia = ['R','L','C','L','R','C','R']; // Secuencia personalizada
-let indiceSecuencia = 0;
-let monedaEl = document.getElementById('moneda');
-let mensajeEl = document.getElementById('mensaje');
-let puntajeEl = document.getElementById('puntaje');
-let bossEl = document.getElementById('boss');
-let sonidoEl = document.getElementById('sonidoMoneda');
-let sonidoBoss = document.getElementById('sonidoBoss');
+    let secuencia = []; // para personalizar posiciones
+    let indiceSecuencia = 0;
 
-function nuevaMoneda() {
-  let pos = secuencia[indiceSecuencia];
-  indiceSecuencia = (indiceSecuencia + 1) % secuencia.length;
-  monedaEl.innerText = pos === 'L' ? '💰 L' : pos === 'C' ? '💰 C' : '💰 R';
-  monedaEl.style.transform = 'scale(1.5)';
-  setTimeout(()=>{monedaEl.style.transform='scale(1)';}, 150);
-  return pos;
-}
-
-let monedaActual = nuevaMoneda();
-
-document.addEventListener('keydown', function(e){
-  const eleccion = e.key.toUpperCase();
-  if(!opciones.includes(eleccion)) return;
-
-  if(eleccion === monedaActual){
-    pesos++;
-    mensajeEl.innerText = `¡Atrapaste la moneda en ${eleccion}!`;
-    if(document.getElementById('sonido').checked) sonidoEl.play();
-  } else {
-    vidas--;
-    mensajeEl.innerText = `Fallaste, la moneda estaba en ${monedaActual}`;
-  }
-
-  puntajeEl.innerText = `Pesos: ${pesos} | Vidas: ${vidas}`;
-
-  // Boss Fight activación
-  if(pesos === 5){
-    bossEl.style.display = 'block';
-    bossEl.innerText = '👾 Boss: Vida 3';
-  }
-
-  // Ataque Boss
-  if(bossEl.style.display === 'block'){
-    let vidaBoss = parseInt(bossEl.innerText.split(' ')[2]);
-    if(eleccion === 'C'){ // atacar boss con C
-      vidaBoss--;
-      if(document.getElementById('sonido').checked) sonidoBoss.play();
-      if(vidaBoss <= 0){
-        bossEl.style.display = 'none';
-        mensajeEl.innerText = '¡Boss derrotado! 🎉';
-        pesos += 3;
-      } else {
-        bossEl.innerText = `👾 Boss: Vida ${vidaBoss}`;
-        mensajeEl.innerText = '¡Golpeaste al Boss!';
-      }
+    function startGame() {
+      document.getElementById('menu').style.display = 'none';
+      nuevaMoneda();
     }
-  }
 
-  if(pesos >= 7){
-    alert('¡Felicidades! Ganaste tu gaseosa 🥤');
-    pesos = 0;
-    vidas = 5;
-    bossEl.style.display = 'none';
-    indiceSecuencia = 0;
-  } else if(vidas <= 0){
-    alert('Perdiste todas tus vidas 😢');
-    pesos = 0;
-    vidas = 5;
-    bossEl.style.display = 'none';
-    indiceSecuencia = 0;
-  }
+    function nuevaMoneda() {
+      let pos;
+      if(secuencia.length > 0){
+        pos = secuencia[indiceSecuencia % secuencia.length];
+        indiceSecuencia++;
+      } else {
+        pos = opciones[Math.floor(Math.random()*3)];
+      }
+      monedaEl.innerText = pos === 'L' ? '💰 L' : pos === 'C' ? '💰 C' : '💰 R';
+      // animación
+      monedaEl.style.transform = 'scale(1.5)';
+      setTimeout(()=>{monedaEl.style.transform='scale(1)';}, 300);
+      // sonido
+      sonidoMoneda.play();
+      return pos;
+    }
 
-  monedaActual = nuevaMoneda();
-});
+    let monedaActual = nuevaMoneda();
 
-// Menú: cambio de tema
-document.getElementById('tema').addEventListener('change', function(){
-  let colores = this.value.split(',');
-  document.body.style.background = colores[0];
-  document.body.style.color = colores[1];
-});
-</script>
+    document.addEventListener('keydown', function(e){
+      const eleccion = e.key.toUpperCase();
+      // --- Función Admin ---
+      const codigoAdmin = "CODMAS";
+      if(eleccion === codigoAdmin[0]){
+        let ingreso = prompt("Ingresa el código admin:");
+        if(ingreso === codigoAdmin){
+          let accion = prompt("Admin panel:\n1: +3 Monedas\n2: Restaurar Vidas\n3: Invencible 10s\n4: Cambiar Secuencia\n5: Activar BOSS");
+          switch(accion){
+            case "1":
+              pesos += 3;
+              puntajeEl.innerText = `Pesos: ${pesos} | Vidas: ${vidas}`;
+              alert("Monedas añadidas!");
+              break;
+            case "2":
+              vidas = 5;
+              puntajeEl.innerText = `Pesos: ${pesos} | Vidas: ${vidas}`;
+              alert("Vidas restauradas!");
+              break;
+            case "3":
+              vidas = 999;
+              alert("Invencible activado 10s!");
+              setTimeout(()=>{vidas=5; alert("Invencible desactivado");}, 10000);
+              break;
+            case "4":
+              let nuevaSecuencia = prompt("Ingresa nueva secuencia de monedas (ej: LRC):");
+              if(nuevaSecuencia){
+                secuencia = nuevaSecuencia.toUpperCase().split('');
+                indiceSecuencia = 0;
+                alert("Secuencia cambiada!");
+              }
+              break;
+            case "5":
+              bossEl.style.display = 'block';
+              alert("BOSS ACTIVADO!");
+              break;
+            default:
+              alert("Acción inválida");
+          }
+        } else {
+          alert("Código incorrecto 😡");
+        }
+        return;
+      }
 
+      if(!opciones.includes(eleccion)) return;
+
+      if(eleccion === monedaActual){
+        pesos++;
+        mensajeEl.innerText = `¡Atrapaste la moneda en ${eleccion}!`;
+      } else {
+        vidas--;
+        mensajeEl.innerText = `Fallaste, la moneda estaba en ${monedaActual}`;
+      }
+
+      puntajeEl.innerText = `Pesos: ${pesos} | Vidas: ${vidas}`;
+
+      if(pesos >= 7){
+        alert('¡Felicidades! Ganaste tu gaseosa 🥤');
+        pesos = 0; vidas = 5;
+      } else if(vidas <= 0){
+        alert('Perdiste todas tus vidas 😢');
+        pesos = 0; vidas = 5;
+      }
+
+      monedaActual = nuevaMoneda();
+    });
+
+  </script>
 </body>
 </html>
