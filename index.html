@@ -1,68 +1,186 @@
 <!DOCTYPE html>
 <html>
 <head>
-  <meta charset="UTF-8">
-  <title>Juego Secuencia Personal</title>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Atrapa la Moneda 1.1</title>
+
+<style>
+body{
+  margin:0;
+  background:#0f0f0f;
+  color:white;
+  font-family:Arial;
+  text-align:center;
+}
+
+h1{
+  color:#00ffcc;
+  text-shadow:0 0 10px #00ffcc;
+}
+
+#menu{
+  margin-top:50px;
+}
+
+button{
+  padding:15px 25px;
+  font-size:20px;
+  background:#00ffcc;
+  border:none;
+  border-radius:12px;
+  cursor:pointer;
+  margin:10px;
+}
+
+#game{
+  display:none;
+  margin-top:20px;
+}
+
+#moneda{
+  font-size:90px;
+  margin:20px;
+}
+
+#botones{
+  margin-top:20px;
+}
+
+#botones button{
+  width:80px;
+  height:80px;
+  font-size:28px;
+  margin:10px;
+}
+
+.info{
+  font-size:18px;
+  margin:10px;
+}
+</style>
 </head>
-<body style="text-align:center; font-family:Arial; background:#111; color:white;">
+<body>
 
-<h1>🎮 Atrapa la Moneda - Secuencia 🔥</h1>
+<h1>🎮 ATRAPA LA MONEDA</h1>
 
-<h2 id="moneda">❓</h2>
-<p>Presiona L, C o R</p>
+<div id="menu">
+  <button onclick="iniciar()">INICIAR</button>
+</div>
 
-<p id="mensaje"></p>
-<p id="puntaje">Pesos: 0 | Vidas: 5</p>
+<div id="game">
+  <h2 id="moneda">❓</h2>
+
+  <div id="botones">
+    <button onclick="respuesta('L')">L</button>
+    <button onclick="respuesta('C')">C</button>
+    <button onclick="respuesta('R')">R</button>
+  </div>
+
+  <div class="info" id="stats"></div>
+</div>
 
 <script>
 
 let pesos = 0;
 let vidas = 5;
+let record = localStorage.getItem("record") || 0;
 
-// 🔥 TU SECUENCIA PERSONAL
 let secuencia = ["R","L","C","L","R","C","R"];
 let indice = 0;
 
-const monedaEl = document.getElementById('moneda');
-const mensajeEl = document.getElementById('mensaje');
-const puntajeEl = document.getElementById('puntaje');
+let monedaActual = "";
+let velocidad = 1500;
+let intervalo;
 
-function nuevaMoneda() {
+const monedaEl = document.getElementById("moneda");
+const statsEl = document.getElementById("stats");
+
+function iniciar(){
+  document.getElementById("menu").style.display="none";
+  document.getElementById("game").style.display="block";
+  resetGame();
+}
+
+function resetGame(){
+  pesos = 0;
+  vidas = 5;
+  velocidad = 1500;
+  indice = 0;
+  actualizarStats();
+  nuevaMoneda();
+  clearInterval(intervalo);
+  intervalo = setInterval(tiempoAgotado, velocidad);
+}
+
+function nuevaMoneda(){
   monedaActual = secuencia[indice];
   monedaEl.innerText = monedaActual;
 
   indice++;
-
-  // si llega al final vuelve a empezar
   if(indice >= secuencia.length){
     indice = 0;
   }
 }
 
-let monedaActual = "";
-nuevaMoneda();
+function actualizarStats(){
+  statsEl.innerText = 
+    "Pesos: " + pesos + 
+    " | Vidas: " + vidas + 
+    " | Récord: " + record;
+}
 
-document.addEventListener('keydown', function(e){
-  const eleccion = e.key.toUpperCase();
-  if(!["L","C","R"].includes(eleccion)) return;
-
-  if(eleccion === monedaActual) {
-    pesos++;
-    mensajeEl.innerText = "¡Atrapaste la moneda! 💰";
-  } else {
-    vidas--;
-    mensajeEl.innerText = "Fallaste 😢";
-  }
-
-  puntajeEl.innerText = "Pesos: " + pesos + " | Vidas: " + vidas;
+function tiempoAgotado(){
+  vidas--;
+  actualizarStats();
 
   if(vidas <= 0){
-    alert("Game Over");
-    pesos = 0;
-    vidas = 5;
+    gameOver();
   }
 
   nuevaMoneda();
+}
+
+function respuesta(eleccion){
+
+  if(eleccion === monedaActual){
+    pesos++;
+    velocidad -= 50;
+    if(velocidad < 500) velocidad = 500;
+
+    clearInterval(intervalo);
+    intervalo = setInterval(tiempoAgotado, velocidad);
+  }else{
+    vidas--;
+  }
+
+  actualizarStats();
+
+  if(vidas <= 0){
+    gameOver();
+  }
+
+  nuevaMoneda();
+}
+
+function gameOver(){
+  clearInterval(intervalo);
+
+  if(pesos > record){
+    record = pesos;
+    localStorage.setItem("record", record);
+  }
+
+  alert("GAME OVER\nPuntaje: " + pesos);
+  resetGame();
+}
+
+/* Compatible también con teclado */
+document.addEventListener("keydown", function(e){
+  const tecla = e.key.toUpperCase();
+  if(["L","C","R"].includes(tecla)){
+    respuesta(tecla);
+  }
 });
 
 </script>
