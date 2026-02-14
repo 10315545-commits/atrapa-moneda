@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>Atrapa la Gaseosa</title>
+<style>
+body {
+  text-align: center;
+  font-family: Arial, sans-serif;
+  background: #222;
+  color: white;
+}
+h1 {
+  color: #ffdd00;
+}
+#moneda {
+  font-size: 60px;
+  margin: 20px;
+}
+#mensaje {
+  font-size: 20px;
+  margin: 10px;
+}
+#puntaje {
+  font-size: 20px;
+  margin: 10px;
+}
+button {
+  padding: 10px 20px;
+  font-size: 18px;
+  cursor: pointer;
+}
+</style>
+</head>
+<body>
+
+<h1>¡Atrapa la Gaseosa Arcade! 🥤</h1>
+<p id="puntaje">Pesos: 0 | Vidas: 5</p>
+<p id="mensaje">Presiona L, C o R para atrapar la moneda</p>
+<p id="moneda">💰</p>
+
+<script>
+let pesos = 0;
+let vidas = 5;
+const opciones = ['L','C','R'];
+
+const monedaEl = document.getElementById('moneda');
+const mensajeEl = document.getElementById('mensaje');
+const puntajeEl = document.getElementById('puntaje');
+
+function nuevaMoneda() {
+  const pos = opciones[Math.floor(Math.random()*3)];
+  monedaEl.innerText = '💰 ' + pos;
+  return pos;
+}
+
+let monedaActual = nuevaMoneda();
+
+document.addEventListener('keydown', function(e){
+  const eleccion = e.key.toUpperCase();
+  if(!opciones.includes(eleccion)) return;
+
+  if(eleccion === monedaActual) {
+    pesos++;
+    mensajeEl.innerText = "¡Atrapaste la moneda!";
+  } else {
+    vidas--;
+    mensajeEl.innerText = "Fallaste 😢";
+  }
+
+  puntajeEl.innerText = "Pesos: " + pesos + " | Vidas: " + vidas;
+
+  if(pesos >= 7){
+    alert("¡Ganaste tu gaseosa! 🥤");
+    pesos = 0;
+    vidas = 5;
+  }
+
+  if(vidas <= 0){
+    alert("Perdiste todas tus vidas 😢");
+    pesos = 0;
+    vidas = 5;
+  }
+
+  monedaActual = nuevaMoneda();
+});
+</script>
+
+</body>
+</html>
