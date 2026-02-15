@@ -2,7 +2,7 @@
 <html>
 <head>
 <meta charset="UTF-8">
-<title>Atrapa la Moneda Mega Final</title>
+<title>Atrapa la Moneda Mega Owner</title>
 <style>
 body{
   margin:0;
@@ -26,7 +26,7 @@ button{
   color:#fff;
   text-shadow:0 0 5px #fff;
 }
-#game, #adminPanel{ display:none; }
+#game, #adminPanel, #ownerPanel{ display:none; }
 #moneda{
   font-size:80px;
   margin:20px;
@@ -56,11 +56,12 @@ button{
 </head>
 <body>
 
-<h1>🎮 ATRAPA LA MONEDA MEGA FINAL</h1>
+<h1>🎮 ATRAPA LA MONEDA OWNER</h1>
 
 <div id="menu">
   <button onclick="iniciar()">INICIAR JUEGO</button>
   <button onclick="abrirAdmin()">ADMIN PANEL</button>
+  <button onclick="abrirOwner()">OWNER PANEL</button>
 </div>
 
 <div id="game">
@@ -78,136 +79,154 @@ button{
   <button onclick="cerrarAdmin()">Cerrar Panel</button>
 </div>
 
+<div id="ownerPanel">
+  <h2>Owner Panel 🔒</h2>
+  <div>
+    <label>Clave secreta: </label>
+    <input type="password" id="ownerPass">
+    <button onclick="verificarOwner()">Entrar</button>
+  </div>
+  <div id="configPanel" style="display:none;">
+    <h3>Configuración del Juego</h3>
+    <label>Velocidad Inicial: </label><input type="number" id="velInicial" value="1500"><br>
+    <label>Vidas Iniciales: </label><input type="number" id="vidasInicial" value="5"><br>
+    <label>Color de Menú: </label><input type="color" id="menuColor" value="#ff00ff"><br>
+    <label>Animación Moneda:</label><input type="checkbox" id="animMoneda" checked><br>
+    <button onclick="guardarConfig()">Guardar Configuración</button>
+
+    <h3>Versiones Antiguas</h3>
+    <button onclick="cargarVersion(1)">Versión 1.0</button>
+    <button onclick="cargarVersion(1.5)">Versión 1.5</button>
+    <button onclick="cargarVersion(2.0)">Versión 2.0</button>
+    <button onclick="cargarVersion(3.0)">Versión 3.0</button>
+  </div>
+  <button onclick="cerrarOwner()">Cerrar Owner</button>
+</div>
+
 <audio id="coinSound" src="https://freesound.org/data/previews/341/341695_5260870-lq.mp3"></audio>
 <audio id="bossSound" src="https://freesound.org/data/previews/331/331912_3248244-lq.mp3"></audio>
 
 <script>
-let pesos = 0;
-let vidas = 5;
-let record = localStorage.getItem("record") || 0;
+let pesos = 0, vidas = 5, record = localStorage.getItem("record") || 0;
+let secuencia = ["R","L","C","L","R","C","R"], indice = 0, monedaActual="", velocidad = 1500, intervalo;
+const monedaEl = document.getElementById("moneda"), statsEl = document.getElementById("stats");
+const coinSound = document.getElementById("coinSound"), bossSound = document.getElementById("bossSound");
 
-let secuencia = ["R","L","C","L","R","C","R"];
-let indice = 0;
-let monedaActual = "";
-let velocidad = 1500;
-let intervalo;
+// CONFIG
+let config = {
+  velocidadInicial: 1500,
+  vidasInicial: 5,
+  colorMenu: "#ff00ff",
+  animacionMoneda: true
+};
 
-const monedaEl = document.getElementById("moneda");
-const statsEl = document.getElementById("stats");
-const coinSound = document.getElementById("coinSound");
-const bossSound = document.getElementById("bossSound");
-
+// INICIO
 function iniciar(){
   document.getElementById("menu").style.display="none";
   document.getElementById("game").style.display="block";
   resetGame();
 }
 
+// RESET GAME
 function resetGame(){
-  pesos = 0; vidas = 5; velocidad = 1500; indice = 0;
+  pesos=0; vidas=config.vidasInicial; velocidad=config.velocidadInicial; indice=0;
   actualizarStats();
   nuevaMoneda();
   clearInterval(intervalo);
   intervalo = setInterval(tiempoAgotado, velocidad);
 }
 
+// NUEVA MONEDA
 function nuevaMoneda(){
   monedaActual = secuencia[indice];
   monedaEl.innerText = monedaActual;
-  monedaEl.classList.add("anim");
-  setTimeout(()=> monedaEl.classList.remove("anim"), 200);
+  if(config.animacionMoneda){
+    monedaEl.classList.add("anim");
+    setTimeout(()=> monedaEl.classList.remove("anim"),200);
+  }
   indice = (indice + 1) % secuencia.length;
 }
 
+// STATS
 function actualizarStats(){
   statsEl.innerText = "Pesos: " + pesos + " | Vidas: " + vidas + " | Récord: " + record;
 }
 
-function tiempoAgotado(){
-  vidas--;
-  actualizarStats();
-  if(vidas <= 0) gameOver();
-  nuevaMoneda();
-}
+// TIEMPO AGOTADO
+function tiempoAgotado(){ vidas--; actualizarStats(); if(vidas<=0) gameOver(); nuevaMoneda(); }
 
+// GAME OVER
 function gameOver(){
   clearInterval(intervalo);
-  if(pesos > record){
-    record = pesos;
-    localStorage.setItem("record", record);
-  }
+  if(pesos>record){ record=pesos; localStorage.setItem("record",record); }
   alert("GAME OVER\nPuntaje: " + pesos);
   resetGame();
 }
 
+// ATRAPAR MONEDA
 function atraparMoneda(){
   pesos++;
-  coinSound.currentTime = 0;
-  coinSound.play();
-  velocidad = Math.max(500, velocidad - 50);
+  coinSound.currentTime=0; coinSound.play();
+  velocidad=Math.max(500,velocidad-50);
   clearInterval(intervalo);
-  intervalo = setInterval(tiempoAgotado, velocidad);
+  intervalo=setInterval(tiempoAgotado,velocidad);
   crearMonedaCayendo("💰");
 }
 
-// Teclado
-document.addEventListener("keydown", function(e){
-  const eleccion = e.key.toUpperCase();
+// TECLADO
+document.addEventListener("keydown", e=>{
+  const eleccion=e.key.toUpperCase();
   if(!["L","C","R"].includes(eleccion)) return;
-  if(eleccion === monedaActual){ atraparMoneda(); }else{ vidas--; }
+  if(eleccion===monedaActual) atraparMoneda(); else vidas--;
   actualizarStats();
-  if(vidas <= 0) gameOver();
+  if(vidas<=0) gameOver();
   nuevaMoneda();
 });
 
-// Celular
+// CELULAR
 monedaEl.addEventListener("click", ()=>{
   atraparMoneda();
   nuevaMoneda();
 });
 
-// Animación monedas cayendo
+// MONEDAS CAYENDO
 function crearMonedaCayendo(simbolo){
-  const coin = document.createElement("div");
-  coin.className = "fallingCoin";
-  coin.innerText = simbolo;
-  coin.style.left = Math.random() * 90 + "vw";
-  coin.style.animationDuration = (2 + Math.random()*2) + "s";
+  const coin=document.createElement("div");
+  coin.className="fallingCoin"; coin.innerText=simbolo;
+  coin.style.left=Math.random()*90+"vw";
+  coin.style.animationDuration=(2+Math.random()*2)+"s";
   document.body.appendChild(coin);
-  setTimeout(()=> coin.remove(), 3000);
+  setTimeout(()=>coin.remove(),3000);
 }
 
-// Admin Panel
+// ADMIN PANEL
 function abrirAdmin(){ document.getElementById("adminPanel").style.display="block"; }
 function cerrarAdmin(){ document.getElementById("adminPanel").style.display="none"; }
-
 function comandoParty(){ for(let i=0;i<20;i++) crearMonedaCayendo("💰"); }
-function comandoClear(){ document.querySelectorAll(".fallingCoin, .diamond, .bossCoin").forEach(el=> el.remove()); }
-function comandoRainDiamonds(){
-  for(let i=0;i<30;i++){
-    const dia = document.createElement("div");
-    dia.className="diamond";
-    dia.innerText="💎";
-    dia.style.left=Math.random()*90+"vw";
-    dia.style.animationDuration=(2+Math.random()*2)+"s";
-    document.body.appendChild(dia);
-    setTimeout(()=> dia.remove(), 3000);
-  }
+function comandoClear(){ document.querySelectorAll(".fallingCoin, .diamond, .bossCoin").forEach(el=>el.remove()); }
+function comandoRainDiamonds(){ for(let i=0;i<30;i++){ const d=document.createElement("div"); d.className="diamond"; d.innerText="💎"; d.style.left=Math.random()*90+"vw"; d.style.animationDuration=(2+Math.random()*2)+"s"; document.body.appendChild(d); setTimeout(()=>d.remove(),3000); } }
+function comandoBoss(){ bossSound.currentTime=0; bossSound.play(); for(let i=0;i<50;i++){ const b=document.createElement("div"); b.className="bossCoin"; b.innerText="👑"; b.style.left=Math.random()*90+"vw"; b.style.animationDuration=(1.5+Math.random()*2)+"s"; document.body.appendChild(b); setTimeout(()=>b.remove(),4000); } }
+
+// OWNER PANEL
+function abrirOwner(){ document.getElementById("ownerPanel").style.display="block"; }
+function cerrarOwner(){ document.getElementById("ownerPanel").style.display="none"; }
+
+function verificarOwner(){
+  const pass=document.getElementById("ownerPass").value;
+  if(pass==="admin123"){ document.getElementById("configPanel").style.display="block"; alert("Bienvenido Owner"); } else alert("Clave incorrecta");
 }
 
-// Boss Event
-function comandoBoss(){
-  bossSound.currentTime=0;
-  bossSound.play();
-  for(let i=0;i<50;i++){
-    const bossCoin = document.createElement("div");
-    bossCoin.className="bossCoin";
-    bossCoin.innerText="👑";
-    bossCoin.style.left = Math.random()*90 + "vw";
-    bossCoin.style.animationDuration=(1.5 + Math.random()*2)+"s";
-    document.body.appendChild(bossCoin);
-    setTimeout(()=> bossCoin.remove(), 4000);
-  }
+function guardarConfig(){
+  config.velocidadInicial=parseInt(document.getElementById("velInicial").value);
+  config.vidasInicial=parseInt(document.getElementById("vidasInicial").value);
+  config.colorMenu=document.getElementById("menuColor").value;
+  config.animacionMoneda=document.getElementById("animMoneda").checked;
+  document.querySelectorAll("button").forEach(b=>b.style.background=config.colorMenu);
+  alert("Configuración guardada");
+}
+
+function cargarVersion(ver){
+  alert("Cargando versión "+ver+"\n(En esta demo solo se simula, reemplaza con tu código de versión antigua)");
 }
 </script>
 
