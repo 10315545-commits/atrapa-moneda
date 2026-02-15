@@ -141,27 +141,158 @@ button:hover{
 <audio id="diamondSound" src="https://freesound.org/data/previews/276/276020_5121236-lq.mp3"></audio>
 
 <script>
-// --- Variables base ---
-let pesos = 0;
-let vidas = 5;
-let infiniteLife = false;
-let level = 1;
-let record = localStorage.getItem("record") || 0;
-let secuencia = ["R","L","C","L","R","C","R"];
-let indice = 0;
-let monedaActual = "";
-let velocidad = 1500;
-let intervalo;
+// Variables base
+let pesos = 0, vidas = 5, infiniteLife = false, level=1;
+let record = localStorage.getItem("record")||0;
+let secuencia=["R","L","C","L","R","C","R"], indice=0, monedaActual="";
+let velocidad = 1500, intervalo;
 let rankingList = [];
-const ownerClass = "ruler"; 
-let userSkinColor = "#00ffcc";
+const ownerClass="ruler";
+let userSkinColor="#00ffcc";
 
-// --- Elementos DOM ---
-const monedaEl = document.getElementById("moneda");
-const statsEl = document.getElementById("stats");
-const adminPanel = document.getElementById("adminPanel");
-const eventHistory = document.getElementById("eventHistory");
-const rankingEl = document.getElementById("ranking");
-const messagesEl = document.getElementById("messages");
+// Elementos DOM
+const monedaEl=document.getElementById("moneda");
+const statsEl=document.getElementById("stats");
+const adminPanel=document.getElementById("adminPanel");
+const eventHistory=document.getElementById("eventHistory");
+const rankingEl=document.getElementById("ranking");
+const messagesEl=document.getElementById("messages");
+const coinSound=document.getElementById("coinSound");
+const bossSound=document.getElementById("bossSound");
+const diamondSound=document.getElementById("diamondSound");
 
-const coinSound = document.getElementById("coinSo
+// Skin
+function applySkin(color){
+  userSkinColor=color;
+  document.querySelectorAll('button').forEach(btn=>btn.style.boxShadow="0 0 10px "+color);
+  monedaEl.style.textShadow="0 0 10px "+color;
+}
+
+// Inicio juego
+function iniciar(){
+  document.getElementById("menu").style.display="none";
+  document.getElementById("game").style.display="block";
+  resetGame();
+  spawnMiniBosses();
+  startDailyEvents();
+}
+
+// Reset
+function resetGame(){
+  pesos=0; vidas=5; velocidad=1500; indice=0; level=1;
+  actualizarStats();
+  nuevaMoneda();
+  clearInterval(intervalo);
+  intervalo=setInterval(tiempoAgotado,velocidad);
+}
+
+// Nueva moneda
+function nuevaMoneda(){
+  monedaActual=secuencia[indice];
+  monedaEl.innerText=monedaActual;
+  crearMoneda(monedaActual);
+  indice++; if(indice>=secuencia.length) indice=0;
+}
+
+// Stats
+function actualizarStats(){
+  statsEl.innerText="Pesos: "+pesos+" | Vidas: "+(infiniteLife?"∞":vidas)+" | Nivel: "+level+" | Récord: "+record;
+  if(pesos>0 && pesos%50===0) level=Math.floor(pesos/50)+1;
+  actualizarRanking();
+}
+function actualizarRanking(){
+  rankingEl.innerHTML="Ranking:<br>"+rankingList.slice(-5).reverse().map((v,i)=> (i+1)+". "+v).join("<br>");
+}
+
+// Tiempo agotado
+function tiempoAgotado(){
+  if(!infiniteLife) vidas--;
+  actualizarStats();
+  if(vidas<=0) gameOver();
+  nuevaMoneda();
+}
+
+// Game over
+function gameOver(){
+  clearInterval(intervalo);
+  if(pesos>record){ record=pesos; localStorage.setItem("record",record); }
+  rankingList.push(pesos);
+  showMessage("GAME OVER! Puntaje: "+pesos,2000);
+  resetGame();
+}
+
+// Teclas
+document.addEventListener("keydown",function(e){
+  const eleccion=e.key.toUpperCase();
+  if(!["L","C","R"].includes(eleccion)) return;
+  if(eleccion===monedaActual){ pesos++; coinSound.play(); velocidad-=50; if(velocidad<500) velocidad=500;
+    clearInterval(intervalo); intervalo=setInterval(tiempoAgotado,velocidad);
+  } else { if(!infiniteLife) vidas--; }
+  actualizarStats();
+  if(vidas<=0) gameOver();
+  nuevaMoneda();
+});
+
+// Crear monedas / diamond / boss
+function crearMoneda(tipo){
+  const coin=document.createElement("div");
+  if(tipo==="C") coin.className="fallingCoin", coin.innerText="🪙";
+  if(tipo==="R") coin.className="bossCoin", coin.innerText="💰";
+  if(tipo==="diamond") coin.className="diamond", coin.innerText="💎";
+  if(tipo==="bossFinal") coin.className="bossFinal", coin.innerText="👑";
+  coin.style.left=Math.random()*90+"vw";
+  coin.style.animationDuration=(2+Math.random()*1)+"s";
+  coin.style.textShadow="0 0 10px "+userSkinColor+",0 0 20px #fff";
+  document.body.appendChild(coin);
+  setTimeout(()=>coin.remove(),3500);
+}
+
+// Admin panel
+function showAdmin(){ if(ownerClass!=="ruler") return alert("Solo el owner"); adminPanel.style.display=adminPanel.style.display==="block"?"none":"block"; }
+
+// Eventos
+function triggerEvent(event,isAdmin=false){
+  if(event==="party"){ for(let i=0;i<10;i++) crearMoneda("C"); pesos+=(isAdmin?10:5); logEvent("Party +"+(isAdmin?10:5)+" monedas",isAdmin); showMessage("Party +"+(isAdmin?10:5)+" monedas"); }
+  if(event==="superParty"){ for(let i=0;i<30;i++) crearMoneda("C"); pesos+=(isAdmin?30:15); logEvent("Super Party +"+(isAdmin?30:15)+" monedas",isAdmin); showMessage("Super Party +"+(isAdmin?30:15)+" monedas"); }
+  if(event==="rainDiamonds"){ for(let i=0;i<15;i++) crearMoneda("diamond"); pesos+=(isAdmin?20:10); diamondSound.play(); logEvent("Rain Diamonds +"+(isAdmin?20:10)+" monedas",isAdmin); showMessage("Rain Diamonds +"+(isAdmin?20:10)+" monedas"); }
+  if(event==="meteorShower"){ for(let i=0;i<20;i++){ crearMoneda(Math.random()<0.3?"diamond":"C"); } pesos+=(isAdmin?25:12); logEvent("Meteor Shower +"+(isAdmin?25:12)+" monedas",isAdmin); showMessage("Meteor Shower +"+(isAdmin?25:12)+" monedas"); }
+  if(event==="clear"){ document.querySelectorAll(".fallingCoin,.diamond,.bossCoin,.miniBoss").forEach(c=>c.remove()); logEvent("Monedas limpiadas",true); showMessage("Monedas limpiadas"); }
+}
+
+// Event history
+function logEvent(msg,isPrivate=false){ const p=document.createElement("p"); p.innerText=msg; if(isPrivate) p.style.color="#ff88ff"; eventHistory.appendChild(p); eventHistory.scrollTop=eventHistory.scrollHeight; }
+
+// Vida infinita
+function toggleInfiniteLife(){ infiniteLife=!infiniteLife; logEvent("Vida infinita "+(infiniteLife?"activada":"desactivada"),true); actualizarStats(); }
+
+// Mensajes owner
+function ownerMessagePrompt(){ if(ownerClass!=="ruler") return; const msg=prompt("Mensaje Público del Owner:"); if(msg) showMessage(msg,3000); }
+function showMessage(msg,duration=2000){ messagesEl.innerText=msg; messagesEl.style.display="block"; messagesEl.style.opacity=0; let op=0; const fadeIn=setInterval(()=>{ if(op<1){ op+=0.05; messagesEl.style.opacity=op; }else clearInterval(fadeIn); },20); setTimeout(()=>{ let op2=1; const fadeOut=setInterval(()=>{ if(op2>0){ op2-=0.05; messagesEl.style.opacity=op2; }else{ clearInterval(fadeOut); messagesEl.style.display="none"; } },20); },duration); }
+
+// MiniBosses
+function spawnMiniBosses(){
+  setInterval(()=>{
+    if(Math.random()<0.08){
+      const mb=document.createElement("div");
+      mb.className="miniBoss"; mb.innerText="👾";
+      mb.style.left=Math.random()*90+"vw";
+      mb.style.animationDuration=(2+Math.random()*1)+"s";
+      document.body.appendChild(mb);
+      let attacked=false;
+      const attackTimeout=setTimeout(()=>{
+        if(!attacked && !infiniteLife){ vidas--; showMessage("MiniBoss atacó -1 vida"); actualizarStats(); }
+        mb.remove();
+      },2500);
+      mb.onclick=()=>{
+        attacked=true; pesos+=5; coinSound.play(); actualizarStats(); showMessage("MiniBoss atrapado +5 monedas"); clearTimeout(attackTimeout); mb.remove();
+      };
+    }
+  },1000);
+}
+
+// Eventos automáticos
+function startDailyEvents(){ setInterval(()=>{ const events=["party","rainDiamonds"]; const e=events[Math.floor(Math.random()*events.length)]; triggerEvent(e,false); },30000); }
+</script>
+
+</body>
+</html>
