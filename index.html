@@ -2,11 +2,11 @@
 <html>
 <head>
 <meta charset="UTF-8">
-<title>Atrapa la Moneda – Owner Only</title>
+<title>Atrapa la Moneda – V6.0</title>
 <style>
   body{
     margin:0;
-    background: linear-gradient(to bottom, #0f0f0f, #111111);
+    background: linear-gradient(to bottom,#0f0f0f,#111111);
     color:white;
     font-family:Arial;
     text-align:center;
@@ -17,16 +17,15 @@
     text-shadow:0 0 15px #ff77aa, 0 0 20px #ff44cc;
   }
   button{
-    padding:12px 24px;
-    font-size:18px;
-    background:linear-gradient(45deg,#ff77aa,#ff44cc);
+    padding:10px 20px;
+    font-size:16px;
     border:none;
-    border-radius:12px;
+    border-radius:10px;
     cursor:pointer;
-    margin:5px;
+    margin:3px;
     color:white;
     font-weight:bold;
-    box-shadow:0 0 10px #ff44cc;
+    box-shadow:0 0 5px #ff44cc;
   }
   #game, #adminPanel{
     display:none;
@@ -36,27 +35,40 @@
     margin:20px;
   }
   .info{
-    font-size:20px;
-    margin:10px;
+    font-size:18px;
+    margin:5px;
   }
-  .fallingCoin, .diamond, .bossCoin{
+  .fallingCoin,.diamond,.bossCoin{
     position:absolute;
     top:-50px;
     user-select:none;
     pointer-events:none;
   }
-  .fallingCoin{ font-size:40px; animation:caer linear forwards;}
-  .diamond{ font-size:35px; animation:caer linear forwards;}
-  .bossCoin{ font-size:50px; animation:caer linear forwards;}
+  .fallingCoin{ font-size:40px; color:yellow; animation:caer linear forwards;}
+  .diamond{ font-size:35px; color:#00ffff; animation:caer linear forwards;}
+  .bossCoin{ font-size:50px; color:#ff44cc; animation:caer linear forwards;}
   @keyframes caer{
     0% {top:-50px; opacity:1;}
     100% {top:90vh; opacity:0;}
+  }
+  .tabButton.active{
+    background:#ff44cc;
+    box-shadow:0 0 10px #ff44cc;
+  }
+  #eventHistory{
+    max-height:150px;
+    overflow-y:auto;
+    border:1px solid #ff44cc;
+    margin-top:5px;
+    padding:5px;
+    font-size:14px;
+    text-align:left;
   }
 </style>
 </head>
 <body>
 
-<h1>🎮 ATRAPA LA MONEDA</h1>
+<h1>🎮 ATRAPA LA MONEDA V6.0</h1>
 
 <div id="menu">
   <button onclick="iniciar()">INICIAR JUEGO</button>
@@ -72,29 +84,32 @@
 <div id="adminPanel">
   <h2>⚡ ADMIN PANEL ⚡</h2>
   <p>Clase: <span id="adminClase"></span></p>
-  <button onclick="comandoParty()">Party</button>
-  <button onclick="comandoRainDiamonds()">Rain Diamonds</button>
-  <button onclick="comandoBoss()">Boss Event</button>
-  <button onclick="comandoVidaInfinita()">Vida Infinita</button>
-  <button onclick="cerrarAdminPanel()">Cerrar Panel</button>
+  <div>
+    <button class="tabButton active" onclick="cambiarPestana('party')">Party</button>
+    <button class="tabButton" onclick="cambiarPestana('diamonds')">Rain Diamonds</button>
+    <button class="tabButton" onclick="cambiarPestana('boss')">Boss Event</button>
+    <button onclick="comandoVidaInfinita()">Vida Infinita</button>
+    <button onclick="cerrarAdminPanel()">Cerrar Panel</button>
+  </div>
+  <div id="eventHistory"></div>
 </div>
 
 <script>
 // VARIABLES PRINCIPALES
-let pesos = 0, vidas = 5, record = localStorage.getItem("record") || 0;
-let secuencia = ["R","L","C","L","R","C","R"], indice = 0;
-let monedaActual = "", velocidad = 1500, intervalo;
-let vidaInfinita = false;
-let claseAdmin = "";
+let pesos=0, vidas=5, record=localStorage.getItem("record")||0;
+let secuencia=["R","L","C","L","R","C","R"], indice=0;
+let monedaActual="", velocidad=1500, intervalo;
+let vidaInfinita=false, claseAdmin="";
 
 // ELEMENTOS
-const monedaEl = document.getElementById("moneda");
-const statsEl = document.getElementById("stats");
-const adminClaseEl = document.getElementById("adminClase");
+const monedaEl=document.getElementById("moneda");
+const statsEl=document.getElementById("stats");
+const adminClaseEl=document.getElementById("adminClase");
+const eventHistoryEl=document.getElementById("eventHistory");
 
 // SONIDOS
-const coinSound = new Audio("https://freesound.org/data/previews/341/341695_62435-lq.mp3");
-const bossSound = new Audio("https://freesound.org/data/previews/331/331912_3248240-lq.mp3");
+const coinSound=new Audio("https://freesound.org/data/previews/341/341695_62435-lq.mp3");
+const bossSound=new Audio("https://freesound.org/data/previews/331/331912_3248240-lq.mp3");
 
 // INICIAR JUEGO
 function iniciar(){
@@ -109,14 +124,14 @@ function resetGame(){
   actualizarStats();
   nuevaMoneda();
   clearInterval(intervalo);
-  intervalo = setInterval(tiempoAgotado, velocidad);
+  intervalo=setInterval(tiempoAgotado, velocidad);
 }
 
 // NUEVA MONEDA
 function nuevaMoneda(){
-  monedaActual = secuencia[indice];
-  monedaEl.innerText = monedaActual;
-  indice++; if(indice >= secuencia.length) indice=0;
+  monedaActual=secuencia[indice];
+  monedaEl.innerText=monedaActual;
+  indice++; if(indice>=secuencia.length) indice=0;
   crearMonedaCayendo("💰");
 }
 
@@ -158,40 +173,58 @@ document.addEventListener("keydown", function(e){
   nuevaMoneda();
 });
 
-// ANIMACION DE MONEDAS
-function crearMonedaCayendo(simbolo){
-  const c = document.createElement("div");
+// ANIMACIONES
+function crearMonedaCayendo(simbolo,color="#FFFF00"){
+  const c=document.createElement("div");
   c.className="fallingCoin";
-  c.innerText = simbolo;
+  c.innerText=simbolo;
   c.style.left=Math.random()*90+"vw";
+  c.style.color=color;
   c.style.animationDuration=(2+Math.random()*1.5)+"s";
   document.body.appendChild(c);
   setTimeout(()=>c.remove(),3000);
 }
 
-// ADMIN PANEL SOLO OWNER
+// ADMIN PANEL
 function pedirClaseAdmin(){
-  const clave = prompt("Introduce la clave de tu clase admin:");
-  if(clave==="ruler admin"){ // <-- Tu clase personalizada
-    claseAdmin = clave;
-    adminClaseEl.innerText = claseAdmin;
+  const clave=prompt("Introduce la clave de tu clase admin:");
+  if(clave==="ruler admin"){
+    claseAdmin=clave;
+    adminClaseEl.innerText=claseAdmin;
     mostrarAdminPanel();
-  } else{
-    alert("Clase incorrecta");
-  }
+  } else{ alert("Clase incorrecta"); }
 }
 function mostrarAdminPanel(){ document.getElementById("adminPanel").style.display="block"; }
 function cerrarAdminPanel(){ document.getElementById("adminPanel").style.display="none"; }
 
+// PESTAÑAS
+function cambiarPestana(tipo){
+  const buttons=document.getElementsByClassName("tabButton");
+  for(let b of buttons){ b.classList.remove("active"); }
+  if(tipo==="party") buttons[0].classList.add("active");
+  if(tipo==="diamonds") buttons[1].classList.add("active");
+  if(tipo==="boss") buttons[2].classList.add("active");
+
+  if(tipo==="party") comandoParty();
+  if(tipo==="diamonds") comandoRainDiamonds();
+  if(tipo==="boss") comandoBoss();
+}
+
 // EVENTOS ADMIN
-function comandoParty(){ for(let i=0;i<20;i++){ crearMonedaCayendo("💰"); pesos++; } actualizarStats(); }
-function comandoRainDiamonds(){ for(let i=0;i<30;i++){ const d=document.createElement("div"); d.className="diamond"; d.innerText="💎"; d.style.left=Math.random()*90+"vw"; d.style.animationDuration=(2+Math.random()*2)+"s"; document.body.appendChild(d); setTimeout(()=>d.remove(),3000); pesos+=2;} actualizarStats();}
-function comandoBoss(){ bossSound.currentTime=0; bossSound.play(); for(let i=0;i<50;i++){ const b=document.createElement("div"); b.className="bossCoin"; b.innerText="👑"; b.style.left=Math.random()*90+"vw"; b.style.animationDuration=(1.5+Math.random()*2)+"s"; document.body.appendChild(b); setTimeout(()=>b.remove(),4000); pesos+=5;} actualizarStats();}
-function comandoVidaInfinita(){ vidaInfinita=true; mostrarMensaje("Modo Vida Infinita Activado! ♾️"); actualizarStats();}
+function comandoParty(){ for(let i=0;i<20;i++){ crearMonedaCayendo("💰","yellow"); pesos++; } registrarEvento("Party activado!"); actualizarStats();}
+function comandoRainDiamonds(){ for(let i=0;i<30;i++){ crearMonedaCayendo("💎","#00ffff"); pesos+=2; } registrarEvento("Rain Diamonds!"); actualizarStats();}
+function comandoBoss(){ bossSound.currentTime=0; bossSound.play(); for(let i=0;i<50;i++){ crearMonedaCayendo("👑","#ff44cc"); pesos+=5; } registrarEvento("Boss Event activado!"); actualizarStats();}
+function comandoVidaInfinita(){ vidaInfinita=true; mostrarMensaje("Modo Vida Infinita Activado! ♾️"); registrarEvento("Vida Infinita activada"); actualizarStats();}
 
 // MENSAJES
 function mostrarMensaje(texto){ alert(texto); }
 
+// HISTORIAL
+function registrarEvento(texto){
+  const e=document.createElement("div");
+  e.innerText=(new Date()).toLocaleTimeString()+" → "+texto;
+  eventHistoryEl.prepend(e);
+}
 </script>
 
 </body>
