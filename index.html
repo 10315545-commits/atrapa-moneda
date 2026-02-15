@@ -2,30 +2,33 @@
 <html>
 <head>
 <meta charset="UTF-8">
-<title>Atrapa la Moneda 4.0</title>
+<title>Atrapa la Moneda 5.0</title>
 <style>
   body{
     margin:0;
-    background:#0f0f0f;
+    background: linear-gradient(to bottom, #0f0f0f, #111111);
     color:white;
     font-family:Arial;
     text-align:center;
     overflow-x:hidden;
   }
   h1{
-    color:#00ffcc;
-    text-shadow:0 0 10px #00ffcc;
+    color:#ff77aa;
+    text-shadow:0 0 15px #ff77aa, 0 0 20px #ff44cc;
   }
   button{
-    padding:10px 20px;
+    padding:12px 24px;
     font-size:18px;
-    background:#00ffcc;
+    background:linear-gradient(45deg,#ff77aa,#ff44cc);
     border:none;
-    border-radius:10px;
+    border-radius:12px;
     cursor:pointer;
     margin:5px;
+    color:white;
+    font-weight:bold;
+    box-shadow:0 0 10px #ff44cc;
   }
-  #game, #adminPanel{
+  #game, #adminPanel, #historialPanel{
     display:none;
   }
   #moneda{
@@ -53,11 +56,12 @@
 </head>
 <body>
 
-<h1>🎮 ATRAPA LA MONEDA 4.0</h1>
+<h1>🎮 ATRAPA LA MONEDA 5.0</h1>
 
 <div id="menu">
   <button onclick="iniciar()">INICIAR JUEGO</button>
   <button onclick="mostrarAdminPanel()">ADMIN PANEL</button>
+  <button onclick="mostrarHistorial()">HISTORIAL DE VERSIONES</button>
 </div>
 
 <div id="game">
@@ -75,6 +79,18 @@
   <button onclick="cerrarAdminPanel()">Cerrar Panel</button>
 </div>
 
+<div id="historialPanel">
+  <h2>📜 HISTORIAL DE VERSIONES</h2>
+  <ul>
+    <li>Beta 1 – Primeras animaciones básicas</li>
+    <li>Update 1.0 – Monedas cayendo</li>
+    <li>Update 2.0 – Sonidos y velocidad dinámica</li>
+    <li>Update 3.0 – Admin Panel y eventos</li>
+    <li>Update 4.0 – Vida infinita y boss coins</li>
+  </ul>
+  <button onclick="cerrarHistorial()">Cerrar Historial</button>
+</div>
+
 <script>
 // VARIABLES PRINCIPALES
 let pesos = 0, vidas = 5, record = localStorage.getItem("record") || 0;
@@ -82,6 +98,7 @@ let secuencia = ["R","L","C","L","R","C","R"], indice = 0;
 let monedaActual = "", velocidad = 1500, intervalo;
 let vidaInfinita = false;
 
+// ELEMENTOS
 const monedaEl = document.getElementById("moneda");
 const statsEl = document.getElementById("stats");
 
@@ -168,10 +185,8 @@ function cerrarAdminPanel(){ document.getElementById("adminPanel").style.display
 
 // EVENTOS ADMIN QUE SUMAN MONEDAS
 function comandoParty(){
-  for(let i=0;i<20;i++){
-    crearMonedaCayendo("💰");
-    pesos++;
-  } actualizarStats();
+  for(let i=0;i<20;i++){ crearMonedaCayendo("💰"); pesos++; }
+  actualizarStats();
 }
 
 function comandoRainDiamonds(){
@@ -207,9 +222,12 @@ function comandoVidaInfinita(){
 }
 
 // FUNCION DE MENSAJES
-function mostrarMensaje(texto){
-  alert(texto);
-}
+function mostrarMensaje(texto){ alert(texto); }
+
+// HISTORIAL DE VERSIONES (solo Owner)
+function mostrarHistorial(){ document.getElementById("historialPanel").style.display="block"; }
+function cerrarHistorial(){ document.getElementById("historialPanel").style.display="none"; }
+
 </script>
 
 </body>
