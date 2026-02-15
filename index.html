@@ -2,120 +2,120 @@
 <html>
 <head>
 <meta charset="UTF-8">
-<title>Atrapa la Moneda V10.0 Ultra Mega</title>
+<title>Atrapa la Moneda V10.1 Final</title>
 <style>
-  body{
-    margin:0;
-    background: linear-gradient(to bottom,#0f0f0f,#1a1a2e);
-    color:white;
-    font-family: Arial, sans-serif;
-    text-align:center;
-    overflow-x:hidden;
-  }
-  h1{
-    color:#00ffcc;
-    text-shadow:0 0 15px #00ffcc,0 0 25px #00ffaa;
-  }
-  button{
-    padding:10px 20px;
-    font-size:16px;
-    border:none;
-    border-radius:12px;
-    cursor:pointer;
-    margin:5px;
-    font-weight:bold;
-    color:white;
-    background: linear-gradient(145deg, #222233, #444466);
-    box-shadow: 0 0 10px #00ffcc;
-    transition: all 0.2s ease;
-  }
-  button:hover{
-    background: linear-gradient(145deg,#00ffcc,#00aa88);
-    box-shadow: 0 0 15px #00ffcc;
-    color:#0f0f0f;
-  }
-  #game, #adminPanel{
-    display:none;
-    background: linear-gradient(to bottom,#111122,#222244);
-    padding:15px;
-    border-radius:12px;
-    box-shadow:0 0 15px #00ffcc;
-    margin:10px auto;
-    max-width: 400px;
-  }
-  #moneda{
-    font-size:80px;
-    margin:20px;
-    text-shadow:0 0 10px #ffff66;
-  }
-  .info{
-    font-size:18px;
-    margin:5px;
-  }
-  .fallingCoin,.diamond,.bossCoin,.miniBoss{
-    position:absolute;
-    top:-50px;
-    user-select:none;
-    pointer-events:none;
-  }
-  .fallingCoin{ font-size:40px; color:yellow; animation:caer 2s forwards ease-in;}
-  .diamond{ font-size:35px; color:#00ffff; animation:caer 2s forwards ease-in;}
-  .bossCoin{ font-size:50px; color:#ff44cc; animation:caer 2.2s forwards ease-in;}
-  .miniBoss{ font-size:45px; color:#ffbb33; animation:caer 2.5s forwards ease-in;}
-  @keyframes caer{
-    0% {top:-50px; opacity:1;}
-    80% {top:80vh; transform:translateY(-10px);}
-    100% {top:85vh; opacity:0; transform:translateY(0);}
-  }
-  #eventHistory{
-    max-height:180px;
-    overflow-y:auto;
-    border:1px solid #00ffcc;
-    margin-top:5px;
-    padding:5px;
-    font-size:14px;
-    text-align:left;
-    background:#111122;
-    border-radius:8px;
-  }
-  .eventItem{
-    cursor:pointer;
-    margin:2px 0;
-  }
-  .eventItem:hover{
-    background:#00ffcc;
-    color:#0f0f0f;
-    border-radius:5px;
-  }
-  #ranking{
-    max-height:100px;
-    overflow-y:auto;
-    border:1px solid #00ffcc;
-    margin-top:5px;
-    padding:5px;
-    font-size:14px;
-    background:#111122;
-    border-radius:8px;
-    text-align:left;
-  }
-  #messages{
-    position:fixed;
-    top:10px;
-    left:50%;
-    transform:translateX(-50%);
-    background: rgba(0,0,0,0.7);
-    padding:10px 20px;
-    border-radius:12px;
-    color:#fff;
-    font-weight:bold;
-    display:none;
-    z-index:1000;
-  }
+body{
+  margin:0;
+  background: linear-gradient(to bottom,#0f0f0f,#1a1a2e);
+  color:white;
+  font-family: Arial, sans-serif;
+  text-align:center;
+  overflow-x:hidden;
+}
+h1{
+  color:#00ffcc;
+  text-shadow:0 0 15px #00ffcc,0 0 25px #00ffaa;
+}
+button{
+  padding:10px 20px;
+  font-size:16px;
+  border:none;
+  border-radius:12px;
+  cursor:pointer;
+  margin:5px;
+  font-weight:bold;
+  color:white;
+  background: linear-gradient(145deg, #222233, #444466);
+  box-shadow: 0 0 10px #00ffcc;
+  transition: all 0.2s ease;
+}
+button:hover{
+  background: linear-gradient(145deg,#00ffcc,#00aa88);
+  box-shadow: 0 0 15px #00ffcc;
+  color:#0f0f0f;
+}
+#game, #adminPanel{
+  display:none;
+  background: linear-gradient(to bottom,#111122,#222244);
+  padding:15px;
+  border-radius:12px;
+  box-shadow:0 0 15px #00ffcc;
+  margin:10px auto;
+  max-width: 400px;
+}
+#moneda{
+  font-size:80px;
+  margin:20px;
+  text-shadow:0 0 10px #ffff66;
+}
+.info{
+  font-size:18px;
+  margin:5px;
+}
+.fallingCoin,.diamond,.bossCoin,.miniBoss{
+  position:absolute;
+  top:-50px;
+  user-select:none;
+  pointer-events:none;
+}
+.fallingCoin{ font-size:40px; color:yellow; animation:caer 2s forwards ease-in;}
+.diamond{ font-size:35px; color:#00ffff; animation:caer 2s forwards ease-in;}
+.bossCoin{ font-size:50px; color:#ff44cc; animation:caer 2.2s forwards ease-in;}
+.miniBoss{ font-size:45px; color:#ffbb33; animation:caer 2.5s forwards ease-in;}
+@keyframes caer{
+  0% {top:-50px; opacity:1;}
+  80% {top:80vh; transform:translateY(-10px);}
+  100% {top:85vh; opacity:0; transform:translateY(0);}
+}
+#eventHistory{
+  max-height:180px;
+  overflow-y:auto;
+  border:1px solid #00ffcc;
+  margin-top:5px;
+  padding:5px;
+  font-size:14px;
+  text-align:left;
+  background:#111122;
+  border-radius:8px;
+}
+.eventItem{
+  cursor:pointer;
+  margin:2px 0;
+}
+.eventItem:hover{
+  background:#00ffcc;
+  color:#0f0f0f;
+  border-radius:5px;
+}
+#ranking{
+  max-height:100px;
+  overflow-y:auto;
+  border:1px solid #00ffcc;
+  margin-top:5px;
+  padding:5px;
+  font-size:14px;
+  background:#111122;
+  border-radius:8px;
+  text-align:left;
+}
+#messages{
+  position:fixed;
+  top:10px;
+  left:50%;
+  transform:translateX(-50%);
+  background: rgba(0,0,0,0.7);
+  padding:10px 20px;
+  border-radius:12px;
+  color:#fff;
+  font-weight:bold;
+  display:none;
+  z-index:1000;
+}
 </style>
 </head>
 <body>
 
-<h1>🎮 ATRAPA LA MONEDA V10.0 Ultra Mega</h1>
+<h1>🎮 ATRAPA LA MONEDA V10.1 Final</h1>
 
 <div id="menu">
   <button onclick="iniciar()">INICIAR JUEGO</button>
@@ -264,35 +264,58 @@ document.addEventListener("keydown", function(e){
   nuevaMoneda();
 });
 
-// --- Falling Coins ---
-function crearMoneda(tipo){
-  const coin = document.createElement("div");
-  coin.className = tipo==="C" ? "fallingCoin" : tipo==="R" ? "bossCoin" : "fallingCoin";
-  coin.style.left = Math.random()*90+"vw";
-  coin.innerText = tipo==="R" ? "💰" : "🪙";
-  coin.style.animationDuration = (2 + Math.random()*1) + "s";
-  document.body.appendChild(coin);
-  setTimeout(()=>{
-    coin.remove();
-    if(tipo==="R") bossSound.play();
-    else coinSound.play();
-  },3500);
-}
-
-// --- Mini Boss ---
+// --- Mini Boss Attack Upgrade ---
 function spawnMiniBosses(){
   setInterval(()=>{
-    if(Math.random()<0.08){ // 8% chance
+    if(Math.random()<0.08){
       const mb = document.createElement("div");
       mb.className = "miniBoss";
       mb.innerText = "👾";
       mb.style.left = Math.random()*90+"vw";
       mb.style.animationDuration = (2+Math.random()*1)+"s";
       document.body.appendChild(mb);
-      mb.onclick = ()=>{ pesos+=5; mb.remove(); coinSound.play(); actualizarStats(); showMessage("MiniBoss atrapado +5 monedas",2000); };
-      setTimeout(()=>mb.remove(),3000);
+
+      let attacked = false;
+      const attackTimeout = setTimeout(()=>{
+        if(!attacked && !infiniteLife){
+          vidas--;
+          showMessage("MiniBoss atacó! -1 vida",2000);
+          actualizarStats();
+        }
+        mb.remove();
+      },2500);
+
+      mb.onclick = ()=>{
+        attacked = true;
+        pesos += 5;
+        coinSound.play();
+        actualizarStats();
+        showMessage("MiniBoss atrapado +5 monedas",2000);
+        clearTimeout(attackTimeout);
+        mb.remove();
+      };
     }
   },1000);
+}
+
+// --- Coins & Diamonds ---
+function crearMoneda(tipo){
+  const coin = document.createElement("div");
+  if(tipo==="C"){ coin.className = "fallingCoin"; coin.innerText = "🪙"; }
+  if(tipo==="R"){ coin.className = "bossCoin"; coin.innerText = "💰"; }
+  if(tipo==="diamond"){ coin.className = "diamond"; coin.innerText = "💎"; }
+
+  coin.style.left = Math.random()*90+"vw";
+  coin.style.animationDuration = (2+Math.random()*1)+"s";
+  coin.style.textShadow = "0 0 10px "+userSkinColor+",0 0 20px #fff";
+  document.body.appendChild(coin);
+
+  setTimeout(()=>{
+    coin.remove();
+    if(tipo==="R") bossSound.play();
+    else if(tipo==="diamond") diamondSound.play();
+    else coinSound.play();
+  },3500);
 }
 
 // --- Admin Panel ---
@@ -357,14 +380,26 @@ function startDailyEvents(){
     const e = events[Math.floor(Math.random()*events.length)];
     triggerEvent(e,false);
     showMessage("Evento diario activado: "+e,2500);
-  },30000); // cada 30s simulado
+  },30000);
 }
 
-// --- Messages ---
+// --- Messages with Fade ---
 function showMessage(msg,duration=2000){
   messagesEl.innerText = msg;
   messagesEl.style.display="block";
-  setTimeout(()=>{ messagesEl.style.display="none"; },duration);
+  messagesEl.style.opacity = 0;
+  let op = 0;
+  const fadeIn = setInterval(()=>{
+    if(op<1){ op+=0.05; messagesEl.style.opacity = op; }
+    else clearInterval(fadeIn);
+  },20);
+  setTimeout(()=>{
+    let op2 = 1;
+    const fadeOut = setInterval(()=>{
+      if(op2>0){ op2-=0.05; messagesEl.style.opacity = op2; }
+      else{ clearInterval(fadeOut); messagesEl.style.display="none"; }
+    },20);
+  },duration);
 }
 </script>
 
