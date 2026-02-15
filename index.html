@@ -2,7 +2,7 @@
 <html>
 <head>
 <meta charset="UTF-8">
-<title>Atrapa la Moneda V6.0</title>
+<title>Atrapa la Moneda V7.0</title>
 <style>
   body{
     margin:0;
@@ -58,12 +58,13 @@
     user-select:none;
     pointer-events:none;
   }
-  .fallingCoin{ font-size:40px; color:yellow; animation:caer linear forwards;}
-  .diamond{ font-size:35px; color:#00ffff; animation:caer linear forwards;}
-  .bossCoin{ font-size:50px; color:#ff44cc; animation:caer linear forwards;}
+  .fallingCoin{ font-size:40px; color:yellow; animation:caer 2s forwards ease-in;}
+  .diamond{ font-size:35px; color:#00ffff; animation:caer 2s forwards ease-in;}
+  .bossCoin{ font-size:50px; color:#ff44cc; animation:caer 2.2s forwards ease-in;}
   @keyframes caer{
     0% {top:-50px; opacity:1;}
-    100% {top:90vh; opacity:0;}
+    80% {top:80vh; transform:translateY(-10px);}
+    100% {top:85vh; opacity:0; transform:translateY(0);}
   }
   .tabButton.active{
     background: #00ffcc;
@@ -85,7 +86,7 @@
 </head>
 <body>
 
-<h1>🎮 ATRAPA LA MONEDA V6.0</h1>
+<h1>🎮 ATRAPA LA MONEDA</h1>
 
 <div id="menu">
   <button onclick="iniciar()">INICIAR JUEGO</button>
@@ -100,12 +101,16 @@
 
 <div id="adminPanel">
   <h3>ADMIN PANEL</h3>
-  <button onclick="triggerEvent('party')">Party</button>
-  <button onclick="triggerEvent('clear')">Clear Coins</button>
-  <button onclick="triggerEvent('rainDiamonds')">Rain Diamonds</button>
+  <button onclick="triggerEvent('party',true)">Party</button>
+  <button onclick="triggerEvent('clear',true)">Clear Coins</button>
+  <button onclick="triggerEvent('rainDiamonds',true)">Rain Diamonds</button>
   <button onclick="toggleInfiniteLife()">Vida Infinita</button>
   <div id="eventHistory"></div>
 </div>
+
+<audio id="coinSound" src="https://freesound.org/data/previews/341/341695_624578-lq.mp3"></audio>
+<audio id="eventSound" src="https://freesound.org/data/previews/198/198841_2859972-lq.mp3"></audio>
+<audio id="diamondSound" src="https://freesound.org/data/previews/276/276020_5121236-lq.mp3"></audio>
 
 <script>
 let pesos = 0;
@@ -122,6 +127,10 @@ const monedaEl = document.getElementById("moneda");
 const statsEl = document.getElementById("stats");
 const adminPanel = document.getElementById("adminPanel");
 const eventHistory = document.getElementById("eventHistory");
+
+const coinSound = document.getElementById("coinSound");
+const eventSound = document.getElementById("eventSound");
+const diamondSound = document.getElementById("diamondSound");
 
 // Owner info
 const ownerClass = "ruler"; // solo el owner puede abrir admin
@@ -146,7 +155,6 @@ function resetGame(){
 function nuevaMoneda(){
   monedaActual = secuencia[indice];
   monedaEl.innerText = monedaActual;
-  // Animación de caída
   crearMoneda(monedaActual);
   indice++;
   if(indice >= secuencia.length) indice=0;
@@ -182,6 +190,7 @@ document.addEventListener("keydown", function(e){
 
   if(eleccion === monedaActual){
     pesos++;
+    coinSound.play();
     velocidad -= 50;
     if(velocidad < 500) velocidad = 500;
     clearInterval(intervalo);
@@ -200,10 +209,10 @@ function crearMoneda(tipo){
   const coin = document.createElement("div");
   coin.className = tipo === "C" ? "fallingCoin" : tipo==="R" ? "bossCoin" : "fallingCoin";
   coin.style.left = Math.random()*90+"vw";
-  coin.innerText = "🪙";
+  coin.innerText = tipo==="R" ? "💰" : "🪙";
   coin.style.animationDuration = (2 + Math.random()*1) + "s";
   document.body.appendChild(coin);
-  setTimeout(()=>coin.remove(),3000);
+  setTimeout(()=>coin.remove(),3500);
 }
 
 // --- Admin Panel ---
@@ -212,11 +221,13 @@ function showAdmin(){
   adminPanel.style.display = adminPanel.style.display==="block" ? "none" : "block";
 }
 
-function triggerEvent(event){
+// Evento actualizado: public y admin
+function triggerEvent(event, isAdmin=false){
   if(event === "party"){
     for(let i=0;i<10;i++) crearMoneda("C");
-    pesos += 10;
-    logEvent("Evento Party activado +10 monedas");
+    pesos += isAdmin ? 10 : 5;
+    eventSound.play();
+    logEvent("Evento Party activado +" + (isAdmin?10:5) + " monedas");
   }
   if(event === "clear"){
     const coins = document.querySelectorAll(".fallingCoin,.diamond,.bossCoin");
@@ -233,8 +244,9 @@ function triggerEvent(event){
       document.body.appendChild(d);
       setTimeout(()=>d.remove(),4000);
     }
-    pesos += 20;
-    logEvent("Evento Rain Diamonds activado +20 monedas");
+    pesos += isAdmin ? 20 : 10;
+    diamondSound.play();
+    logEvent("Evento Rain Diamonds activado +" + (isAdmin?20:10) + " monedas");
   }
 }
 
