@@ -2,7 +2,7 @@
 <html>
 <head>
 <meta charset="UTF-8">
-<title>Atrapa la Moneda V10.1 Final</title>
+<title>Atrapa la Moneda V10.2 Owner</title>
 <style>
 body{
   margin:0;
@@ -98,7 +98,7 @@ button:hover{
   border-radius:8px;
   text-align:left;
 }
-#messages{
+#messages,#ownerMessages{
   position:fixed;
   top:10px;
   left:50%;
@@ -111,11 +111,15 @@ button:hover{
   display:none;
   z-index:1000;
 }
+#ownerMessages{
+  top:60px;
+  background:#8800ff;
+}
 </style>
 </head>
 <body>
 
-<h1>🎮 ATRAPA LA MONEDA V10.1 Final</h1>
+<h1>🎮 ATRAPA LA MONEDA V10.2 Owner</h1>
 
 <div id="menu">
   <button onclick="iniciar()">INICIAR JUEGO</button>
@@ -131,15 +135,17 @@ button:hover{
 </div>
 
 <div id="adminPanel">
-  <h3>ADMIN PANEL</h3>
+  <h3>ADMIN PANEL (Owner)</h3>
   <button onclick="triggerEvent('party',true)">Party</button>
   <button onclick="triggerEvent('clear',true)">Clear Coins</button>
   <button onclick="triggerEvent('rainDiamonds',true)">Rain Diamonds</button>
   <button onclick="toggleInfiniteLife()">Vida Infinita</button>
+  <button onclick="ownerMessagePrompt()">Enviar Mensaje Owner</button>
   <div id="eventHistory"></div>
 </div>
 
 <div id="messages"></div>
+<div id="ownerMessages"></div>
 
 <audio id="coinSound" src="https://freesound.org/data/previews/341/341695_624578-lq.mp3"></audio>
 <audio id="bossSound" src="https://freesound.org/data/previews/186/186942_351137-lq.mp3"></audio>
@@ -163,6 +169,7 @@ const adminPanel = document.getElementById("adminPanel");
 const eventHistory = document.getElementById("eventHistory");
 const rankingEl = document.getElementById("ranking");
 const messagesEl = document.getElementById("messages");
+const ownerMessagesEl = document.getElementById("ownerMessages");
 
 const coinSound = document.getElementById("coinSound");
 const bossSound = document.getElementById("bossSound");
@@ -264,7 +271,7 @@ document.addEventListener("keydown", function(e){
   nuevaMoneda();
 });
 
-// --- Mini Boss Attack Upgrade ---
+// --- Mini Bosses ---
 function spawnMiniBosses(){
   setInterval(()=>{
     if(Math.random()<0.08){
@@ -371,6 +378,30 @@ function toggleInfiniteLife(){
   infiniteLife = !infiniteLife;
   logEvent("Vida infinita " + (infiniteLife?"activada":"desactivada"), true);
   actualizarStats();
+}
+
+// --- Owner Messages ---
+function ownerMessagePrompt(){
+  if(ownerClass!=="ruler") return;
+  const msg = prompt("Mensaje Owner:");
+  if(msg) showOwnerMessage(msg,3000);
+}
+function showOwnerMessage(msg,duration=2000){
+  ownerMessagesEl.innerText = msg;
+  ownerMessagesEl.style.display="block";
+  ownerMessagesEl.style.opacity = 0;
+  let op = 0;
+  const fadeIn = setInterval(()=>{
+    if(op<1){ op+=0.05; ownerMessagesEl.style.opacity = op; }
+    else clearInterval(fadeIn);
+  },20);
+  setTimeout(()=>{
+    let op2 = 1;
+    const fadeOut = setInterval(()=>{
+      if(op2>0){ op2-=0.05; ownerMessagesEl.style.opacity = op2; }
+      else{ clearInterval(fadeOut); ownerMessagesEl.style.display="none"; }
+    },20);
+  },duration);
 }
 
 // --- Daily Events Simulation ---
