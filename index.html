@@ -2,7 +2,7 @@
 <html>
 <head>
 <meta charset="UTF-8">
-<title>Atrapa la Moneda V8.0</title>
+<title>Atrapa la Moneda V9.0</title>
 <style>
   body{
     margin:0;
@@ -52,7 +52,7 @@
     font-size:18px;
     margin:5px;
   }
-  .fallingCoin,.diamond,.bossCoin{
+  .fallingCoin,.diamond,.bossCoin,.miniBoss{
     position:absolute;
     top:-50px;
     user-select:none;
@@ -61,6 +61,7 @@
   .fallingCoin{ font-size:40px; color:yellow; animation:caer 2s forwards ease-in;}
   .diamond{ font-size:35px; color:#00ffff; animation:caer 2s forwards ease-in;}
   .bossCoin{ font-size:50px; color:#ff44cc; animation:caer 2.2s forwards ease-in;}
+  .miniBoss{ font-size:45px; color:#ffbb33; animation:caer 2.5s forwards ease-in;}
   @keyframes caer{
     0% {top:-50px; opacity:1;}
     80% {top:80vh; transform:translateY(-10px);}
@@ -86,21 +87,34 @@
     color:#0f0f0f;
     border-radius:5px;
   }
+  #ranking{
+    max-height:100px;
+    overflow-y:auto;
+    border:1px solid #00ffcc;
+    margin-top:5px;
+    padding:5px;
+    font-size:14px;
+    background:#111122;
+    border-radius:8px;
+    text-align:left;
+  }
 </style>
 </head>
 <body>
 
-<h1>🎮 ATRAPA LA MONEDA</h1>
+<h1>🎮 ATRAPA LA MONEDA V9.0</h1>
 
 <div id="menu">
   <button onclick="iniciar()">INICIAR JUEGO</button>
   <button onclick="showAdmin()" id="adminBtn">Admin Panel</button>
+  <input type="color" id="userSkin" value="#00ffcc" onchange="applySkin(this.value)">
 </div>
 
 <div id="game">
   <h2 id="moneda">❓</h2>
   <p>Presiona L, C o R</p>
   <div class="info" id="stats"></div>
+  <div id="ranking"></div>
 </div>
 
 <div id="adminPanel">
@@ -126,23 +140,34 @@ let indice = 0;
 let monedaActual = "";
 let velocidad = 1500;
 let intervalo;
+let rankingList = [];
 
 const monedaEl = document.getElementById("moneda");
 const statsEl = document.getElementById("stats");
 const adminPanel = document.getElementById("adminPanel");
 const eventHistory = document.getElementById("eventHistory");
+const rankingEl = document.getElementById("ranking");
 
 const coinSound = document.getElementById("coinSound");
 const bossSound = document.getElementById("bossSound");
 const diamondSound = document.getElementById("diamondSound");
 
-// Owner info
 const ownerClass = "ruler"; 
+let userSkinColor = "#00ffcc";
+
+function applySkin(color){
+  userSkinColor = color;
+  document.querySelectorAll('button').forEach(btn=>{
+    btn.style.boxShadow = "0 0 10px "+color;
+  });
+  monedaEl.style.textShadow = "0 0 10px "+color;
+}
 
 function iniciar(){
   document.getElementById("menu").style.display="none";
   document.getElementById("game").style.display="block";
   resetGame();
+  spawnMiniBosses();
 }
 
 function resetGame(){
@@ -169,6 +194,7 @@ function actualizarStats(){
     "Pesos: " + pesos +
     " | Vidas: " + (infiniteLife ? "∞" : vidas) +
     " | Récord: " + record;
+  actualizarRanking();
 }
 
 function tiempoAgotado(){
@@ -184,6 +210,7 @@ function gameOver(){
     record = pesos;
     localStorage.setItem("record", record);
   }
+  rankingList.push(pesos);
   alert("GAME OVER\nPuntaje: " + pesos);
   resetGame();
 }
@@ -223,22 +250,36 @@ function crearMoneda(tipo){
   },3500);
 }
 
+// --- Mini-boss aleatorios ---
+function spawnMiniBosses(){
+  setInterval(()=>{
+    if(Math.random()<0.1){ // 10% chance cada segundo
+      const mb = document.createElement("div");
+      mb.className = "miniBoss";
+      mb.innerText = "👾";
+      mb.style.left = Math.random()*90+"vw";
+      mb.style.animationDuration = (2+Math.random()*1)+"s";
+      document.body.appendChild(mb);
+      mb.onclick = ()=>{ pesos+=5; mb.remove(); coinSound.play(); actualizarStats(); };
+      setTimeout(()=>mb.remove(),3000);
+    }
+  },1000);
+}
+
 // --- Admin Panel ---
 function showAdmin(){
   if(ownerClass !== "ruler") return alert("Solo el owner puede abrir este panel");
   adminPanel.style.display = adminPanel.style.display==="block" ? "none" : "block";
 }
 
-// Evento actualizado: public y admin
 function triggerEvent(event, isAdmin=false){
   if(event === "party"){
     for(let i=0;i<10;i++) crearMoneda("C");
     pesos += isAdmin ? 10 : 5;
-    eventSound.play();
     logEvent("Party activado +" + (isAdmin?10:5) + " monedas", isAdmin);
   }
   if(event === "clear"){
-    const coins = document.querySelectorAll(".fallingCoin,.diamond,.bossCoin");
+    const coins = document.querySelectorAll(".fallingCoin,.diamond,.bossCoin,.miniBoss");
     coins.forEach(c=>c.remove());
     logEvent("Monedas limpiadas", true);
   }
@@ -277,6 +318,11 @@ function toggleInfiniteLife(){
   infiniteLife = !infiniteLife;
   logEvent("Vida infinita " + (infiniteLife?"activada":"desactivada"), true);
   actualizarStats();
+}
+
+// Ranking
+function actualizarRanking(){
+  rankingEl.innerHTML = "Ranking: <br>"+rankingList.slice(-5).reverse().map((v,i)=> (i+1)+". "+v).join("<br>");
 }
 </script>
 </body>
