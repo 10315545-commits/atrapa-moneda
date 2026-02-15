@@ -2,7 +2,7 @@
 <html>
 <head>
 <meta charset="UTF-8">
-<title>Atrapa la Moneda V12.0 Ultra Arcade</title>
+<title>Atrapa la Moneda V12.1 Ultra Arcade</title>
 <style>
 body{
   margin:0;
@@ -99,11 +99,27 @@ button:hover{
   display:none;
   z-index:1000;
 }
+
+/* Partículas */
+.particle{
+  position:absolute;
+  width:6px; height:6px;
+  background:yellow;
+  border-radius:50%;
+  opacity:0.8;
+  pointer-events:none;
+  transform:translate(-50%,-50%);
+  animation:particleAnim 0.8s linear forwards;
+}
+@keyframes particleAnim{
+  0%{transform:translate(-50%,-50%) scale(1); opacity:1;}
+  100%{transform:translate(calc(-50% + var(--dx)), calc(-50% + var(--dy))) scale(0); opacity:0;}
+}
 </style>
 </head>
 <body>
 
-<h1>🎮 ATRAPA LA MONEDA V12.0 Ultra Arcade</h1>
+<h1>🎮 ATRAPA LA MONEDA V12.1 Ultra Arcade</h1>
 
 <div id="menu">
   <button onclick="iniciar()">INICIAR JUEGO</button>
@@ -229,7 +245,22 @@ document.addEventListener("keydown",function(e){
   nuevaMoneda();
 });
 
-// Crear monedas con rebote
+// Crear partículas
+function createParticles(x,y,color){
+  for(let i=0;i<8;i++){
+    const p=document.createElement("div");
+    p.className="particle";
+    p.style.left=x+"px";
+    p.style.top=y+"px";
+    p.style.background=color;
+    p.style.setProperty("--dx",(Math.random()*40-20)+"px");
+    p.style.setProperty("--dy",(Math.random()*40-20)+"px");
+    document.body.appendChild(p);
+    setTimeout(()=>p.remove(),800);
+  }
+}
+
+// Crear monedas con partículas
 function crearMoneda(tipo){
   const coin=document.createElement("div");
   coin.style.left=Math.random()*90+"vw";
@@ -238,16 +269,20 @@ function crearMoneda(tipo){
   coin.style.position="absolute";
   coin.style.top="-50px";
   coin.style.pointerEvents="none";
-  let emoji="🪙", sound=coinSound;
-  if(tipo==="R") {emoji="💰"; sound=bossSound;}
-  if(tipo==="diamond") {emoji="💎"; sound=diamondSound;}
-  if(tipo==="bossFinal"){emoji="👑"; sound=bossSound;}
+  let emoji="🪙", sound=coinSound, color="yellow";
+  if(tipo==="R") {emoji="💰"; sound=bossSound; color="#ff44cc";}
+  if(tipo==="diamond") {emoji="💎"; sound=diamondSound; color="#00ffff";}
+  if(tipo==="bossFinal"){emoji="👑"; sound=bossSound; color="#ff0000";}
   coin.innerText=emoji; document.body.appendChild(coin);
   sound.play();
   let posY=-50, velocityY=2+Math.random()*3, bounce=0.6;
   const anim=setInterval(()=>{
     posY+=velocityY; velocityY+=0.2;
-    if(posY>window.innerHeight-50){ posY=window.innerHeight-50; velocityY*=-bounce; }
+    if(posY>window.innerHeight-50){
+      posY=window.innerHeight-50; 
+      velocityY*=-bounce;
+      createParticles(coin.offsetLeft+25,posY+25,color); // partículas al suelo
+    }
     coin.style.top=posY+"px";
   },20);
   setTimeout(()=>{clearInterval(anim); coin.remove();},4000);
@@ -289,7 +324,7 @@ function spawnMiniBosses(){
       let posY=-50, velocityY=2+Math.random()*2, bounce=0.5;
       const anim=setInterval(()=>{
         posY+=velocityY; velocityY+=0.2;
-        if(posY>window.innerHeight-50){ posY=window.innerHeight-50; velocityY*=-bounce; }
+        if(posY>window.innerHeight-50){ posY=window.innerHeight-50; velocityY*=-bounce; createParticles(mb.offsetLeft+25,posY+25,"#ffbb33"); }
         mb.style.top=posY+"px";
       },20);
       const attackTimeout=setTimeout(()=>{
@@ -305,7 +340,7 @@ function spawnMiniBosses(){
 
 // Eventos automáticos
 function startDailyEvents(){ setInterval(()=>{ const events=["party","rainDiamonds"]; const e=events[Math.floor(Math.random()*events.length)]; triggerEvent(e,false); },30000); }
-</script>
 
+</script>
 </body>
 </html>
