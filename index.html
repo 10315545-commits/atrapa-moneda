@@ -1,8 +1,8 @@
-!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="es">
 <head>
 <meta charset="UTF-8">
-<title>Atrapa la Moneda - Owner Edition</title>
+<title>Atrapa la Moneda</title>
 
 <style>
 body{
@@ -14,9 +14,7 @@ body{
   overflow:hidden;
 }
 
-h1{
-  color:#00f7ff;
-}
+h1{ color:#00f7ff; }
 
 #gameArea{
   position:relative;
@@ -38,27 +36,21 @@ h1{
   transform:translateX(-50%);
 }
 
-.coin{
+.coin,.diamond,.meteor{
   position:absolute;
   width:40px;
   height:40px;
-  background:gold;
   border-radius:50%;
   top:0;
 }
 
-#score{
-  font-size:20px;
-  margin:10px;
-}
+.coin{ background:gold; }
+.diamond{ background:cyan; }
+.meteor{ background:red; }
 
-button{
-  padding:10px 20px;
+#score{
   margin:10px;
-  font-size:16px;
-  cursor:pointer;
-  border:none;
-  border-radius:5px;
+  font-size:18px;
 }
 
 #adminPanel{
@@ -67,11 +59,17 @@ button{
   left:0;
   width:100%;
   height:100%;
-  background:rgba(0,0,0,0.95);
+  background:rgba(0,0,0,0.9);
   display:none;
   flex-direction:column;
   justify-content:center;
   align-items:center;
+}
+
+button{
+  padding:8px 15px;
+  margin:5px;
+  cursor:pointer;
 }
 </style>
 </head>
@@ -80,106 +78,169 @@ button{
 <h1>Atrapa la Moneda 💰</h1>
 <div id="score">Puntos: 0</div>
 
-<div id="adminButtonContainer"></div>
+<button onclick="openAdmin()">👑 Panel Admin</button>
 
 <div id="gameArea">
   <div id="player"></div>
 </div>
 
 <div id="adminPanel">
-  <h2>👑 Panel Admin (Solo para Owner)</h2>
-  <button onclick="addPoints()">+10 Puntos</button>
-  <button onclick="increaseSpeed()">Aumentar Velocidad</button>
+  <h2>Eventos</h2>
+  <button onclick="addCoins()">Add Coins</button>
+  <button onclick="rainDiamonds()">Rain Diamonds</button>
+  <button onclick="megaRainDiamonds()">Mega Rain Diamonds</button>
+  <button onclick="clearObjects()">Clear Coins</button>
+  <button onclick="megaParty()">Mega Party</button>
+  <button onclick="bossFight()">Boss Fight</button>
+  <button onclick="meteorShower()">Meteor Shower</button>
   <button onclick="closeAdmin()">Cerrar</button>
 </div>
 
 <script>
-let modoAdmin = true; // 👈 PON false si no quieres que aparezca
-
 let player = document.getElementById("player");
 let gameArea = document.getElementById("gameArea");
 let scoreText = document.getElementById("score");
 
 let score = 0;
-let playerX = window.innerWidth / 2;
-let coinSpeed = 5;
 let gamePaused = false;
 
-if(modoAdmin){
-  let btn = document.createElement("button");
-  btn.innerText = "👑 Panel Admin";
-  btn.onclick = openAdmin;
-  document.getElementById("adminButtonContainer").appendChild(btn);
-}
+/* =========================
+   MOVIMIENTO CLÁSICO RLC
+========================= */
 
-document.addEventListener("mousemove", (e)=>{
-  if(!gamePaused){
-    playerX = e.clientX - 30;
-    player.style.left = playerX + "px";
-  }
+let playerX = window.innerWidth / 2;
+let speed = 7;
+
+let movingLeft = false;
+let movingRight = false;
+
+document.addEventListener("keydown", (e)=>{
+  if(e.key === "ArrowLeft") movingLeft = true;
+  if(e.key === "ArrowRight") movingRight = true;
 });
 
-function createCoin(){
-  if(gamePaused) return;
+document.addEventListener("keyup", (e)=>{
+  if(e.key === "ArrowLeft") movingLeft = false;
+  if(e.key === "ArrowRight") movingRight = false;
+});
 
-  let coin = document.createElement("div");
-  coin.classList.add("coin");
-  coin.style.left = Math.random() * (window.innerWidth - 40) + "px";
-  gameArea.appendChild(coin);
+function movePlayer(){
+  if(!gamePaused){
+    if(movingLeft) playerX -= speed;
+    if(movingRight) playerX += speed;
 
-  let coinY = 0;
+    if(playerX < 0) playerX = 0;
+    if(playerX > window.innerWidth - 60)
+      playerX = window.innerWidth - 60;
 
-  let fall = setInterval(()=>{
+    player.style.left = playerX + "px";
+  }
+  requestAnimationFrame(movePlayer);
+}
+
+movePlayer();
+
+/* =========================
+   SISTEMA DE OBJETOS
+========================= */
+
+function spawn(type,speedFall,value,size=40){
+  let obj = document.createElement("div");
+  obj.classList.add(type);
+  obj.style.width = size+"px";
+  obj.style.height = size+"px";
+  obj.style.left = Math.random()*(window.innerWidth-size)+"px";
+  gameArea.appendChild(obj);
+
+  let y=0;
+
+  let fall=setInterval(()=>{
     if(gamePaused){
       clearInterval(fall);
-      coin.remove();
+      obj.remove();
       return;
     }
 
-    coinY += coinSpeed;
-    coin.style.top = coinY + "px";
+    y+=speedFall;
+    obj.style.top=y+"px";
 
-    let playerRect = player.getBoundingClientRect();
-    let coinRect = coin.getBoundingClientRect();
+    let pr=player.getBoundingClientRect();
+    let or=obj.getBoundingClientRect();
 
-    if(
-      coinRect.bottom > playerRect.top &&
-      coinRect.left < playerRect.right &&
-      coinRect.right > playerRect.left
-    ){
-      score++;
-      scoreText.innerText = "Puntos: " + score;
+    if(or.bottom>pr.top && or.left<pr.right && or.right>pr.left){
+      score+=value;
+      scoreText.innerText="Puntos: "+score;
       clearInterval(fall);
-      coin.remove();
+      obj.remove();
     }
 
-    if(coinY > gameArea.offsetHeight){
+    if(y>gameArea.offsetHeight){
       clearInterval(fall);
-      coin.remove();
+      obj.remove();
     }
 
   },20);
 }
 
-setInterval(createCoin, 1000);
+/* =========================
+   EVENTOS
+========================= */
+
+function addCoins(){
+  for(let i=0;i<15;i++){
+    setTimeout(()=>spawn("coin",5,1),i*120);
+  }
+}
+
+function rainDiamonds(){
+  for(let i=0;i<15;i++){
+    setTimeout(()=>spawn("diamond",5,3),i*120);
+  }
+}
+
+function megaRainDiamonds(){
+  for(let i=0;i<40;i++){
+    setTimeout(()=>spawn("diamond",6,5),i*70);
+  }
+}
+
+function clearObjects(){
+  document.querySelectorAll(".coin,.diamond,.meteor").forEach(e=>e.remove());
+}
+
+function megaParty(){
+  for(let i=0;i<30;i++){
+    setTimeout(()=>{
+      spawn("coin",5,1);
+      spawn("diamond",6,3);
+    },i*100);
+  }
+}
+
+function bossFight(){
+  for(let i=0;i<25;i++){
+    setTimeout(()=>spawn("coin",8,2,50),i*80);
+  }
+}
+
+function meteorShower(){
+  for(let i=0;i<20;i++){
+    setTimeout(()=>spawn("meteor",8,-3),i*120);
+  }
+}
+
+/* =========================
+   PANEL ADMIN
+========================= */
 
 function openAdmin(){
-  gamePaused = true;
-  document.getElementById("adminPanel").style.display = "flex";
+  gamePaused=true;
+  document.getElementById("adminPanel").style.display="flex";
 }
 
 function closeAdmin(){
-  gamePaused = false;
-  document.getElementById("adminPanel").style.display = "none";
-}
-
-function addPoints(){
-  score += 10;
-  scoreText.innerText = "Puntos: " + score;
-}
-
-function increaseSpeed(){
-  coinSpeed += 2;
+  gamePaused=false;
+  document.getElementById("adminPanel").style.display="none";
 }
 </script>
 
