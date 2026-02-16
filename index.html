@@ -2,290 +2,192 @@
 <html>
 <head>
 <meta charset="UTF-8">
-<title>Atrapa la Moneda - Owner Edition</title>
+<title>Juego con Sistema de Roles</title>
 
 <style>
 body{
   margin:0;
-  background:#0b0f1a;
-  color:white;
   font-family:Arial;
+  background:#0f172a;
+  color:white;
   text-align:center;
 }
 
-h1{
-  color:#00f7ff;
-  text-shadow:0 0 15px #00f7ff;
-}
-
-#moneda{
-  font-size:80px;
-  margin:20px;
-}
-
-.info{
-  font-size:20px;
-  margin:10px;
-}
-
-/* CHAT */
-#chatContainer{
-  position:fixed;
-  bottom:10px;
-  right:10px;
-  width:260px;
-  max-height:320px;
-  background:#111827;
-  border:2px solid #00f7ff;
-  border-radius:12px;
-  padding:6px;
-  display:flex;
-  flex-direction:column;
-}
-
-#chatMessages{
-  flex:1;
-  overflow-y:auto;
-  font-size:14px;
-}
-
-#chatInput{
-  margin-top:5px;
-  padding:5px;
-  border:none;
-  border-radius:6px;
-}
-
-.chatMsg.user{color:#ffff66;}
-.chatMsg.owner{color:#ff4dff;font-weight:bold;}
-
-/* OWNER PANEL */
-#ownerPanel{
-  position:fixed;
-  top:50%;
-  left:50%;
-  transform:translate(-50%,-50%);
-  background:#111827;
-  border:2px solid #ff00ff;
-  padding:20px;
-  border-radius:15px;
-  display:none;
-  z-index:9999;
-}
-
-#ownerPanel button{
+button{
+  padding:10px 15px;
   margin:5px;
-  padding:8px 12px;
   border:none;
   border-radius:8px;
   cursor:pointer;
   font-weight:bold;
 }
 
-.btn1{background:#00ffcc;}
-.btn2{background:#ffcc00;}
-.btn3{background:#ff4444;}
-.btn4{background:#00ff00;}
-
-#openPanelBtn{
-  position:fixed;
-  top:10px;
-  right:10px;
-  background:#ff00ff;
-  border:none;
-  padding:6px 10px;
-  border-radius:8px;
-  cursor:pointer;
+#mainMenu, #game, #adminPanel, #rulerPanel{
   display:none;
+  margin-top:50px;
+}
+
+.adminBtn{ background:#00ffcc; }
+.rulerBtn{ background:#ff00ff; }
+.playBtn{ background:#00aaff; }
+
+input{
+  padding:8px;
+  border-radius:6px;
+  border:none;
 }
 </style>
 </head>
 
 <body>
 
-<h1>🎮 ATRAPA LA MONEDA - OWNER EDITION</h1>
-
-<h2 id="moneda">❓</h2>
-<p>Presiona L, C o R</p>
-<div class="info" id="stats"></div>
-
-<!-- CHAT -->
-<div id="chatContainer">
-  <div id="chatMessages"></div>
-  <input type="text" id="chatInput" placeholder="Escribe..." />
+<!-- LOGIN -->
+<div id="login">
+  <h1>🔐 Login</h1>
+  <input type="text" id="username" placeholder="Nombre"><br><br>
+  <input type="password" id="password" placeholder="Contraseña"><br><br>
+  <button onclick="login()">Entrar</button>
 </div>
 
-<!-- BOTON ABRIR PANEL -->
-<button id="openPanelBtn" onclick="togglePanel()">OWNER</button>
+<!-- MENU PRINCIPAL -->
+<div id="mainMenu">
+  <h1>🎮 MENÚ PRINCIPAL</h1>
 
-<!-- PANEL OWNER -->
-<div id="ownerPanel">
-  <h2>👑 OWNER PANEL</h2>
-  <button class="btn1" onclick="giveCoins(10)">+10 Monedas</button>
-  <button class="btn2" onclick="triggerEvent('rainDiamonds')">Rain Diamonds</button>
-  <button class="btn4" onclick="infiniteLives()">Vida Infinita</button>
-  <button class="btn3" onclick="closePanel()">Cerrar</button>
+  <button class="playBtn" onclick="startGame()">Jugar</button>
+
+  <button id="adminBtn" class="adminBtn" onclick="openAdmin()" style="display:none;">
+    Panel Admin
+  </button>
+
+  <button id="rulerBtn" class="rulerBtn" onclick="openRuler()" style="display:none;">
+    Panel Ruler
+  </button>
+
+  <br><br>
+  <button onclick="logout()">Cerrar Sesión</button>
+</div>
+
+<!-- JUEGO -->
+<div id="game">
+  <h2>🎯 Juego Activo</h2>
+  <p id="stats"></p>
+  <button onclick="addCoins(1)">+1 Moneda</button>
+  <button onclick="backToMenu()">Volver</button>
+</div>
+
+<!-- PANEL ADMIN -->
+<div id="adminPanel">
+  <h2>🛠 Panel Admin</h2>
+  <button onclick="addCoins(10)">+10 Monedas</button>
+  <button onclick="backToMenu()">Volver</button>
+</div>
+
+<!-- PANEL RULER -->
+<div id="rulerPanel">
+  <h2>👑 Panel Ruler</h2>
+  <button onclick="addCoins(50)">+50 Monedas</button>
+  <button onclick="infiniteMode()">Vida Infinita</button>
+  <button onclick="backToMenu()">Volver</button>
 </div>
 
 <script>
 
-/* ---------------- JUEGO ---------------- */
-let pesos=0;
-let vidas=5;
-let record=localStorage.getItem("record")||0;
-let secuencia=["R","L","C","L","R","C"];
-let indice=0;
-let monedaActual="";
-let velocidad=1500;
-let intervalo;
+/* ---------------- SISTEMA DE USUARIOS ---------------- */
 
-const monedaEl=document.getElementById("moneda");
-const statsEl=document.getElementById("stats");
+const users = {
+  "player1": { password:"1234", role:"player" },
+  "admin1":  { password:"admin123", role:"admin" },
+  "ruler1":  { password:"ruler123", role:"ruler" }
+};
 
-function actualizarStats(){
-  statsEl.innerText="Pesos: "+pesos+" | Vidas: "+vidas+" | Récord: "+record;
-}
+let currentUser = null;
+let coins = 0;
+let infinite = false;
 
-function nuevaMoneda(){
-  monedaActual=secuencia[indice];
-  monedaEl.innerText=monedaActual;
-  indice++;
-  if(indice>=secuencia.length) indice=0;
-}
+function login(){
+  let name = document.getElementById("username").value;
+  let pass = document.getElementById("password").value;
 
-function tiempoAgotado(){
-  vidas--;
-  actualizarStats();
-  if(vidas<=0) gameOver();
-  nuevaMoneda();
-}
-
-function gameOver(){
-  clearInterval(intervalo);
-  if(pesos>record){
-    record=pesos;
-    localStorage.setItem("record",record);
-  }
-  alert("GAME OVER");
-  resetGame();
-}
-
-function resetGame(){
-  pesos=0;
-  vidas=5;
-  velocidad=1500;
-  indice=0;
-  actualizarStats();
-  nuevaMoneda();
-  clearInterval(intervalo);
-  intervalo=setInterval(tiempoAgotado,velocidad);
-}
-
-resetGame();
-
-document.addEventListener("keydown",function(e){
-  const key=e.key.toUpperCase();
-  if(!["L","C","R"].includes(key)) return;
-
-  if(key===monedaActual){
-    pesos++;
-  }else{
-    vidas--;
-  }
-
-  actualizarStats();
-  if(vidas<=0) gameOver();
-  nuevaMoneda();
-});
-
-/* ---------------- CHAT ---------------- */
-let chatHistory=[];
-const chatBox=document.getElementById("chatMessages");
-const chatInput=document.getElementById("chatInput");
-
-chatInput.addEventListener("keydown",function(e){
-  if(e.key==="Enter"){
-    addMessage("user",chatInput.value);
-    chatInput.value="";
-  }
-});
-
-function addMessage(type,text){
-  if(!text) return;
-  if(chatHistory.length>20) chatHistory.shift();
-  chatHistory.push({type,text});
-  updateChat();
-}
-
-function updateChat(){
-  chatBox.innerHTML="";
-  chatHistory.forEach(m=>{
-    const div=document.createElement("div");
-    div.className="chatMsg "+m.type;
-    div.innerText=(m.type==="owner"?"Owner: ":"Jugador: ")+m.text;
-    chatBox.appendChild(div);
-  });
-  chatBox.scrollTop=chatBox.scrollHeight;
-}
-
-function ownerSend(msg){
-  if(!isOwner) return;
-  addMessage("owner",msg);
-}
-
-/* ---------------- OWNER SYSTEM ---------------- */
-let isOwner=false;
-const password="ruler123";
-
-function loginOwner(pw){
-  if(pw===password){
-    isOwner=true;
-    document.getElementById("openPanelBtn").style.display="block";
-    ownerSend("Owner conectado.");
-    alert("Modo Owner Activado");
-  }else{
-    alert("Contraseña incorrecta");
+  if(users[name] && users[name].password === pass){
+    currentUser = users[name];
+    showMenu();
+  } else {
+    alert("Datos incorrectos");
   }
 }
 
-function togglePanel(){
-  document.getElementById("ownerPanel").style.display="block";
-}
+function showMenu(){
+  document.getElementById("login").style.display="none";
+  document.getElementById("mainMenu").style.display="block";
 
-function closePanel(){
-  document.getElementById("ownerPanel").style.display="none";
-}
+  // Mostrar botones según rol
+  if(currentUser.role === "admin" || currentUser.role === "ruler"){
+    document.getElementById("adminBtn").style.display="inline-block";
+  }
 
-function giveCoins(n){
-  if(!isOwner) return;
-  pesos+=n;
-  actualizarStats();
-  ownerSend("Se agregaron "+n+" monedas.");
-}
-
-function infiniteLives(){
-  if(!isOwner) return;
-  vidas=9999;
-  actualizarStats();
-  ownerSend("Vida infinita activada.");
-}
-
-function triggerEvent(name){
-  if(!isOwner) return;
-  if(name==="rainDiamonds"){
-    pesos+=20;
-    actualizarStats();
-    ownerSend("💎 Rain Diamonds activado (+20)");
+  if(currentUser.role === "ruler"){
+    document.getElementById("rulerBtn").style.display="inline-block";
   }
 }
 
-/*
-PARA ACTIVAR OWNER:
-abre consola y escribe:
-loginOwner("ruler123");
-*/
+function logout(){
+  location.reload();
+}
+
+/* ---------------- MENÚS ---------------- */
+
+function startGame(){
+  hideAll();
+  document.getElementById("game").style.display="block";
+  updateStats();
+}
+
+function openAdmin(){
+  if(currentUser.role === "admin" || currentUser.role === "ruler"){
+    hideAll();
+    document.getElementById("adminPanel").style.display="block";
+  }
+}
+
+function openRuler(){
+  if(currentUser.role === "ruler"){
+    hideAll();
+    document.getElementById("rulerPanel").style.display="block";
+  }
+}
+
+function backToMenu(){
+  hideAll();
+  document.getElementById("mainMenu").style.display="block";
+}
+
+function hideAll(){
+  document.getElementById("mainMenu").style.display="none";
+  document.getElementById("game").style.display="none";
+  document.getElementById("adminPanel").style.display="none";
+  document.getElementById("rulerPanel").style.display="none";
+}
+
+/* ---------------- FUNCIONES DEL JUEGO ---------------- */
+
+function addCoins(n){
+  coins += n;
+  updateStats();
+}
+
+function infiniteMode(){
+  infinite = true;
+  alert("Modo infinito activado 👑");
+}
+
+function updateStats(){
+  document.getElementById("stats").innerText =
+    "Monedas: " + coins +
+    (infinite ? " | Vida infinita ACTIVADA" : "");
+}
 
 </script>
 </body>
 </html>
+
 
