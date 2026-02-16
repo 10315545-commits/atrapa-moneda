@@ -2,12 +2,12 @@
 <html>
 <head>
 <meta charset="UTF-8">
-<title>Atrapa la Moneda - Owner Animated</title>
+<title>Atrapa la Moneda - Legendary Owner</title>
 
 <style>
 body{
   margin:0;
-  background:linear-gradient(#050510,#0b0f1a);
+  background:radial-gradient(circle at top,#0a0f2a,#050510);
   color:white;
   font-family:Arial;
   text-align:center;
@@ -33,27 +33,49 @@ h1{
   bottom:20px;
   left:50%;
   transform:translateX(-50%);
-  width:100px;
+  width:110px;
   height:25px;
   background:#00f7ff;
   border-radius:15px;
-  box-shadow:0 0 20px #00f7ff;
+  box-shadow:0 0 25px #00f7ff;
   transition:left 0.3s ease;
 }
 
-.coin{
+.coin, .diamond{
   position:absolute;
   width:35px;
   height:35px;
-  background:gold;
   border-radius:50%;
-  box-shadow:0 0 15px gold;
   animation: fall linear forwards;
+}
+
+.coin{
+  background:gold;
+  box-shadow:0 0 20px gold;
+}
+
+.diamond{
+  background:cyan;
+  box-shadow:0 0 20px cyan;
 }
 
 @keyframes fall{
   from{ top:-40px; }
   to{ top:420px; }
+}
+
+.explosion{
+  position:absolute;
+  width:40px;
+  height:40px;
+  border-radius:50%;
+  background:yellow;
+  animation: explode 0.4s forwards;
+}
+
+@keyframes explode{
+  from{ transform:scale(1); opacity:1; }
+  to{ transform:scale(2); opacity:0; }
 }
 
 .controls{
@@ -74,12 +96,23 @@ h1{
   background:#00f7ff;
   color:black;
   font-weight:bold;
-  box-shadow:0 0 15px #00f7ff;
-  transition:0.2s;
 }
 
-.controls button:hover{
-  transform:scale(1.1);
+#adminPanel{
+  position:fixed;
+  top:10px;
+  right:10px;
+  background:#111;
+  padding:10px;
+  border:2px solid #00f7ff;
+  box-shadow:0 0 15px #00f7ff;
+}
+
+#adminPanel button{
+  display:block;
+  margin:5px 0;
+  padding:5px;
+  cursor:pointer;
 }
 </style>
 </head>
@@ -98,10 +131,21 @@ h1{
   <button onclick="moveRight()">R</button>
 </div>
 
+<!-- PANEL OWNER -->
+<div id="adminPanel">
+  <strong>👑 OWNER PANEL</strong>
+  <button onclick="rainDiamonds()">Rain Diamonds</button>
+  <button onclick="megaParty()">Mega Party</button>
+  <button onclick="clearCoins()">Clear Coins</button>
+  <button onclick="addCoins()">Add 50 Coins</button>
+  <button onclick="togglePanel()">Close Panel</button>
+</div>
+
 <script>
 let player = document.getElementById("player");
 let game = document.getElementById("game");
 let coins = 0;
+let speed = 2;
 
 function updateCoins(){
   document.getElementById("coins").innerText = coins;
@@ -122,59 +166,90 @@ function moveRight(){
   player.style.transform = "none";
 }
 
-// 🎮 TECLADO PC
 document.addEventListener("keydown", function(e){
   if(e.key === "ArrowLeft") moveLeft();
   if(e.key === "ArrowRight") moveRight();
   if(e.key === "ArrowDown" || e.key === " ") center();
 });
 
-function spawnCoin(){
-  let coin = document.createElement("div");
-  coin.className = "coin";
+function spawnItem(type){
+  let item = document.createElement("div");
+  item.className = type;
+  item.style.left = Math.random()*90 + "%";
 
-  // posición random
-  coin.style.left = Math.random()*90 + "%";
+  let duration = speed + Math.random();
+  item.style.animationDuration = duration + "s";
 
-  // duración random (velocidad diferente)
-  let duration = 2 + Math.random()*2;
-  coin.style.animationDuration = duration + "s";
+  game.appendChild(item);
 
-  game.appendChild(coin);
-
-  // detectar colisión mientras cae
   let check = setInterval(()=>{
-    let coinRect = coin.getBoundingClientRect();
+    let itemRect = item.getBoundingClientRect();
     let playerRect = player.getBoundingClientRect();
 
     if(
-      coinRect.bottom >= playerRect.top &&
-      coinRect.left < playerRect.right &&
-      coinRect.right > playerRect.left
+      itemRect.bottom >= playerRect.top &&
+      itemRect.left < playerRect.right &&
+      itemRect.right > playerRect.left
     ){
-      coins++;
+      if(type === "coin") coins++;
+      if(type === "diamond") coins += 5;
+
       updateCoins();
-      coin.remove();
+
+      let boom = document.createElement("div");
+      boom.className="explosion";
+      boom.style.left=item.style.left;
+      boom.style.top=player.offsetTop+"px";
+      game.appendChild(boom);
+      setTimeout(()=>boom.remove(),400);
+
+      item.remove();
       clearInterval(check);
+
+      if(speed > 0.8) speed -= 0.03;
     }
 
-    // si desaparece
-    if(!document.body.contains(coin)){
+    if(!document.body.contains(item)){
       clearInterval(check);
     }
 
   },20);
 
-  // eliminar después de animación
-  setTimeout(()=>{
-    coin.remove();
-  }, duration*1000);
+  setTimeout(()=>item.remove(), duration*1000);
 }
 
 setInterval(()=>{
-  spawnCoin();
-},600);
+  spawnItem("coin");
+},700);
 
+/* OWNER EVENTS */
+
+function rainDiamonds(){
+  for(let i=0;i<10;i++){
+    setTimeout(()=>spawnItem("diamond"), i*200);
+  }
+}
+
+function megaParty(){
+  for(let i=0;i<20;i++){
+    setTimeout(()=>spawnItem("coin"), i*150);
+  }
+}
+
+function clearCoins(){
+  coins = 0;
+  updateCoins();
+}
+
+function addCoins(){
+  coins += 50;
+  updateCoins();
+}
+
+function togglePanel(){
+  let panel = document.getElementById("adminPanel");
+  panel.style.display = "none";
+}
 </script>
 
 </body>
