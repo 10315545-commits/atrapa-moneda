@@ -1,10 +1,5 @@
-function askOwnerLogin(){
-  let pw = prompt("Contraseña Owner:");
-
-  if(pw === password){
-    loginOwner(pw);
-  } else {
-    activarTroll();
-  }
-}
-
+const users = {
+  "player1": { password:"1234", role:"player" },
+  "admin1":  { password:"admin123", role:"admin" },
+  "ruler1":  { password:"ruler123", role:"ruler" }
+};
