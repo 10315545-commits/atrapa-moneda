@@ -48,11 +48,6 @@ h1{ color:#00f7ff; }
 .diamond{ background:cyan; }
 .meteor{ background:red; }
 
-#score{
-  margin:10px;
-  font-size:18px;
-}
-
 #adminPanel{
   position:fixed;
   top:0;
@@ -104,22 +99,18 @@ let scoreText = document.getElementById("score");
 let score = 0;
 let gamePaused = false;
 
-/* =========================
-   MOVIMIENTO CLÁSICO RLC
-========================= */
-
+/* MOVIMIENTO CONTINUO */
 let playerX = window.innerWidth / 2;
 let speed = 7;
-
 let movingLeft = false;
 let movingRight = false;
 
-document.addEventListener("keydown", (e)=>{
+document.addEventListener("keydown", function(e){
   if(e.key === "ArrowLeft") movingLeft = true;
   if(e.key === "ArrowRight") movingRight = true;
 });
 
-document.addEventListener("keyup", (e)=>{
+document.addEventListener("keyup", function(e){
   if(e.key === "ArrowLeft") movingLeft = false;
   if(e.key === "ArrowRight") movingRight = false;
 });
@@ -140,11 +131,10 @@ function movePlayer(){
 
 movePlayer();
 
-/* =========================
-   SISTEMA DE OBJETOS
-========================= */
+/* SPAWN */
+function spawn(type,speedFall,value,size){
+  if(!size) size = 40;
 
-function spawn(type,speedFall,value,size=40){
   let obj = document.createElement("div");
   obj.classList.add(type);
   obj.style.width = size+"px";
@@ -154,27 +144,27 @@ function spawn(type,speedFall,value,size=40){
 
   let y=0;
 
-  let fall=setInterval(()=>{
+  let fall = setInterval(function(){
     if(gamePaused){
       clearInterval(fall);
       obj.remove();
       return;
     }
 
-    y+=speedFall;
-    obj.style.top=y+"px";
+    y += speedFall;
+    obj.style.top = y + "px";
 
-    let pr=player.getBoundingClientRect();
-    let or=obj.getBoundingClientRect();
+    let pr = player.getBoundingClientRect();
+    let or = obj.getBoundingClientRect();
 
-    if(or.bottom>pr.top && or.left<pr.right && or.right>pr.left){
-      score+=value;
-      scoreText.innerText="Puntos: "+score;
+    if(or.bottom > pr.top && or.left < pr.right && or.right > pr.left){
+      score += value;
+      scoreText.innerText = "Puntos: " + score;
       clearInterval(fall);
       obj.remove();
     }
 
-    if(y>gameArea.offsetHeight){
+    if(y > gameArea.offsetHeight){
       clearInterval(fall);
       obj.remove();
     }
@@ -182,65 +172,66 @@ function spawn(type,speedFall,value,size=40){
   },20);
 }
 
-/* =========================
-   EVENTOS
-========================= */
+/* EVENTOS */
 
 function addCoins(){
   for(let i=0;i<15;i++){
-    setTimeout(()=>spawn("coin",5,1),i*120);
+    setTimeout(function(){ spawn("coin",5,1); }, i*120);
   }
 }
 
 function rainDiamonds(){
   for(let i=0;i<15;i++){
-    setTimeout(()=>spawn("diamond",5,3),i*120);
+    setTimeout(function(){ spawn("diamond",5,3); }, i*120);
   }
 }
 
 function megaRainDiamonds(){
   for(let i=0;i<40;i++){
-    setTimeout(()=>spawn("diamond",6,5),i*70);
+    setTimeout(function(){ spawn("diamond",6,5); }, i*70);
   }
 }
 
 function clearObjects(){
-  document.querySelectorAll(".coin,.diamond,.meteor").forEach(e=>e.remove());
+  let objs = document.querySelectorAll(".coin,.diamond,.meteor");
+  objs.forEach(function(o){ o.remove(); });
 }
 
 function megaParty(){
   for(let i=0;i<30;i++){
-    setTimeout(()=>{
+    setTimeout(function(){
       spawn("coin",5,1);
       spawn("diamond",6,3);
-    },i*100);
+    }, i*100);
   }
 }
 
 function bossFight(){
   for(let i=0;i<25;i++){
-    setTimeout(()=>spawn("coin",8,2,50),i*80);
+    setTimeout(function(){
+      spawn("coin",8,2,50);
+    }, i*80);
   }
 }
 
 function meteorShower(){
   for(let i=0;i<20;i++){
-    setTimeout(()=>spawn("meteor",8,-3),i*120);
+    setTimeout(function(){
+      spawn("meteor",8,-3);
+    }, i*120);
   }
 }
 
-/* =========================
-   PANEL ADMIN
-========================= */
+/* PANEL */
 
 function openAdmin(){
-  gamePaused=true;
-  document.getElementById("adminPanel").style.display="flex";
+  gamePaused = true;
+  document.getElementById("adminPanel").style.display = "flex";
 }
 
 function closeAdmin(){
-  gamePaused=false;
-  document.getElementById("adminPanel").style.display="none";
+  gamePaused = false;
+  document.getElementById("adminPanel").style.display = "none";
 }
 </script>
 
