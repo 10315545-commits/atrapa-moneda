@@ -2,7 +2,7 @@
 <html>
 <head>
 <meta charset="UTF-8">
-<title>Atrapa la Moneda - Owner Edition</title>
+<title>Atrapa la Moneda</title>
 
 <style>
 body{
@@ -31,52 +31,44 @@ h1{
   bottom:10px;
   left:50%;
   transform:translateX(-50%);
-  width:60px;
-  height:60px;
+  width:70px;
+  height:30px;
   background:#00f7ff;
   border-radius:10px;
 }
 
-.coin, .diamond, .meteor, .boss{
+.coin{
   position:absolute;
-  width:40px;
-  height:40px;
-  top:0;
+  width:35px;
+  height:35px;
+  background:gold;
   border-radius:50%;
+  top:0;
 }
 
-.coin{ background:gold; }
-.diamond{ background:cyan; }
-.meteor{ background:red; }
-.boss{
-  background:purple;
-  width:80px;
-  height:80px;
+.controls{
+  position:absolute;
+  bottom:80px;
+  width:100%;
+  display:flex;
+  justify-content:center;
+  gap:20px;
 }
 
 .controls button{
-  font-size:20px;
-  margin:10px;
-  padding:10px 20px;
+  font-size:22px;
+  padding:12px 25px;
   cursor:pointer;
-}
-
-#admin{
-  margin-top:10px;
-  padding:10px;
-  background:#111;
-  border-top:2px solid #00f7ff;
-}
-
-#admin button{
-  margin:5px;
-  padding:5px 10px;
+  border:none;
+  border-radius:8px;
+  background:#00f7ff;
+  color:black;
 }
 </style>
 </head>
 <body>
 
-<h1>Atrapa la Moneda - OWNER</h1>
+<h1>Atrapa la Moneda</h1>
 <h2>Monedas: <span id="coins">0</span></h2>
 
 <div id="game">
@@ -89,7 +81,68 @@ h1{
   <button onclick="moveRight()">R</button>
 </div>
 
-<div id="admin">
-  <h3>Panel Admin (Solo tú 😎)</h3>
-  <button onclick="r
+<script>
+let player = document.getElementById("player");
+let game = document.getElementById("game");
+let coins = 0;
 
+function updateCoins(){
+  document.getElementById("coins").innerText = coins;
+}
+
+function moveLeft(){
+  player.style.left = "20%";
+  player.style.transform = "none";
+}
+
+function center(){
+  player.style.left = "50%";
+  player.style.transform = "translateX(-50%)";
+}
+
+function moveRight(){
+  player.style.left = "80%";
+  player.style.transform = "none";
+}
+
+function spawnCoin(){
+  let coin = document.createElement("div");
+  coin.className = "coin";
+
+  // POSICIÓN RANDOM
+  coin.style.left = Math.random()*90 + "%";
+
+  game.appendChild(coin);
+
+  let fall = setInterval(()=>{
+    coin.style.top = coin.offsetTop + 5 + "px";
+
+    // Detectar colisión
+    if(
+      coin.offsetTop > 330 &&
+      Math.abs(coin.offsetLeft - player.offsetLeft) < 60
+    ){
+      coins++;
+      updateCoins();
+      game.removeChild(coin);
+      clearInterval(fall);
+    }
+
+    // Si cae al suelo
+    if(coin.offsetTop > 400){
+      game.removeChild(coin);
+      clearInterval(fall);
+    }
+
+  },30);
+}
+
+// Monedas cayendo random cada tiempo random
+setInterval(()=>{
+  spawnCoin();
+}, 800 + Math.random()*1200);
+
+</script>
+
+</body>
+</html>
