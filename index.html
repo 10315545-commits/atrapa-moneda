@@ -2,12 +2,12 @@
 <html>
 <head>
 <meta charset="UTF-8">
-<title>Atrapa la Moneda</title>
+<title>Atrapa la Moneda - Owner Edition</title>
 
 <style>
 body{
   margin:0;
-  background:#0b0f1a;
+  background:linear-gradient(#050510,#0b0f1a);
   color:white;
   font-family:Arial;
   text-align:center;
@@ -16,25 +16,29 @@ body{
 
 h1{
   color:#00f7ff;
+  text-shadow:0 0 15px #00f7ff;
 }
 
 #game{
   position:relative;
   width:100%;
-  height:400px;
+  height:420px;
   border-top:3px solid #00f7ff;
+  box-shadow:0 0 20px #00f7ff inset;
   overflow:hidden;
 }
 
 .player{
   position:absolute;
-  bottom:10px;
+  bottom:15px;
   left:50%;
   transform:translateX(-50%);
-  width:70px;
-  height:30px;
+  width:90px;
+  height:25px;
   background:#00f7ff;
-  border-radius:10px;
+  border-radius:15px;
+  box-shadow:0 0 20px #00f7ff;
+  transition:0.2s;
 }
 
 .coin{
@@ -43,32 +47,40 @@ h1{
   height:35px;
   background:gold;
   border-radius:50%;
+  box-shadow:0 0 15px gold;
   top:0;
 }
 
 .controls{
   position:absolute;
-  bottom:80px;
+  bottom:90px;
   width:100%;
   display:flex;
   justify-content:center;
-  gap:20px;
+  gap:30px;
 }
 
 .controls button{
   font-size:22px;
-  padding:12px 25px;
-  cursor:pointer;
+  padding:12px 30px;
   border:none;
-  border-radius:8px;
+  border-radius:10px;
+  cursor:pointer;
   background:#00f7ff;
   color:black;
+  font-weight:bold;
+  box-shadow:0 0 15px #00f7ff;
+  transition:0.2s;
+}
+
+.controls button:hover{
+  transform:scale(1.1);
 }
 </style>
 </head>
 <body>
 
-<h1>Atrapa la Moneda</h1>
+<h1>Atrapa la Moneda - OWNER</h1>
 <h2>Monedas: <span id="coins">0</span></h2>
 
 <div id="game">
@@ -91,7 +103,7 @@ function updateCoins(){
 }
 
 function moveLeft(){
-  player.style.left = "20%";
+  player.style.left = "15%";
   player.style.transform = "none";
 }
 
@@ -101,7 +113,7 @@ function center(){
 }
 
 function moveRight(){
-  player.style.left = "80%";
+  player.style.left = "85%";
   player.style.transform = "none";
 }
 
@@ -109,18 +121,21 @@ function spawnCoin(){
   let coin = document.createElement("div");
   coin.className = "coin";
 
-  // POSICIÓN RANDOM
+  // RANDOM POSITION
   coin.style.left = Math.random()*90 + "%";
 
   game.appendChild(coin);
 
-  let fall = setInterval(()=>{
-    coin.style.top = coin.offsetTop + 5 + "px";
+  let speed = 3 + Math.random()*4; // velocidad random
 
-    // Detectar colisión
+  let fall = setInterval(()=>{
+
+    coin.style.top = coin.offsetTop + speed + "px";
+
+    // Colisión
     if(
-      coin.offsetTop > 330 &&
-      Math.abs(coin.offsetLeft - player.offsetLeft) < 60
+      coin.offsetTop > 340 &&
+      Math.abs(coin.offsetLeft - player.offsetLeft) < 80
     ){
       coins++;
       updateCoins();
@@ -129,18 +144,18 @@ function spawnCoin(){
     }
 
     // Si cae al suelo
-    if(coin.offsetTop > 400){
+    if(coin.offsetTop > 420){
       game.removeChild(coin);
       clearInterval(fall);
     }
 
-  },30);
+  },20);
 }
 
-// Monedas cayendo random cada tiempo random
+// Monedas cayendo constantemente random
 setInterval(()=>{
   spawnCoin();
-}, 800 + Math.random()*1200);
+}, 600);
 
 </script>
 
