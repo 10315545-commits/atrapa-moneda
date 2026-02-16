@@ -2,7 +2,7 @@
 <html>
 <head>
 <meta charset="UTF-8">
-<title>Atrapa la Moneda - Owner Edition</title>
+<title>Atrapa la Moneda - Owner Animated</title>
 
 <style>
 body{
@@ -30,15 +30,15 @@ h1{
 
 .player{
   position:absolute;
-  bottom:15px;
+  bottom:20px;
   left:50%;
   transform:translateX(-50%);
-  width:90px;
+  width:100px;
   height:25px;
   background:#00f7ff;
   border-radius:15px;
   box-shadow:0 0 20px #00f7ff;
-  transition:0.2s;
+  transition:left 0.3s ease;
 }
 
 .coin{
@@ -48,7 +48,12 @@ h1{
   background:gold;
   border-radius:50%;
   box-shadow:0 0 15px gold;
-  top:0;
+  animation: fall linear forwards;
+}
+
+@keyframes fall{
+  from{ top:-40px; }
+  to{ top:420px; }
 }
 
 .controls{
@@ -117,45 +122,58 @@ function moveRight(){
   player.style.transform = "none";
 }
 
+// 🎮 TECLADO PC
+document.addEventListener("keydown", function(e){
+  if(e.key === "ArrowLeft") moveLeft();
+  if(e.key === "ArrowRight") moveRight();
+  if(e.key === "ArrowDown" || e.key === " ") center();
+});
+
 function spawnCoin(){
   let coin = document.createElement("div");
   coin.className = "coin";
 
-  // RANDOM POSITION
+  // posición random
   coin.style.left = Math.random()*90 + "%";
+
+  // duración random (velocidad diferente)
+  let duration = 2 + Math.random()*2;
+  coin.style.animationDuration = duration + "s";
 
   game.appendChild(coin);
 
-  let speed = 3 + Math.random()*4; // velocidad random
+  // detectar colisión mientras cae
+  let check = setInterval(()=>{
+    let coinRect = coin.getBoundingClientRect();
+    let playerRect = player.getBoundingClientRect();
 
-  let fall = setInterval(()=>{
-
-    coin.style.top = coin.offsetTop + speed + "px";
-
-    // Colisión
     if(
-      coin.offsetTop > 340 &&
-      Math.abs(coin.offsetLeft - player.offsetLeft) < 80
+      coinRect.bottom >= playerRect.top &&
+      coinRect.left < playerRect.right &&
+      coinRect.right > playerRect.left
     ){
       coins++;
       updateCoins();
-      game.removeChild(coin);
-      clearInterval(fall);
+      coin.remove();
+      clearInterval(check);
     }
 
-    // Si cae al suelo
-    if(coin.offsetTop > 420){
-      game.removeChild(coin);
-      clearInterval(fall);
+    // si desaparece
+    if(!document.body.contains(coin)){
+      clearInterval(check);
     }
 
   },20);
+
+  // eliminar después de animación
+  setTimeout(()=>{
+    coin.remove();
+  }, duration*1000);
 }
 
-// Monedas cayendo constantemente random
 setInterval(()=>{
   spawnCoin();
-}, 600);
+},600);
 
 </script>
 
