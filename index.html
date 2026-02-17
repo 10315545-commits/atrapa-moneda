@@ -2,19 +2,18 @@
 <html>
 <head>
 <meta charset="UTF-8">
-<title>Owner Coin Event</title>
+<title>OWNER Coin Event</title>
 
 <style>
 body{
   margin:0;
-  background:radial-gradient(circle at top,#0a0f2a,#050510);
   font-family:Arial;
+  background:radial-gradient(circle at top,#0b1026,#050510);
   color:white;
   text-align:center;
   overflow:hidden;
 }
 
-/* TITULOS */
 h1{
   color:#00f7ff;
   text-shadow:0 0 20px #00f7ff;
@@ -30,10 +29,10 @@ h1{
   flex-direction:column;
   justify-content:center;
   align-items:center;
-  z-index:10;
+  z-index:20;
 }
 
-.keyBox{
+.keyContainer{
   display:flex;
   gap:40px;
   margin-top:20px;
@@ -42,17 +41,16 @@ h1{
 .key{
   width:80px;
   height:80px;
-  background:#111;
   border:3px solid #00f7ff;
   display:flex;
   justify-content:center;
   align-items:center;
-  font-size:40px;
-  border-radius:10px;
+  font-size:35px;
+  border-radius:12px;
   box-shadow:0 0 20px #00f7ff;
 }
 
-/* AREA DE JUEGO */
+/* AREA JUEGO */
 #game{
   position:relative;
   width:100%;
@@ -72,26 +70,25 @@ h1{
   background:#00f7ff;
   border-radius:20px;
   box-shadow:0 0 25px #00f7ff;
-  transition:0.3s;
+  transition:0.25s;
 }
 
-/* MONEDA */
+/* MONEDAS */
 .coin{
   position:absolute;
   width:35px;
   height:35px;
   background:gold;
   border-radius:50%;
-  box-shadow:0 0 20px gold;
+  box-shadow:0 0 15px gold;
   animation:fall linear forwards;
 }
 
 @keyframes fall{
   from{ top:-40px; }
-  to{ top:460px; }
+  to{ top:470px; }
 }
 
-/* EXPLOSION */
 .explosion{
   position:absolute;
   width:40px;
@@ -112,9 +109,9 @@ h1{
 }
 
 .controls button{
-  font-size:22px;
+  font-size:20px;
   padding:10px 25px;
-  margin:10px;
+  margin:8px;
   border:none;
   border-radius:10px;
   background:#00f7ff;
@@ -135,21 +132,19 @@ h1{
 
 #panel button{
   display:block;
-  margin:5px 0;
   width:140px;
+  margin:5px 0;
 }
 </style>
 </head>
 
 <body>
 
-<!-- PANTALLA INICIAL -->
 <div id="startScreen">
   <h1>👑 OWNER EDITION</h1>
   <p>Ranking / Eventos Activos</p>
   <p>Presiona L C R para iniciar</p>
-
-  <div class="keyBox">
+  <div class="keyContainer">
     <div class="key">L</div>
     <div class="key">C</div>
     <div class="key">R</div>
@@ -165,63 +160,71 @@ h1{
 
 <div class="controls">
   <button onclick="moveLeft()">L</button>
-  <button onclick="center()">C</button>
+  <button onclick="moveCenter()">C</button>
   <button onclick="moveRight()">R</button>
 </div>
 
-<!-- OWNER PANEL -->
 <div id="panel">
   <strong>👑 OWNER</strong>
-  <button onclick="addCoins()">+100</button>
+  <button onclick="addCoins()">+100 Coins</button>
   <button onclick="megaEvent()">Mega Event</button>
   <button onclick="turbo()">Turbo</button>
   <button onclick="slow()">Slow</button>
-  <button onclick="pause()">Pause</button>
-  <button onclick="resume()">Resume</button>
-  <button onclick="reset()">Reset</button>
+  <button onclick="pauseGame()">Pause</button>
+  <button onclick="resumeGame()">Resume</button>
+  <button onclick="resetGame()">Reset</button>
 </div>
 
 <script>
-let player = document.getElementById("player");
-let game = document.getElementById("game");
-let score = 0;
-let speed = 2;
-let gameStarted = false;
-let paused = false;
+let player=document.getElementById("player");
+let game=document.getElementById("game");
+let score=0;
+let speed=2;
+let gameStarted=false;
+let paused=false;
 
 /* ACTUALIZAR SCORE */
 function updateScore(){
-  document.getElementById("score").innerText = score;
+  document.getElementById("score").innerText=score;
 }
 
 /* MOVIMIENTO */
-function moveLeft(){ player.style.left="15%"; player.style.transform="none"; }
-function center(){ player.style.left="50%"; player.style.transform="translateX(-50%)"; }
-function moveRight(){ player.style.left="85%"; player.style.transform="none"; }
+function moveLeft(){
+  player.style.left="15%";
+  player.style.transform="none";
+}
+function moveCenter(){
+  player.style.left="50%";
+  player.style.transform="translateX(-50%)";
+}
+function moveRight(){
+  player.style.left="85%";
+  player.style.transform="none";
+}
 
-/* INICIAR */
+/* INICIAR JUEGO */
 function startGame(){
   document.getElementById("startScreen").style.display="none";
   gameStarted=true;
 }
 
-/* TECLAS LCR */
+/* TECLADO LCR */
 document.addEventListener("keydown",function(e){
-  let key=e.key.toLowerCase();
+  let k=e.key.toLowerCase();
 
-  if(!gameStarted && (key==="l"||key==="c"||key==="r")){
+  if(!gameStarted && (k==="l"||k==="c"||k==="r")){
     startGame();
   }
 
   if(gameStarted && !paused){
-    if(key==="l") moveLeft();
-    if(key==="c") center();
-    if(key==="r") moveRight();
+    if(k==="l") moveLeft();
+    if(k==="c") moveCenter();
+    if(k==="r") moveRight();
   }
 });
 
-/* CREAR MONEDA */
-function spawnCoin(){
+/* CREAR MONEDAS */
+function createCoin(){
   if(!gameStarted || paused) return;
 
   let coin=document.createElement("div");
@@ -255,16 +258,37 @@ function spawnCoin(){
   setTimeout(()=>coin.remove(),5000);
 }
 
-setInterval(spawnCoin,700);
+setInterval(createCoin,700);
 
 /* OWNER COMANDOS */
-function addCoins(){ score+=100; updateScore(); }
-function megaEvent(){ for(let i=0;i<25;i++) spawnCoin(); }
-function turbo(){ speed=0.6; }
-function slow(){ speed=3; }
-function pause(){ paused=true; }
-function resume(){ paused=false; }
-function reset(){
+function addCoins(){
+  score+=100;
+  updateScore();
+}
+
+function megaEvent(){
+  for(let i=0;i<30;i++){
+    createCoin();
+  }
+}
+
+function turbo(){
+  speed=0.6;
+}
+
+function slow(){
+  speed=3;
+}
+
+function pauseGame(){
+  paused=true;
+}
+
+function resumeGame(){
+  paused=false;
+}
+
+function resetGame(){
   score=0;
   speed=2;
   paused=false;
