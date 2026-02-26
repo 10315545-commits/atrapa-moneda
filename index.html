@@ -2,7 +2,7 @@
 <html>
 <head>
 <meta charset="UTF-8">
-<title>atrapa la moneda</title>
+<title>RAGE GAME</title>
 
 <style>
 body{
@@ -14,13 +14,12 @@ body{
   overflow:hidden;
 }
 
-/* GAME */
 #game{
   position:relative;
   width:100%;
-  height:450px;
-  overflow:hidden;
+  height:400px;
   border-top:3px solid cyan;
+  overflow:hidden;
 }
 
 .player{
@@ -29,15 +28,15 @@ body{
   left:50%;
   transform:translateX(-50%);
   width:120px;
-  height:25px;
+  height:20px;
   background:cyan;
   border-radius:20px;
 }
 
 .coin{
   position:absolute;
-  width:30px;
-  height:30px;
+  width:25px;
+  height:25px;
   background:gold;
   border-radius:50%;
   animation:fall linear forwards;
@@ -45,52 +44,54 @@ body{
 
 @keyframes fall{
   from{ top:-40px; }
-  to{ top:480px; }
+  to{ top:420px; }
 }
 
-/* RAGE */
+/* RAGE OVERLAY */
 #rageOverlay{
   position:fixed;
   width:100%;
   height:100%;
-  background:rgba(255,0,0,0.85);
+  background:rgba(255,0,0,0.8);
   display:none;
   justify-content:center;
   align-items:center;
   z-index:50;
-}
-
-#rageText{
-  font-size:70px;
-  color:black;
+  font-size:60px;
   font-weight:bold;
 }
 
 /* RULER IMAGE */
 #ruler{
   position:fixed;
-  bottom:-500px;
+  bottom:-400px;
   left:50%;
   transform:translateX(-50%);
-  width:400px;
+  width:300px;
   display:none;
   z-index:60;
 }
 
 .rise{
-  animation:riseUp 1.5s forwards;
+  animation:riseUp 1s forwards;
 }
 
 @keyframes riseUp{
-  from{ bottom:-500px; }
+  from{ bottom:-400px; }
   to{ bottom:0px; }
+}
+
+button{
+  margin:10px;
+  padding:10px 20px;
+  font-size:18px;
 }
 </style>
 </head>
 
 <body>
 
-<h1>👑 OWNER RAGE MODE</h1>
+<h1>👑 RAGE GAME</h1>
 <h2>Coins: <span id="score">0</span></h2>
 
 <div id="game">
@@ -99,11 +100,9 @@ body{
 
 <button onclick="rageEvent()">💀 RAGE EVENT</button>
 
-<div id="rageOverlay">
-  <div id="rageText">U MAD?!</div>
-</div>
+<div id="rageOverlay">U MAD?!</div>
 
-<!-- IMAGEN ORIGINAL PUESTA -->
+<!-- IMPORTANTE: la imagen debe llamarse ruler.png -->
 <img id="ruler" src="ruler.png">
 
 <script>
@@ -150,7 +149,7 @@ function rageEvent(){
 
   speed=0.5;
 
-  let rageInterval=setInterval(()=>{
+  let rain=setInterval(()=>{
     for(let i=0;i<5;i++) createCoin();
   },200);
 
@@ -159,9 +158,9 @@ function rageEvent(){
     ruler.style.display="none";
     ruler.classList.remove("rise");
     speed=2;
-    clearInterval(rageInterval);
+    clearInterval(rain);
     rageActive=false;
-  },6000);
+  },5000);
 }
 </script>
 
