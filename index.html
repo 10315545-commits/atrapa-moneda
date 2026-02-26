@@ -2,7 +2,7 @@
 <html>
 <head>
 <meta charset="UTF-8">
-<title>OWNER ULTRA EVENT</title>
+<title>atrapa-la-moneda</title>
 
 <style>
 body{
@@ -14,49 +14,44 @@ body{
   overflow:hidden;
 }
 
-h1{
-  color:#00f7ff;
-  text-shadow:0 0 20px #00f7ff;
-}
-
-/* START SCREEN */
-#startScreen{
+/* RAGE OVERLAY */
+#rageOverlay{
   position:fixed;
   width:100%;
   height:100%;
-  background:#050510;
-  display:flex;
+  background:radial-gradient(circle,rgba(255,0,0,0.9),black);
+  display:none;
+  justify-content:center;
+  align-items:center;
   flex-direction:column;
-  justify-content:center;
-  align-items:center;
-  z-index:20;
+  z-index:50;
+  animation:pulse 0.3s infinite alternate;
 }
 
-.keyBox{
-  display:flex;
-  gap:40px;
-  margin-top:20px;
+@keyframes pulse{
+  from{ filter:brightness(1); }
+  to{ filter:brightness(1.5); }
 }
 
-.key{
-  width:80px;
-  height:80px;
-  border:3px solid #00f7ff;
-  display:flex;
-  justify-content:center;
-  align-items:center;
-  font-size:35px;
-  border-radius:12px;
-  box-shadow:0 0 20px #00f7ff;
+#rageText{
+  font-size:70px;
+  color:red;
+  text-shadow:0 0 30px red;
+  transform:rotate(-10deg);
+  animation:shake 0.2s infinite;
 }
 
-/* GAME AREA */
+@keyframes shake{
+  0%{ transform:translateX(-5px) rotate(-10deg); }
+  100%{ transform:translateX(5px) rotate(-10deg); }
+}
+
+/* GAME */
 #game{
   position:relative;
   width:100%;
   height:450px;
   border-top:3px solid #00f7ff;
-  box-shadow:0 0 20px #00f7ff inset;
   overflow:hidden;
 }
 
@@ -69,7 +64,6 @@ h1{
   height:25px;
   background:#00f7ff;
   border-radius:20px;
-  box-shadow:0 0 25px #00f7ff;
   transition:0.25s;
 }
 
@@ -86,20 +80,6 @@ h1{
 @keyframes fall{
   from{ top:-40px; }
   to{ top:470px; }
-}
-
-.explosion{
-  position:absolute;
-  width:40px;
-  height:40px;
-  background:yellow;
-  border-radius:50%;
-  animation:explode 0.4s forwards;
-}
-
-@keyframes explode{
-  from{transform:scale(1);opacity:1;}
-  to{transform:scale(2);opacity:0;}
 }
 
 .controls button{
@@ -119,32 +99,20 @@ h1{
   background:#111;
   padding:10px;
   border:2px solid #00f7ff;
-  box-shadow:0 0 15px #00f7ff;
 }
 
 #panel button{
   display:block;
-  width:150px;
   margin:5px 0;
+  width:150px;
 }
 </style>
 </head>
 
 <body>
 
-<div id="startScreen">
-  <h1>👑 OWNER ULTRA EDITION</h1>
-  <p>Ranking Máximo: <span id="bestScore">0</span></p>
-  <p>Presiona L C R para iniciar</p>
-  <div class="keyBox">
-    <div class="key">L</div>
-    <div class="key">C</div>
-    <div class="key">R</div>
-  </div>
-</div>
-
-<h1>Coins: <span id="score">0</span></h1>
-<h2>Combo: <span id="combo">x1</span> | Vidas: <span id="lives">3</span></h2>
+<h1>👑 OWNER RAGE MODE</h1>
+<h2>Coins: <span id="score">0</span></h2>
 
 <div id="game">
   <div class="player" id="player"></div>
@@ -158,85 +126,50 @@ h1{
 
 <div id="panel">
   <strong>👑 OWNER</strong>
-  <button onclick="addCoins()">+100</button>
-  <button onclick="megaEvent()">Mega Event</button>
-  <button onclick="turbo()">Turbo</button>
-  <button onclick="slow()">Slow</button>
-  <button onclick="pauseGame()">Pause</button>
-  <button onclick="resumeGame()">Resume</button>
-  <button onclick="resetGame()">Reset</button>
+  <button onclick="rageMode()">💀 RAGE EVENT</button>
+  <button onclick="megaEvent()">Mega Rain</button>
 </div>
 
-<audio id="music" loop>
-  <source src="https://cdn.pixabay.com/download/audio/2022/03/15/audio_115b9b0c51.mp3?filename=arcade-music-loop-110624.mp3">
-</audio>
+<div id="rageOverlay">
+  <div id="rageText">U MAD?!</div>
+</div>
 
 <script>
 let player=document.getElementById("player");
 let game=document.getElementById("game");
 let score=0;
-let combo=1;
-let comboCount=0;
-let lives=3;
 let speed=2;
-let gameStarted=false;
-let paused=false;
+let rageActive=false;
 
-let best=localStorage.getItem("bestScore") || 0;
-document.getElementById("bestScore").innerText=best;
-
-function updateUI(){
+function updateScore(){
   document.getElementById("score").innerText=score;
-  document.getElementById("combo").innerText="x"+combo;
-  document.getElementById("lives").innerText=lives;
 }
 
 function moveLeft(){ player.style.left="15%"; player.style.transform="none"; }
 function moveCenter(){ player.style.left="50%"; player.style.transform="translateX(-50%)"; }
 function moveRight(){ player.style.left="85%"; player.style.transform="none"; }
 
-function startGame(){
-  document.getElementById("startScreen").style.display="none";
-  document.getElementById("music").play();
-  gameStarted=true;
-}
-
 document.addEventListener("keydown",function(e){
   let k=e.key.toLowerCase();
-  if(!gameStarted && (k==="l"||k==="c"||k==="r")) startGame();
-
-  if(gameStarted && !paused){
-    if(k==="l") moveLeft();
-    if(k==="c") moveCenter();
-    if(k==="r") moveRight();
-  }
+  if(k==="l") moveLeft();
+  if(k==="c") moveCenter();
+  if(k==="r") moveRight();
 });
 
 function createCoin(){
-  if(!gameStarted || paused) return;
-
   let coin=document.createElement("div");
   coin.className="coin";
   coin.style.left=Math.random()*90+"%";
   coin.style.animationDuration=(speed+Math.random())+"s";
   game.appendChild(coin);
 
-  let caught=false;
-
   let check=setInterval(()=>{
     let c=coin.getBoundingClientRect();
     let p=player.getBoundingClientRect();
 
     if(c.bottom>=p.top && c.left<p.right && c.right>p.left){
-      caught=true;
-      comboCount++;
-      if(comboCount>20) combo=10;
-      else if(comboCount>10) combo=5;
-      else if(comboCount>5) combo=2;
-
-      score+=combo;
-      updateUI();
-
+      score++;
+      updateScore();
       coin.remove();
       clearInterval(check);
     }
@@ -244,38 +177,35 @@ function createCoin(){
     if(!document.body.contains(coin)) clearInterval(check);
   },20);
 
-  setTimeout(()=>{
-    if(!caught && gameStarted){
-      lives--;
-      combo=1;
-      comboCount=0;
-      updateUI();
-      if(lives<=0) gameOver();
-    }
-    coin.remove();
-  },5000);
+  setTimeout(()=>coin.remove(),5000);
 }
 
 setInterval(createCoin,700);
 
-function gameOver(){
-  if(score>best){
-    localStorage.setItem("bestScore",score);
-  }
-  alert("GAME OVER 👑 Score: "+score);
-  location.reload();
+function megaEvent(){
+  for(let i=0;i<50;i++) createCoin();
 }
 
-/* OWNER */
-function addCoins(){ score+=100; updateUI(); }
-function megaEvent(){ for(let i=0;i<40;i++) createCoin(); }
-function turbo(){ speed=0.6; }
-function slow(){ speed=3; }
-function pauseGame(){ paused=true; }
-function resumeGame(){ paused=false; }
-function resetGame(){ location.reload(); }
+function rageMode(){
+  if(rageActive) return;
+  rageActive=true;
 
-updateUI();
+  let overlay=document.getElementById("rageOverlay");
+  overlay.style.display="flex";
+
+  speed=0.5;
+
+  let rageInterval=setInterval(()=>{
+    for(let i=0;i<5;i++) createCoin();
+  },200);
+
+  setTimeout(()=>{
+    overlay.style.display="none";
+    speed=2;
+    clearInterval(rageInterval);
+    rageActive=false;
+  },5000);
+}
 </script>
 
 </body>
