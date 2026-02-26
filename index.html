@@ -2,48 +2,16 @@
 <html>
 <head>
 <meta charset="UTF-8">
-<title>atrapa-la-moneda</title>
+<title>atrapa la moneda</title>
 
 <style>
 body{
   margin:0;
-  font-family:Arial;
-  background:radial-gradient(circle at top,#0b1026,#050510);
+  background:black;
   color:white;
+  font-family:Arial;
   text-align:center;
   overflow:hidden;
-}
-
-/* RAGE OVERLAY */
-#rageOverlay{
-  position:fixed;
-  width:100%;
-  height:100%;
-  background:radial-gradient(circle,rgba(255,0,0,0.9),black);
-  display:none;
-  justify-content:center;
-  align-items:center;
-  flex-direction:column;
-  z-index:50;
-  animation:pulse 0.3s infinite alternate;
-}
-
-@keyframes pulse{
-  from{ filter:brightness(1); }
-  to{ filter:brightness(1.5); }
-}
-
-#rageText{
-  font-size:70px;
-  color:red;
-  text-shadow:0 0 30px red;
-  transform:rotate(-10deg);
-  animation:shake 0.2s infinite;
-}
-
-@keyframes shake{
-  0%{ transform:translateX(-5px) rotate(-10deg); }
-  100%{ transform:translateX(5px) rotate(-10deg); }
 }
 
 /* GAME */
@@ -51,8 +19,8 @@ body{
   position:relative;
   width:100%;
   height:450px;
-  border-top:3px solid #00f7ff;
   overflow:hidden;
+  border-top:3px solid cyan;
 }
 
 .player{
@@ -62,49 +30,60 @@ body{
   transform:translateX(-50%);
   width:120px;
   height:25px;
-  background:#00f7ff;
+  background:cyan;
   border-radius:20px;
-  transition:0.25s;
 }
 
 .coin{
   position:absolute;
-  width:35px;
-  height:35px;
+  width:30px;
+  height:30px;
   background:gold;
   border-radius:50%;
-  box-shadow:0 0 15px gold;
   animation:fall linear forwards;
 }
 
 @keyframes fall{
   from{ top:-40px; }
-  to{ top:470px; }
+  to{ top:480px; }
 }
 
-.controls button{
-  font-size:20px;
-  padding:10px 25px;
-  margin:8px;
-  border:none;
-  border-radius:10px;
-  background:#00f7ff;
+/* RAGE */
+#rageOverlay{
+  position:fixed;
+  width:100%;
+  height:100%;
+  background:rgba(255,0,0,0.85);
+  display:none;
+  justify-content:center;
+  align-items:center;
+  z-index:50;
+}
+
+#rageText{
+  font-size:70px;
+  color:black;
   font-weight:bold;
 }
 
-#panel{
+/* RULER IMAGE */
+#ruler{
   position:fixed;
-  top:10px;
-  right:10px;
-  background:#111;
-  padding:10px;
-  border:2px solid #00f7ff;
+  bottom:-500px;
+  left:50%;
+  transform:translateX(-50%);
+  width:400px;
+  display:none;
+  z-index:60;
 }
 
-#panel button{
-  display:block;
-  margin:5px 0;
-  width:150px;
+.rise{
+  animation:riseUp 1.5s forwards;
+}
+
+@keyframes riseUp{
+  from{ bottom:-500px; }
+  to{ bottom:0px; }
 }
 </style>
 </head>
@@ -118,21 +97,14 @@ body{
   <div class="player" id="player"></div>
 </div>
 
-<div class="controls">
-  <button onclick="moveLeft()">L</button>
-  <button onclick="moveCenter()">C</button>
-  <button onclick="moveRight()">R</button>
-</div>
-
-<div id="panel">
-  <strong>👑 OWNER</strong>
-  <button onclick="rageMode()">💀 RAGE EVENT</button>
-  <button onclick="megaEvent()">Mega Rain</button>
-</div>
+<button onclick="rageEvent()">💀 RAGE EVENT</button>
 
 <div id="rageOverlay">
   <div id="rageText">U MAD?!</div>
 </div>
+
+<!-- IMAGEN ORIGINAL PUESTA -->
+<img id="ruler" src="/mnt/data/a_screenshot_of_a_web_based_mini_game_features_a_p.png">
 
 <script>
 let player=document.getElementById("player");
@@ -141,26 +113,11 @@ let score=0;
 let speed=2;
 let rageActive=false;
 
-function updateScore(){
-  document.getElementById("score").innerText=score;
-}
-
-function moveLeft(){ player.style.left="15%"; player.style.transform="none"; }
-function moveCenter(){ player.style.left="50%"; player.style.transform="translateX(-50%)"; }
-function moveRight(){ player.style.left="85%"; player.style.transform="none"; }
-
-document.addEventListener("keydown",function(e){
-  let k=e.key.toLowerCase();
-  if(k==="l") moveLeft();
-  if(k==="c") moveCenter();
-  if(k==="r") moveRight();
-});
-
 function createCoin(){
   let coin=document.createElement("div");
   coin.className="coin";
   coin.style.left=Math.random()*90+"%";
-  coin.style.animationDuration=(speed+Math.random())+"s";
+  coin.style.animationDuration=speed+"s";
   game.appendChild(coin);
 
   let check=setInterval(()=>{
@@ -169,29 +126,27 @@ function createCoin(){
 
     if(c.bottom>=p.top && c.left<p.right && c.right>p.left){
       score++;
-      updateScore();
+      document.getElementById("score").innerText=score;
       coin.remove();
       clearInterval(check);
     }
-
-    if(!document.body.contains(coin)) clearInterval(check);
   },20);
 
   setTimeout(()=>coin.remove(),5000);
 }
 
-setInterval(createCoin,700);
+setInterval(createCoin,800);
 
-function megaEvent(){
-  for(let i=0;i<50;i++) createCoin();
-}
-
-function rageMode(){
+function rageEvent(){
   if(rageActive) return;
   rageActive=true;
 
   let overlay=document.getElementById("rageOverlay");
+  let ruler=document.getElementById("ruler");
+
   overlay.style.display="flex";
+  ruler.style.display="block";
+  ruler.classList.add("rise");
 
   speed=0.5;
 
@@ -201,10 +156,12 @@ function rageMode(){
 
   setTimeout(()=>{
     overlay.style.display="none";
+    ruler.style.display="none";
+    ruler.classList.remove("rise");
     speed=2;
     clearInterval(rageInterval);
     rageActive=false;
-  },5000);
+  },6000);
 }
 </script>
 
