@@ -2,9 +2,10 @@
 <html>
 <head>
 <meta charset="UTF-8">
-<title>OWNER ULTRA GAME</title>
+<title>OWNER ARCADE</title>
 
 <style>
+
 body{
 margin:0;
 background:#0b0f1a;
@@ -24,7 +25,6 @@ border-top:3px solid cyan;
 overflow:hidden;
 }
 
-/* PLAYER */
 #player{
 position:absolute;
 bottom:20px;
@@ -34,10 +34,8 @@ width:120px;
 height:20px;
 background:#00f7ff;
 border-radius:20px;
-box-shadow:0 0 10px #00f7ff;
 }
 
-/* OBJECTS */
 .coin,.diamond,.meteor{
 position:absolute;
 border-radius:50%;
@@ -45,15 +43,21 @@ animation:fall linear forwards;
 }
 
 .coin{
-width:25px;height:25px;background:gold;
+width:25px;
+height:25px;
+background:gold;
 }
 
 .diamond{
-width:22px;height:22px;background:#00f7ff;
+width:22px;
+height:22px;
+background:#00f7ff;
 }
 
 .meteor{
-width:28px;height:28px;background:red;
+width:28px;
+height:28px;
+background:red;
 }
 
 @keyframes fall{
@@ -61,7 +65,8 @@ from{top:-40px;}
 to{top:480px;}
 }
 
-/* CONTROLS */
+/* CONTROLES */
+
 #controls{
 position:fixed;
 bottom:10px;
@@ -74,7 +79,8 @@ padding:10px 25px;
 margin:5px;
 }
 
-/* ADMIN PANEL */
+/* ADMIN */
+
 #admin{
 position:fixed;
 right:10px;
@@ -83,14 +89,35 @@ background:#111;
 border:2px solid cyan;
 padding:10px;
 width:180px;
+display:none;
 }
 
-#admin button{
+/* LOGIN */
+
+#login{
+position:fixed;
 width:100%;
-margin:4px 0;
+height:100%;
+background:black;
+display:flex;
+flex-direction:column;
+justify-content:center;
+align-items:center;
+z-index:500;
+}
+
+#login input{
+padding:10px;
+font-size:18px;
+}
+
+#login button{
+padding:10px;
+margin-top:10px;
 }
 
 /* RAGE */
+
 #rageOverlay{
 position:fixed;
 width:100%;
@@ -122,24 +149,41 @@ from{bottom:-400px;}
 to{bottom:0;}
 }
 
+/* GAME OVER */
+
 #gameOver{
 position:fixed;
 width:100%;
 height:100%;
 background:black;
 display:none;
+flex-direction:column;
 justify-content:center;
 align-items:center;
 font-size:60px;
 color:red;
-z-index:200;
+z-index:300;
 }
+
+#gameOver button{
+padding:10px 20px;
+font-size:20px;
+margin-top:20px;
+}
+
 </style>
 </head>
 
 <body>
 
-<h1>👑 OWNER ULTRA GAME</h1>
+<div id="login">
+<h2>ADMIN LOGIN</h2>
+<input type="password" id="pass" placeholder="password">
+<button onclick="login()">Entrar</button>
+</div>
+
+<h1>👑 OWNER ARCADE</h1>
+
 <h2>
 Score: <span id="score">0</span> |
 Lives: <span id="lives">3</span>
@@ -149,16 +193,16 @@ Lives: <span id="lives">3</span>
 <div id="player"></div>
 </div>
 
-<!-- MOBILE CONTROLS -->
 <div id="controls">
 <button onclick="moveLeft()">L</button>
 <button onclick="moveCenter()">C</button>
 <button onclick="moveRight()">R</button>
 </div>
 
-<!-- ADMIN -->
 <div id="admin">
+
 <h3>ADMIN</h3>
+
 <button onclick="megaRain()">Mega Rain</button>
 <button onclick="diamondRain()">Diamond Rain</button>
 <button onclick="meteorShower()">Meteor Shower</button>
@@ -166,54 +210,64 @@ Lives: <span id="lives">3</span>
 <button onclick="clearCoins()">Clear Coins</button>
 <button onclick="turbo()">Turbo</button>
 <button onclick="addLife()">+Life</button>
+<button onclick="toggleInfiniteLife()">∞ Vida Infinita</button>
+
 </div>
 
 <div id="rageOverlay">U MAD?!</div>
-<div id="gameOver">GAME OVER</div>
+
+<div id="gameOver">
+<div>💀 PERDISTE 💀</div>
+<button onclick="location.reload()">REINICIAR</button>
+</div>
 
 <img id="ruler" src="ruler.png">
 
 <script>
 
-let player=document.getElementById("player");
-let game=document.getElementById("game");
-
 let score=0;
 let lives=3;
 let speed=2;
 let active=true;
+let infiniteLife=false;
+
+let player=document.getElementById("player");
+let game=document.getElementById("game");
 
 let pos=window.innerWidth/2;
 
 function updateUI(){
-scoreEl.innerText=score;
-livesEl.innerText=lives;
+document.getElementById("score").innerText=score;
+document.getElementById("lives").innerText=lives;
 }
 
-let scoreEl=document.getElementById("score");
-let livesEl=document.getElementById("lives");
+/* LOGIN */
 
-/* MOVEMENT */
+function login(){
 
-function moveLeft(){
-pos-=80;
-updatePos();
+let p=document.getElementById("pass").value;
+
+if(p==="owner123"){
+document.getElementById("admin").style.display="block";
 }
 
-function moveCenter(){
-pos=window.innerWidth/2;
-updatePos();
+document.getElementById("login").style.display="none";
+
 }
 
-function moveRight(){
-pos+=80;
-updatePos();
-}
+/* MOVIMIENTO */
+
+function moveLeft(){pos-=80;updatePos();}
+function moveCenter(){pos=window.innerWidth/2;updatePos();}
+function moveRight(){pos+=80;updatePos();}
 
 function updatePos(){
+
 if(pos<0)pos=0;
 if(pos>window.innerWidth-120)pos=window.innerWidth-120;
+
 player.style.left=pos+"px";
+
 }
 
 document.addEventListener("keydown",(e)=>{
@@ -232,9 +286,7 @@ if(!active) return;
 
 let obj=document.createElement("div");
 
-if(type==="coin") obj.className="coin";
-if(type==="diamond") obj.className="diamond";
-if(type==="meteor") obj.className="meteor";
+obj.className=type;
 
 obj.style.left=Math.random()*(window.innerWidth-30)+"px";
 obj.style.animationDuration=speed+"s";
@@ -248,11 +300,13 @@ let p=player.getBoundingClientRect();
 
 if(o.bottom>=p.top && o.left<p.right && o.right>p.left){
 
-if(type==="coin") score+=1;
+if(type==="coin") score++;
 if(type==="diamond") score+=5;
-if(type==="meteor") lives--;
+
+if(type==="meteor" && !infiniteLife) lives--;
 
 updateUI();
+
 obj.remove();
 clearInterval(check);
 
@@ -262,7 +316,8 @@ if(lives<=0) gameOver();
 
 if(o.top>450){
 
-if(type!=="meteor") lives--;
+if(type!=="meteor" && !infiniteLife) lives--;
+
 updateUI();
 
 obj.remove();
@@ -276,23 +331,13 @@ if(lives<=0) gameOver();
 
 }
 
-/* LOOP */
-
 setInterval(()=>spawn("coin"),1200);
 
-/* EVENTS */
+/* EVENTOS */
 
-function megaRain(){
-for(let i=0;i<30;i++) spawn("coin");
-}
-
-function diamondRain(){
-for(let i=0;i<20;i++) spawn("diamond");
-}
-
-function meteorShower(){
-for(let i=0;i<15;i++) spawn("meteor");
-}
+function megaRain(){for(let i=0;i<30;i++) spawn("coin");}
+function diamondRain(){for(let i=0;i<20;i++) spawn("diamond");}
+function meteorShower(){for(let i=0;i<15;i++) spawn("meteor");}
 
 function clearCoins(){
 document.querySelectorAll(".coin,.diamond,.meteor").forEach(e=>e.remove());
@@ -308,7 +353,21 @@ lives++;
 updateUI();
 }
 
-/* RAGE EVENT */
+/* VIDA INFINITA */
+
+function toggleInfiniteLife(){
+
+infiniteLife=!infiniteLife;
+
+if(infiniteLife){
+alert("∞ VIDA INFINITA ACTIVADA");
+}else{
+alert("Vida infinita desactivada");
+}
+
+}
+
+/* RAGE */
 
 function rageEvent(){
 
@@ -328,17 +387,19 @@ setTimeout(()=>{
 overlay.style.display="none";
 ruler.style.display="none";
 ruler.classList.remove("rise");
+
 speed=2;
 
 },4000);
 
 }
 
-/* GAME OVER */
-
 function gameOver(){
+
 active=false;
+
 document.getElementById("gameOver").style.display="flex";
+
 }
 
 </script>
