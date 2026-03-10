@@ -2,166 +2,345 @@
 <html>
 <head>
 <meta charset="UTF-8">
-<title>RAGE GAME</title>
+<title>OWNER ULTRA GAME</title>
 
 <style>
 body{
-  margin:0;
-  background:black;
-  color:white;
-  font-family:Arial;
-  text-align:center;
-  overflow:hidden;
+margin:0;
+background:#0b0f1a;
+color:white;
+font-family:Arial;
+text-align:center;
+overflow:hidden;
 }
+
+h1{color:#00f7ff;}
 
 #game{
-  position:relative;
-  width:100%;
-  height:400px;
-  border-top:3px solid cyan;
-  overflow:hidden;
+position:relative;
+width:100%;
+height:450px;
+border-top:3px solid cyan;
+overflow:hidden;
 }
 
-.player{
-  position:absolute;
-  bottom:20px;
-  left:50%;
-  transform:translateX(-50%);
-  width:120px;
-  height:20px;
-  background:cyan;
-  border-radius:20px;
+/* PLAYER */
+#player{
+position:absolute;
+bottom:20px;
+left:50%;
+transform:translateX(-50%);
+width:120px;
+height:20px;
+background:#00f7ff;
+border-radius:20px;
+box-shadow:0 0 10px #00f7ff;
+}
+
+/* OBJECTS */
+.coin,.diamond,.meteor{
+position:absolute;
+border-radius:50%;
+animation:fall linear forwards;
 }
 
 .coin{
-  position:absolute;
-  width:25px;
-  height:25px;
-  background:gold;
-  border-radius:50%;
-  animation:fall linear forwards;
+width:25px;height:25px;background:gold;
+}
+
+.diamond{
+width:22px;height:22px;background:#00f7ff;
+}
+
+.meteor{
+width:28px;height:28px;background:red;
 }
 
 @keyframes fall{
-  from{ top:-40px; }
-  to{ top:420px; }
+from{top:-40px;}
+to{top:480px;}
 }
 
-/* RAGE OVERLAY */
+/* CONTROLS */
+#controls{
+position:fixed;
+bottom:10px;
+width:100%;
+}
+
+#controls button{
+font-size:20px;
+padding:10px 25px;
+margin:5px;
+}
+
+/* ADMIN PANEL */
+#admin{
+position:fixed;
+right:10px;
+top:100px;
+background:#111;
+border:2px solid cyan;
+padding:10px;
+width:180px;
+}
+
+#admin button{
+width:100%;
+margin:4px 0;
+}
+
+/* RAGE */
 #rageOverlay{
-  position:fixed;
-  width:100%;
-  height:100%;
-  background:rgba(255,0,0,0.8);
-  display:none;
-  justify-content:center;
-  align-items:center;
-  z-index:50;
-  font-size:60px;
-  font-weight:bold;
+position:fixed;
+width:100%;
+height:100%;
+background:rgba(255,0,0,0.85);
+display:none;
+justify-content:center;
+align-items:center;
+font-size:60px;
+z-index:50;
 }
 
-/* RULER IMAGE */
 #ruler{
-  position:fixed;
-  bottom:-400px;
-  left:50%;
-  transform:translateX(-50%);
-  width:300px;
-  display:none;
-  z-index:60;
+position:fixed;
+bottom:-400px;
+left:50%;
+transform:translateX(-50%);
+width:300px;
+display:none;
+z-index:60;
 }
 
 .rise{
-  animation:riseUp 1s forwards;
+animation:rise 1s forwards;
 }
 
-@keyframes riseUp{
-  from{ bottom:-400px; }
-  to{ bottom:0px; }
+@keyframes rise{
+from{bottom:-400px;}
+to{bottom:0;}
 }
 
-button{
-  margin:10px;
-  padding:10px 20px;
-  font-size:18px;
+#gameOver{
+position:fixed;
+width:100%;
+height:100%;
+background:black;
+display:none;
+justify-content:center;
+align-items:center;
+font-size:60px;
+color:red;
+z-index:200;
 }
 </style>
 </head>
 
 <body>
 
-<h1>👑 RAGE GAME</h1>
-<h2>Coins: <span id="score">0</span></h2>
+<h1>👑 OWNER ULTRA GAME</h1>
+<h2>
+Score: <span id="score">0</span> |
+Lives: <span id="lives">3</span>
+</h2>
 
 <div id="game">
-  <div class="player" id="player"></div>
+<div id="player"></div>
 </div>
 
-<button onclick="rageEvent()">💀 RAGE EVENT</button>
+<!-- MOBILE CONTROLS -->
+<div id="controls">
+<button onclick="moveLeft()">L</button>
+<button onclick="moveCenter()">C</button>
+<button onclick="moveRight()">R</button>
+</div>
+
+<!-- ADMIN -->
+<div id="admin">
+<h3>ADMIN</h3>
+<button onclick="megaRain()">Mega Rain</button>
+<button onclick="diamondRain()">Diamond Rain</button>
+<button onclick="meteorShower()">Meteor Shower</button>
+<button onclick="rageEvent()">Boss Rage</button>
+<button onclick="clearCoins()">Clear Coins</button>
+<button onclick="turbo()">Turbo</button>
+<button onclick="addLife()">+Life</button>
+</div>
 
 <div id="rageOverlay">U MAD?!</div>
+<div id="gameOver">GAME OVER</div>
 
-<!-- IMPORTANTE: la imagen debe llamarse ruler.png -->
 <img id="ruler" src="ruler.png">
 
 <script>
+
 let player=document.getElementById("player");
 let game=document.getElementById("game");
+
 let score=0;
+let lives=3;
 let speed=2;
-let rageActive=false;
+let active=true;
 
-function createCoin(){
-  let coin=document.createElement("div");
-  coin.className="coin";
-  coin.style.left=Math.random()*90+"%";
-  coin.style.animationDuration=speed+"s";
-  game.appendChild(coin);
+let pos=window.innerWidth/2;
 
-  let check=setInterval(()=>{
-    let c=coin.getBoundingClientRect();
-    let p=player.getBoundingClientRect();
-
-    if(c.bottom>=p.top && c.left<p.right && c.right>p.left){
-      score++;
-      document.getElementById("score").innerText=score;
-      coin.remove();
-      clearInterval(check);
-    }
-  },20);
-
-  setTimeout(()=>coin.remove(),5000);
+function updateUI(){
+scoreEl.innerText=score;
+livesEl.innerText=lives;
 }
 
-setInterval(createCoin,800);
+let scoreEl=document.getElementById("score");
+let livesEl=document.getElementById("lives");
+
+/* MOVEMENT */
+
+function moveLeft(){
+pos-=80;
+updatePos();
+}
+
+function moveCenter(){
+pos=window.innerWidth/2;
+updatePos();
+}
+
+function moveRight(){
+pos+=80;
+updatePos();
+}
+
+function updatePos(){
+if(pos<0)pos=0;
+if(pos>window.innerWidth-120)pos=window.innerWidth-120;
+player.style.left=pos+"px";
+}
+
+document.addEventListener("keydown",(e)=>{
+
+if(e.key==="ArrowLeft"||e.key==="l") moveLeft();
+if(e.key==="ArrowRight"||e.key==="r") moveRight();
+if(e.key==="c") moveCenter();
+
+});
+
+/* SPAWN */
+
+function spawn(type="coin"){
+
+if(!active) return;
+
+let obj=document.createElement("div");
+
+if(type==="coin") obj.className="coin";
+if(type==="diamond") obj.className="diamond";
+if(type==="meteor") obj.className="meteor";
+
+obj.style.left=Math.random()*(window.innerWidth-30)+"px";
+obj.style.animationDuration=speed+"s";
+
+game.appendChild(obj);
+
+let check=setInterval(()=>{
+
+let o=obj.getBoundingClientRect();
+let p=player.getBoundingClientRect();
+
+if(o.bottom>=p.top && o.left<p.right && o.right>p.left){
+
+if(type==="coin") score+=1;
+if(type==="diamond") score+=5;
+if(type==="meteor") lives--;
+
+updateUI();
+obj.remove();
+clearInterval(check);
+
+if(lives<=0) gameOver();
+
+}
+
+if(o.top>450){
+
+if(type!=="meteor") lives--;
+updateUI();
+
+obj.remove();
+clearInterval(check);
+
+if(lives<=0) gameOver();
+
+}
+
+},20);
+
+}
+
+/* LOOP */
+
+setInterval(()=>spawn("coin"),1200);
+
+/* EVENTS */
+
+function megaRain(){
+for(let i=0;i<30;i++) spawn("coin");
+}
+
+function diamondRain(){
+for(let i=0;i<20;i++) spawn("diamond");
+}
+
+function meteorShower(){
+for(let i=0;i<15;i++) spawn("meteor");
+}
+
+function clearCoins(){
+document.querySelectorAll(".coin,.diamond,.meteor").forEach(e=>e.remove());
+}
+
+function turbo(){
+speed=0.7;
+setTimeout(()=>speed=2,5000);
+}
+
+function addLife(){
+lives++;
+updateUI();
+}
+
+/* RAGE EVENT */
 
 function rageEvent(){
-  if(rageActive) return;
-  rageActive=true;
 
-  let overlay=document.getElementById("rageOverlay");
-  let ruler=document.getElementById("ruler");
+let overlay=document.getElementById("rageOverlay");
+let ruler=document.getElementById("ruler");
 
-  overlay.style.display="flex";
-  ruler.style.display="block";
-  ruler.classList.add("rise");
+overlay.style.display="flex";
+ruler.style.display="block";
+ruler.classList.add("rise");
 
-  speed=0.5;
+speed=0.5;
 
-  let rain=setInterval(()=>{
-    for(let i=0;i<5;i++) createCoin();
-  },200);
+megaRain();
 
-  setTimeout(()=>{
-    overlay.style.display="none";
-    ruler.style.display="none";
-    ruler.classList.remove("rise");
-    speed=2;
-    clearInterval(rain);
-    rageActive=false;
-  },5000);
+setTimeout(()=>{
+
+overlay.style.display="none";
+ruler.style.display="none";
+ruler.classList.remove("rise");
+speed=2;
+
+},4000);
+
 }
+
+/* GAME OVER */
+
+function gameOver(){
+active=false;
+document.getElementById("gameOver").style.display="flex";
+}
+
 </script>
 
 </body>
