@@ -2,7 +2,7 @@
 <html lang="es">
 <head>
 <meta charset="UTF-8">
-<title>Atrapa la Moneda</title>
+<title>Atrapa la Moneda PRO</title>
 
 <style>
 body{
@@ -14,9 +14,15 @@ body{
 }
 
 h1{color:#00ffcc;}
-
 #moneda{font-size:80px;margin:20px;}
 .info{font-size:20px;margin:10px;}
+
+input,button{
+  margin:5px;
+  padding:6px;
+  border:none;
+  border-radius:6px;
+}
 
 /* LOGIN */
 #loginBox{
@@ -30,40 +36,49 @@ h1{color:#00ffcc;}
   border:2px solid #00ffcc;
 }
 
-input{
-  margin:5px;
-  padding:5px;
-  border:none;
-  border-radius:5px;
+/* PANEL */
+#panelBtn{
+  position:fixed;
+  top:10px;
+  right:10px;
+  background:#ff00ff;
+  display:none;
+}
+
+#panel{
+  position:fixed;
+  top:50%;
+  left:50%;
+  transform:translate(-50%,-50%);
+  background:#111;
+  padding:20px;
+  border-radius:10px;
+  display:none;
 }
 
 /* CHAT */
-#chatContainer{
+#chat{
   position:fixed;
   bottom:10px;
   right:10px;
-  width:250px;
-  max-height:300px;
+  width:240px;
   background:#111;
   border:1px solid #00ffcc;
-  border-radius:10px;
+  border-radius:8px;
   padding:5px;
-  display:flex;
-  flex-direction:column;
 }
 
-#chatMessages{
-  flex:1;
+#messages{
+  height:120px;
   overflow-y:auto;
-  font-size:14px;
+  font-size:13px;
 }
-
 </style>
 </head>
 
 <body>
 
-<h1>🎮 ATRAPA LA MONEDA</h1>
+<h1>🎮 ATRAPA LA MONEDA PRO</h1>
 
 <div id="loginBox">
   <h3>Login</h3>
@@ -72,159 +87,158 @@ input{
   <button onclick="login()">Entrar</button>
 </div>
 
+<button id="panelBtn" onclick="togglePanel()">PANEL</button>
+
+<div id="panel">
+  <h3>Panel</h3>
+  <div id="panelContent"></div>
+  <button onclick="togglePanel()">Cerrar</button>
+</div>
+
 <h2 id="moneda">?</h2>
 <p>Presiona L, C o R</p>
 <div class="info" id="stats"></div>
 
-<!-- CHAT -->
-<div id="chatContainer">
-  <div id="chatMessages"></div>
-  <input id="chatInput" placeholder="Escribe..." />
+<div id="chat">
+  <div id="messages"></div>
+  <input id="input" placeholder="Escribe..." />
 </div>
 
 <script>
 
 // ===== USUARIOS =====
 const users = {
-  owner:{pass:"1234", role:"owner"},
-  admin:{pass:"1234", role:"admin"},
-  tester:{pass:"1234", role:"tester"},
-  player:{pass:"1234", role:"player"}
+  owner:{pass:"1234",role:"owner"},
+  admin:{pass:"1234",role:"admin"},
+  tester:{pass:"1234",role:"tester"},
+  player:{pass:"1234",role:"player"}
 };
 
-let currentRole = "player";
+let role="player";
 
 // ===== LOGIN =====
 function login(){
-  const u = document.getElementById("user").value;
-  const p = document.getElementById("pass").value;
+  const u=user.value;
+  const p=pass.value;
 
-  if(users[u] && users[u].pass === p){
-    currentRole = users[u].role;
-    document.getElementById("loginBox").style.display = "none";
-    addMessage("system","Logeado como "+currentRole);
+  if(users[u] && users[u].pass===p){
+    role=users[u].role;
+    loginBox.style.display="none";
+    panelBtn.style.display="block";
+    addMsg("[SYS] Logeado como "+role);
+    buildPanel();
   }else{
     alert("Error");
   }
 }
 
-// ===== JUEGO (MISMO) =====
-let pesos=0, vidas=5, record=parseInt(localStorage.getItem("record"))||0;
+// ===== PANEL =====
+function togglePanel(){
+  panel.style.display = panel.style.display==="block" ? "none" : "block";
+}
+
+function buildPanel(){
+  panelContent.innerHTML="";
+
+  if(role==="owner"){
+    addBtn("Vida infinita", ()=>{vidas=9999;update();});
+    addBtn("+20 monedas", ()=>{pesos+=20;update();});
+  }
+
+  if(role==="admin" || role==="owner"){
+    addBtn("+10 monedas", ()=>{pesos+=10;update();});
+  }
+
+  if(role==="tester"){
+    addBtn("Test", ()=>{addMsg("[SYS] Test OK");});
+  }
+}
+
+function addBtn(text,action){
+  const b=document.createElement("button");
+  b.textContent=text;
+  b.onclick=action;
+  panelContent.appendChild(b);
+}
+
+// ===== JUEGO =====
+let pesos=0,vidas=5,record=parseInt(localStorage.getItem("record"))||0;
 let secuencia=["R","L","C","L","R","C","R"];
-let indice=0, monedaActual="", velocidad=1500, intervalo;
+let i=0,actual="",vel=1500,loop;
 
-const monedaEl=document.getElementById("moneda");
-const statsEl=document.getElementById("stats");
-
-function actualizarStats(){
-  statsEl.innerText=`Pesos:${pesos} | Vidas:${vidas} | Record:${record}`;
+function nueva(){
+  actual=secuencia[i];
+  moneda.textContent=actual;
+  i=(i+1)%secuencia.length;
 }
 
-function nuevaMoneda(){
-  monedaActual=secuencia[indice];
-  monedaEl.innerText=monedaActual;
-  indice=(indice+1)%secuencia.length;
+function update(){
+  stats.textContent=`Pesos:${pesos} | Vidas:${vidas} | Record:${record}`;
 }
 
-function tiempoAgotado(){
-  vidas--;
-  actualizarStats();
-  if(vidas<=0) gameOver();
-  nuevaMoneda();
-}
-
-function gameOver(){
-  clearInterval(intervalo);
+function over(){
+  clearInterval(loop);
   if(pesos>record){
     record=pesos;
     localStorage.setItem("record",record);
   }
   alert("GAME OVER");
-  resetGame();
+  start();
 }
 
-function resetGame(){
-  pesos=0; vidas=5; velocidad=1500; indice=0;
-  actualizarStats();
-  nuevaMoneda();
-  clearInterval(intervalo);
-  intervalo=setInterval(tiempoAgotado,velocidad);
+function tick(){
+  vidas--;
+  update();
+  if(vidas<=0) return over();
+  nueva();
 }
 
-document.addEventListener("keydown",function(e){
-  const key=e.key.toUpperCase();
-  if(!["L","C","R"].includes(key)) return;
+function start(){
+  pesos=0;vidas=5;vel=1500;i=0;
+  update(); nueva();
+  clearInterval(loop);
+  loop=setInterval(tick,vel);
+}
 
-  if(key===monedaActual){
+document.addEventListener("keydown",e=>{
+  const k=e.key.toUpperCase();
+  if(!["L","C","R"].includes(k)) return;
+
+  if(k===actual){
     pesos++;
-    velocidad=Math.max(500,velocidad-50);
-    clearInterval(intervalo);
-    intervalo=setInterval(tiempoAgotado,velocidad);
+    vel=Math.max(500,vel-50);
+    clearInterval(loop);
+    loop=setInterval(tick,vel);
   }else{
     vidas--;
   }
 
-  actualizarStats();
-  if(vidas<=0) gameOver();
-  nuevaMoneda();
+  update();
+  if(vidas<=0) return over();
+  nueva();
 });
 
-resetGame();
+start();
 
-// ===== CHAT + COMANDOS =====
-const chatInput=document.getElementById("chatInput");
-const chatMessages=document.getElementById("chatMessages");
-
-chatInput.addEventListener("keydown",function(e){
+// ===== CHAT =====
+input.addEventListener("keydown",e=>{
   if(e.key==="Enter"){
-    const text=chatInput.value.trim();
-    if(!text) return;
-
-    // comandos
-    if(text.startsWith("/")){
-      ejecutarComando(text);
-    }else{
-      addMessage("user",text);
-    }
-
-    chatInput.value="";
+    if(!input.value.trim()) return;
+    addMsg("Jugador: "+input.value);
+    input.value="";
   }
 });
 
-function addMessage(type,text){
-  const div=document.createElement("div");
-  div.innerText=(type==="system"?"[SYS] ":"")+text;
-  chatMessages.appendChild(div);
+function addMsg(t){
+  const d=document.createElement("div");
+  d.textContent=t;
+  messages.appendChild(d);
 
-  if(chatMessages.children.length>20){
-    chatMessages.removeChild(chatMessages.firstChild);
+  if(messages.children.length>20){
+    messages.removeChild(messages.firstChild);
   }
 
-  chatMessages.scrollTop=chatMessages.scrollHeight;
-}
-
-// ===== COMANDOS SEGÚN RANGO =====
-function ejecutarComando(cmd){
-
-  if(cmd==="/coins" && (currentRole==="admin"||currentRole==="owner")){
-    pesos+=10;
-    actualizarStats();
-    addMessage("system","+10 monedas");
-  }
-
-  else if(cmd==="/vida" && currentRole==="owner"){
-    vidas=9999;
-    actualizarStats();
-    addMessage("system","Vida infinita");
-  }
-
-  else if(cmd==="/test" && currentRole==="tester"){
-    addMessage("system","Comando tester OK");
-  }
-
-  else{
-    addMessage("system","No tienes permiso");
-  }
+  messages.scrollTop=messages.scrollHeight;
 }
 
 </script>
