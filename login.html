@@ -12,7 +12,6 @@ body{
   font-family:Arial;
   text-align:center;
 }
-
 .box{
   position:absolute;
   top:50%;
@@ -22,21 +21,16 @@ body{
   padding:20px;
   border-radius:10px;
   border:2px solid #00ffcc;
-  width:260px;
 }
-
 input,button{
   margin:6px;
   padding:6px;
   border:none;
   border-radius:6px;
-  width:90%;
 }
-
 button{
   background:#00ffcc;
   cursor:pointer;
-  font-weight:bold;
 }
 </style>
 </head>
@@ -50,8 +44,8 @@ button{
 
   <hr>
 
-  <input id="user" placeholder="usuario">
-  <input id="pass" type="password" placeholder="contraseña">
+  <input id="user" placeholder="usuario"><br>
+  <input id="pass" type="password" placeholder="contraseña"><br>
 
   <button onclick="login()">Login</button>
 </div>
@@ -70,11 +64,11 @@ function enterPlayer(){
 }
 
 function login(){
-  const u = user.value.trim();
-  const p = pass.value.trim();
+  const userInput = document.getElementById("user").value.trim();
+  const passInput = document.getElementById("pass").value.trim();
 
-  if(users[u] && users[u].pass === p){
-    localStorage.setItem("role", users[u].role);
+  if(users[userInput] && users[userInput].pass === passInput){
+    localStorage.setItem("role", users[userInput].role);
     localStorage.setItem("logged","true");
     location.href="index.html";
   }else{
