@@ -2,7 +2,7 @@
 <html lang="es">
 <head>
 <meta charset="UTF-8">
-<title>Atrapa la Moneda</title>
+<title>Atrapa la Moneda + Panel</title>
 
 <style>
 body{
@@ -16,6 +16,7 @@ h1{color:#00ffcc;}
 #moneda{font-size:80px;margin:20px;}
 .info{font-size:20px;}
 
+/* CHAT */
 #chat{
   position:fixed;
   bottom:10px;
@@ -26,14 +27,34 @@ h1{color:#00ffcc;}
   border-radius:10px;
   padding:5px;
 }
-#messages{
-  height:140px;
-  overflow-y:auto;
+#messages{height:140px;overflow-y:auto;}
+#chatInput{width:90%;padding:5px;}
+
+/* PANEL */
+#panelBtn{
+  position:fixed;
+  top:10px;
+  right:10px;
+  background:#00ffcc;
+  border:none;
+  padding:8px;
+  border-radius:6px;
+  cursor:pointer;
+  display:none;
 }
-#chatInput{
-  width:90%;
-  padding:5px;
+
+#panel{
+  position:fixed;
+  top:50%;
+  left:50%;
+  transform:translate(-50%,-50%);
+  background:#111;
+  border:2px solid #00ffcc;
+  padding:20px;
+  border-radius:10px;
+  display:none;
 }
+button{margin:5px;padding:6px;}
 </style>
 </head>
 
@@ -46,6 +67,18 @@ h1{color:#00ffcc;}
 
 <div class="info" id="stats"></div>
 
+<!-- BOTÓN PANEL -->
+<button id="panelBtn">Panel</button>
+
+<!-- PANEL -->
+<div id="panel">
+  <h3>⚙ Panel</h3>
+  <button onclick="addLives()">+5 vidas</button>
+  <button onclick="resetGame()">Reset</button>
+  <button onclick="closePanel()">Cerrar</button>
+</div>
+
+<!-- CHAT -->
 <div id="chat">
   <div id="messages"></div>
   <input id="chatInput" placeholder="Escribe...">
@@ -53,12 +86,11 @@ h1{color:#00ffcc;}
 
 <script>
 
-// 🔒 BLOQUEO LOGIN
+// 🔒 LOGIN
 if(localStorage.getItem("logged") !== "true"){
   location.href = "login.html";
 }
 
-// RANGO
 let role = localStorage.getItem("role") || "player";
 localStorage.removeItem("logged");
 
@@ -67,13 +99,19 @@ const moneda = document.getElementById("moneda");
 const stats = document.getElementById("stats");
 const input = document.getElementById("chatInput");
 const messages = document.getElementById("messages");
+const panelBtn = document.getElementById("panelBtn");
+const panel = document.getElementById("panel");
+
+// 👉 SOLO ADMIN / OWNER VEN PANEL
+if(role === "owner" || role === "admin"){
+  panelBtn.style.display = "block";
+}
 
 // JUEGO
 let pesos=0, vidas=5, record=parseInt(localStorage.getItem("record"))||0;
 
-// 👉 DIFERENCIAS DE RANGO
-if(role === "owner"){ vidas = 999; }
-if(role === "admin"){ vidas = 10; }
+if(role==="owner") vidas=999;
+if(role==="admin") vidas=10;
 
 let secuencia=["R","L","C","L","R","C","R"];
 let i=0, actual="", vel=1500, loop;
@@ -85,25 +123,12 @@ function nueva(){
 }
 
 function update(){
-  let color="white";
-
-  if(role==="owner") color="violet";
-  if(role==="admin") color="red";
-  if(role==="tester") color="cyan";
-
-  stats.innerHTML = `
-    Pesos:${pesos} | Vidas:${vidas} | Record:${record} 
-    | <span style="color:${color}">Rango:${role}</span>
-  `;
+  stats.innerHTML=`Pesos:${pesos} | Vidas:${vidas} | Rango:${role}`;
 }
 
 function over(){
   clearInterval(loop);
-  if(pesos>record){
-    record=pesos;
-    localStorage.setItem("record",record);
-  }
-  alert("GAME OVER\nPuntaje: "+pesos);
+  alert("GAME OVER");
   start();
 }
 
@@ -115,7 +140,8 @@ function tick(){
 }
 
 function start(){
-  pesos=0; vidas=(role==="owner"?999:(role==="admin"?10:5));
+  pesos=0;
+  vidas=(role==="owner"?999:(role==="admin"?10:5));
   vel=1500; i=0;
   update(); nueva();
   clearInterval(loop);
@@ -142,11 +168,26 @@ document.addEventListener("keydown",e=>{
 
 start();
 
-// CHAT
+// ===== PANEL =====
+panelBtn.onclick = ()=> panel.style.display="block";
+
+function closePanel(){
+  panel.style.display="none";
+}
+
+function addLives(){
+  vidas += 5;
+  update();
+}
+
+function resetGame(){
+  start();
+}
+
+// ===== CHAT =====
 input.addEventListener("keydown",e=>{
   if(e.key==="Enter"){
     if(!input.value.trim()) return;
-
     addMsg("[" + role + "] " + input.value);
     input.value="";
   }
@@ -156,11 +197,6 @@ function addMsg(t){
   const d=document.createElement("div");
   d.textContent=t;
   messages.appendChild(d);
-
-  if(messages.children.length>20){
-    messages.removeChild(messages.firstChild);
-  }
-
   messages.scrollTop=messages.scrollHeight;
 }
 
