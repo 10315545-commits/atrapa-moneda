@@ -22,6 +22,7 @@ body{
   padding:20px;
   border-radius:10px;
   border:2px solid #00ffcc;
+  width:260px;
 }
 
 input,button{
@@ -29,6 +30,13 @@ input,button{
   padding:6px;
   border:none;
   border-radius:6px;
+  width:90%;
+}
+
+button{
+  background:#00ffcc;
+  cursor:pointer;
+  font-weight:bold;
 }
 </style>
 </head>
@@ -36,15 +44,15 @@ input,button{
 <body>
 
 <div class="box">
-  <h2>🎮 Entrar</h2>
+  <h2>🎮 LOGIN</h2>
 
   <button onclick="enterPlayer()">Entrar como Player</button>
 
   <hr>
 
-  <h3>Staff</h3>
-  <input id="user" placeholder="usuario"><br>
-  <input id="pass" type="password" placeholder="contraseña"><br>
+  <input id="user" placeholder="usuario">
+  <input id="pass" type="password" placeholder="contraseña">
+
   <button onclick="login()">Login</button>
 </div>
 
@@ -57,6 +65,7 @@ const users = {
 
 function enterPlayer(){
   localStorage.setItem("role","player");
+  localStorage.setItem("logged","true");
   location.href="index.html";
 }
 
@@ -66,9 +75,10 @@ function login(){
 
   if(users[u] && users[u].pass === p){
     localStorage.setItem("role", users[u].role);
+    localStorage.setItem("logged","true");
     location.href="index.html";
   }else{
-    alert("Error");
+    alert("Usuario o contraseña incorrectos");
   }
 }
 </script>
