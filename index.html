@@ -2,7 +2,7 @@
 <html lang="es">
 <head>
 <meta charset="UTF-8">
-<title>Atrapa la Moneda + Chat</title>
+<title>Atrapa la Moneda</title>
 
 <style>
 body{
@@ -12,21 +12,9 @@ body{
   font-family:Arial;
   text-align:center;
 }
-
-h1{
-  color:#00ffcc;
-}
-
-#moneda{
-  font-size:80px;
-  margin:20px;
-}
-
-.info{
-  font-size:20px;
-}
-
-/* CHAT */
+h1{color:#00ffcc;}
+#moneda{font-size:80px;margin:20px;}
+.info{font-size:20px;}
 #chat{
   position:fixed;
   bottom:10px;
@@ -37,16 +25,13 @@ h1{
   border-radius:10px;
   padding:5px;
 }
-
 #messages{
   height:140px;
   overflow-y:auto;
 }
-
-input{
+#chatInput{
   width:90%;
   padding:5px;
-  margin-top:5px;
 }
 </style>
 </head>
@@ -62,23 +47,26 @@ input{
 
 <div id="chat">
   <div id="messages"></div>
-  <input id="input" placeholder="Escribe...">
+  <input id="chatInput" placeholder="Escribe...">
 </div>
 
 <script>
 
-// 🔒 BLOQUEO SI NO VIENE DEL LOGIN
+// 🔒 PROTECCIÓN LOGIN
 if(localStorage.getItem("logged") !== "true"){
   location.href = "login.html";
 }
 
-// obtener rango
 let role = localStorage.getItem("role") || "player";
-
-// limpiar bandera
 localStorage.removeItem("logged");
 
-// ===== JUEGO =====
+// ELEMENTOS
+const moneda = document.getElementById("moneda");
+const stats = document.getElementById("stats");
+const input = document.getElementById("chatInput");
+const messages = document.getElementById("messages");
+
+// JUEGO
 let pesos=0, vidas=5, record=parseInt(localStorage.getItem("record"))||0;
 let secuencia=["R","L","C","L","R","C","R"];
 let i=0, actual="", vel=1500, loop;
@@ -137,7 +125,7 @@ document.addEventListener("keydown",e=>{
 
 start();
 
-// ===== CHAT =====
+// CHAT
 input.addEventListener("keydown",e=>{
   if(e.key==="Enter"){
     if(!input.value.trim()) return;
