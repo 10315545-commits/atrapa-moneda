@@ -1,8 +1,8 @@
 <!DOCTYPE html>
-<html>
+<html lang="es">
 <head>
 <meta charset="UTF-8">
-<title>Atrapa la Moneda - Lite</title>
+<title>Atrapa la Moneda Lite</title>
 
 <style>
 body{
@@ -23,8 +23,8 @@ h1{
 }
 
 .info{
-  margin:10px;
   font-size:18px;
+  margin:10px;
 }
 
 /* CHAT */
@@ -32,7 +32,7 @@ h1{
   position:fixed;
   bottom:10px;
   right:10px;
-  width:230px;
+  width:240px;
   background:#111;
   border:1px solid #00ffcc;
   border-radius:8px;
@@ -48,9 +48,10 @@ h1{
 
 #input{
   width:100%;
-  padding:4px;
+  padding:5px;
   border:none;
   border-radius:5px;
+  outline:none;
 }
 </style>
 </head>
@@ -70,8 +71,7 @@ h1{
 </div>
 
 <script>
-
-/* -------- JUEGO -------- */
+// ===== JUEGO =====
 let monedas = 0;
 let vidas = 5;
 let record = parseInt(localStorage.getItem("record")) || 0;
@@ -80,15 +80,18 @@ const opciones = ["L","C","R"];
 let actual = "";
 
 const monedaEl = document.getElementById("moneda");
-const stats = document.getElementById("stats");
+const statsEl = document.getElementById("stats");
 
-function nueva(){
+function nuevaMoneda(){
   actual = opciones[Math.floor(Math.random()*3)];
   monedaEl.textContent = actual;
 }
 
-function update(){
-  stats.textContent = `Monedas: ${monedas} | Vidas: ${vidas} | Record: ${record}`;
+function actualizar(){
+  statsEl.textContent =
+    "Monedas: " + monedas +
+    " | Vidas: " + vidas +
+    " | Record: " + record;
 }
 
 function gameOver(){
@@ -99,54 +102,56 @@ function gameOver(){
   alert("GAME OVER");
   monedas = 0;
   vidas = 5;
-  nueva();
-  update();
+  nuevaMoneda();
+  actualizar();
 }
 
-document.addEventListener("keydown", e=>{
+document.addEventListener("keydown", function(e){
   const key = e.key.toUpperCase();
+
   if(!opciones.includes(key)) return;
 
   if(key === actual){
     monedas++;
-  }else{
+  } else {
     vidas--;
   }
 
   if(vidas <= 0){
     gameOver();
+  } else {
+    nuevaMoneda();
+    actualizar();
   }
-
-  nueva();
-  update();
 });
 
-nueva();
-update();
+// iniciar
+nuevaMoneda();
+actualizar();
 
-/* -------- CHAT -------- */
+// ===== CHAT =====
 const input = document.getElementById("input");
 const messages = document.getElementById("messages");
 
-input.addEventListener("keydown", e=>{
+input.addEventListener("keydown", function(e){
   if(e.key === "Enter"){
-    if(!input.value.trim()) return;
+    const texto = input.value.trim();
+    if(texto === "") return;
 
-    const div = document.createElement("div");
-    div.textContent = "Jugador: " + input.value;
+    const msg = document.createElement("div");
+    msg.textContent = "Jugador: " + texto;
 
-    messages.appendChild(div);
-    messages.scrollTop = messages.scrollHeight;
+    messages.appendChild(msg);
 
-    // Limitar mensajes (optimización)
+    // Limitar mensajes (evita lag)
     if(messages.children.length > 15){
       messages.removeChild(messages.firstChild);
     }
 
+    messages.scrollTop = messages.scrollHeight;
     input.value = "";
   }
 });
-
 </script>
 
 </body>
