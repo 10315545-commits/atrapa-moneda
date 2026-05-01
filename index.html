@@ -1,407 +1,47 @@
 <!DOCTYPE html>
-<html>
+<html lang="es">
 <head>
-<meta charset="UTF-8">
-<title>OWNER ARCADE</title>
-
-<style>
-
-body{
-margin:0;
-background:#0b0f1a;
-color:white;
-font-family:Arial;
-text-align:center;
-overflow:hidden;
-}
-
-h1{color:#00f7ff;}
-
-#game{
-position:relative;
-width:100%;
-height:450px;
-border-top:3px solid cyan;
-overflow:hidden;
-}
-
-#player{
-position:absolute;
-bottom:20px;
-left:50%;
-transform:translateX(-50%);
-width:120px;
-height:20px;
-background:#00f7ff;
-border-radius:20px;
-}
-
-.coin,.diamond,.meteor{
-position:absolute;
-border-radius:50%;
-animation:fall linear forwards;
-}
-
-.coin{
-width:25px;
-height:25px;
-background:gold;
-}
-
-.diamond{
-width:22px;
-height:22px;
-background:#00f7ff;
-}
-
-.meteor{
-width:28px;
-height:28px;
-background:red;
-}
-
-@keyframes fall{
-from{top:-40px;}
-to{top:480px;}
-}
-
-/* CONTROLES */
-
-#controls{
-position:fixed;
-bottom:10px;
-width:100%;
-}
-
-#controls button{
-font-size:20px;
-padding:10px 25px;
-margin:5px;
-}
-
-/* ADMIN */
-
-#admin{
-position:fixed;
-right:10px;
-top:100px;
-background:#111;
-border:2px solid cyan;
-padding:10px;
-width:180px;
-display:none;
-}
-
-/* LOGIN */
-
-#login{
-position:fixed;
-width:100%;
-height:100%;
-background:black;
-display:flex;
-flex-direction:column;
-justify-content:center;
-align-items:center;
-z-index:500;
-}
-
-#login input{
-padding:10px;
-font-size:18px;
-}
-
-#login button{
-padding:10px;
-margin-top:10px;
-}
-
-/* RAGE */
-
-#rageOverlay{
-position:fixed;
-width:100%;
-height:100%;
-background:rgba(255,0,0,0.85);
-display:none;
-justify-content:center;
-align-items:center;
-font-size:60px;
-z-index:50;
-}
-
-#ruler{
-position:fixed;
-bottom:-400px;
-left:50%;
-transform:translateX(-50%);
-width:300px;
-display:none;
-z-index:60;
-}
-
-.rise{
-animation:rise 1s forwards;
-}
-
-@keyframes rise{
-from{bottom:-400px;}
-to{bottom:0;}
-}
-
-/* GAME OVER */
-
-#gameOver{
-position:fixed;
-width:100%;
-height:100%;
-background:black;
-display:none;
-flex-direction:column;
-justify-content:center;
-align-items:center;
-font-size:60px;
-color:red;
-z-index:300;
-}
-
-#gameOver button{
-padding:10px 20px;
-font-size:20px;
-margin-top:20px;
-}
-
-</style>
+  <meta charset="UTF-8">
+  <title>Atrapa la Moneda con Flechas</title>
 </head>
+<body style="text-align:center; font-family:Arial;">
 
-<body>
-
-<div id="login">
-<h2>ADMIN LOGIN</h2>
-<input type="password" id="pass" placeholder="password">
-<button onclick="login()">Entrar</button>
-</div>
-
-<h1>👑 OWNER ARCADE</h1>
-
-<h2>
-Score: <span id="score">0</span> |
-Lives: <span id="lives">3</span>
-</h2>
-
-<div id="game">
-<div id="player"></div>
-</div>
-
-<div id="controls">
-<button onclick="moveLeft()">L</button>
-<button onclick="moveCenter()">C</button>
-<button onclick="moveRight()">R</button>
-</div>
-
-<div id="admin">
-
-<h3>ADMIN</h3>
-
-<button onclick="megaRain()">Mega Rain</button>
-<button onclick="diamondRain()">Diamond Rain</button>
-<button onclick="meteorShower()">Meteor Shower</button>
-<button onclick="rageEvent()">Boss Rage</button>
-<button onclick="clearCoins()">Clear Coins</button>
-<button onclick="turbo()">Turbo</button>
-<button onclick="addLife()">+Life</button>
-<button onclick="toggleInfiniteLife()">∞ Vida Infinita</button>
-
-</div>
-
-<div id="rageOverlay">U MAD?!</div>
-
-<div id="gameOver">
-<div>💀 PERDISTE 💀</div>
-<button onclick="location.reload()">REINICIAR</button>
-</div>
-
-<img id="ruler" src="ruler.png">
+<h1>Atrapa la Moneda 🪙</h1>
+<p>Presiona cualquier flecha (↑ ↓ ← →) para atraparla</p>
+<p id="estado">Esperando...</p>
 
 <script>
+let cayendo = false;
+let tiempoInicio;
 
-let score=0;
-let lives=3;
-let speed=2;
-let active=true;
-let infiniteLife=false;
-
-let player=document.getElementById("player");
-let game=document.getElementById("game");
-
-let pos=window.innerWidth/2;
-
-function updateUI(){
-document.getElementById("score").innerText=score;
-document.getElementById("lives").innerText=lives;
+function soltarMoneda() {
+    document.getElementById("estado").innerText = "¡Cayó la moneda!";
+    cayendo = true;
+    tiempoInicio = Date.now();
 }
 
-/* LOGIN */
+// tiempo aleatorio
+setTimeout(soltarMoneda, Math.random() * 3000 + 2000);
 
-function login(){
+document.addEventListener("keydown", function(event) {
+    const flechas = ["ArrowUp", "ArrowDown", "ArrowLeft", "ArrowRight"];
 
-let p=document.getElementById("pass").value;
+    if (flechas.includes(event.code)) {
+        if (cayendo) {
+            let tiempoReaccion = Date.now() - tiempoInicio;
 
-if(p==="owner123"){
-document.getElementById("admin").style.display="block";
-}
+            if (tiempoReaccion < 300) {
+                document.getElementById("estado").innerText = "¡La atrapaste! 😎";
+            } else {
+                document.getElementById("estado").innerText = "Muy lento 😅";
+            }
 
-document.getElementById("login").style.display="none";
-
-}
-
-/* MOVIMIENTO */
-
-function moveLeft(){pos-=80;updatePos();}
-function moveCenter(){pos=window.innerWidth/2;updatePos();}
-function moveRight(){pos+=80;updatePos();}
-
-function updatePos(){
-
-if(pos<0)pos=0;
-if(pos>window.innerWidth-120)pos=window.innerWidth-120;
-
-player.style.left=pos+"px";
-
-}
-
-document.addEventListener("keydown",(e)=>{
-
-if(e.key==="ArrowLeft"||e.key==="l") moveLeft();
-if(e.key==="ArrowRight"||e.key==="r") moveRight();
-if(e.key==="c") moveCenter();
-
+            cayendo = false;
+        } else {
+            document.getElementById("estado").innerText = "Te adelantaste 😂";
+        }
+    }
 });
-
-/* SPAWN */
-
-function spawn(type="coin"){
-
-if(!active) return;
-
-let obj=document.createElement("div");
-
-obj.className=type;
-
-obj.style.left=Math.random()*(window.innerWidth-30)+"px";
-obj.style.animationDuration=speed+"s";
-
-game.appendChild(obj);
-
-let check=setInterval(()=>{
-
-let o=obj.getBoundingClientRect();
-let p=player.getBoundingClientRect();
-
-if(o.bottom>=p.top && o.left<p.right && o.right>p.left){
-
-if(type==="coin") score++;
-if(type==="diamond") score+=5;
-
-if(type==="meteor" && !infiniteLife) lives--;
-
-updateUI();
-
-obj.remove();
-clearInterval(check);
-
-if(lives<=0) gameOver();
-
-}
-
-if(o.top>450){
-
-if(type!=="meteor" && !infiniteLife) lives--;
-
-updateUI();
-
-obj.remove();
-clearInterval(check);
-
-if(lives<=0) gameOver();
-
-}
-
-},20);
-
-}
-
-setInterval(()=>spawn("coin"),1200);
-
-/* EVENTOS */
-
-function megaRain(){for(let i=0;i<30;i++) spawn("coin");}
-function diamondRain(){for(let i=0;i<20;i++) spawn("diamond");}
-function meteorShower(){for(let i=0;i<15;i++) spawn("meteor");}
-
-function clearCoins(){
-document.querySelectorAll(".coin,.diamond,.meteor").forEach(e=>e.remove());
-}
-
-function turbo(){
-speed=0.7;
-setTimeout(()=>speed=2,5000);
-}
-
-function addLife(){
-lives++;
-updateUI();
-}
-
-/* VIDA INFINITA */
-
-function toggleInfiniteLife(){
-
-infiniteLife=!infiniteLife;
-
-if(infiniteLife){
-alert("∞ VIDA INFINITA ACTIVADA");
-}else{
-alert("Vida infinita desactivada");
-}
-
-}
-
-/* RAGE */
-
-function rageEvent(){
-
-let overlay=document.getElementById("rageOverlay");
-let ruler=document.getElementById("ruler");
-
-overlay.style.display="flex";
-ruler.style.display="block";
-ruler.classList.add("rise");
-
-speed=0.5;
-
-megaRain();
-
-setTimeout(()=>{
-
-overlay.style.display="none";
-ruler.style.display="none";
-ruler.classList.remove("rise");
-
-speed=2;
-
-},4000);
-
-}
-
-function gameOver(){
-
-active=false;
-
-document.getElementById("gameOver").style.display="flex";
-
-}
-
 </script>
 
 </body>
