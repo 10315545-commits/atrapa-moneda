@@ -2,7 +2,7 @@
 <html lang="es">
 <head>
 <meta charset="UTF-8">
-<title>Atrapa la Moneda PRO</title>
+<title>Atrapa la Moneda + Chat</title>
 
 <style>
 body{
@@ -13,47 +13,17 @@ body{
   text-align:center;
 }
 
-h1{color:#00ffcc;}
-#moneda{font-size:80px;margin:20px;}
-.info{font-size:20px;margin:10px;}
-
-input,button{
-  margin:5px;
-  padding:6px;
-  border:none;
-  border-radius:6px;
+h1{
+  color:#00ffcc;
 }
 
-/* LOGIN */
-#loginBox{
-  position:fixed;
-  top:50%;
-  left:50%;
-  transform:translate(-50%,-50%);
-  background:#111;
-  padding:20px;
-  border-radius:10px;
-  border:2px solid #00ffcc;
+#moneda{
+  font-size:80px;
+  margin:20px;
 }
 
-/* PANEL */
-#panelBtn{
-  position:fixed;
-  top:10px;
-  right:10px;
-  background:#ff00ff;
-  display:none;
-}
-
-#panel{
-  position:fixed;
-  top:50%;
-  left:50%;
-  transform:translate(-50%,-50%);
-  background:#111;
-  padding:20px;
-  border-radius:10px;
-  display:none;
+.info{
+  font-size:20px;
 }
 
 /* CHAT */
@@ -61,110 +31,57 @@ input,button{
   position:fixed;
   bottom:10px;
   right:10px;
-  width:240px;
+  width:250px;
   background:#111;
-  border:1px solid #00ffcc;
-  border-radius:8px;
+  border:2px solid #00ffcc;
+  border-radius:10px;
   padding:5px;
 }
 
 #messages{
-  height:120px;
+  height:140px;
   overflow-y:auto;
-  font-size:13px;
+}
+
+input{
+  width:90%;
+  padding:5px;
+  margin-top:5px;
 }
 </style>
 </head>
 
 <body>
 
-<h1>🎮 ATRAPA LA MONEDA PRO</h1>
-
-<div id="loginBox">
-  <h3>Login</h3>
-  <input id="user" placeholder="usuario"><br>
-  <input id="pass" type="password" placeholder="contraseña"><br>
-  <button onclick="login()">Entrar</button>
-</div>
-
-<button id="panelBtn" onclick="togglePanel()">PANEL</button>
-
-<div id="panel">
-  <h3>Panel</h3>
-  <div id="panelContent"></div>
-  <button onclick="togglePanel()">Cerrar</button>
-</div>
+<h1>🎮 ATRAPA LA MONEDA</h1>
 
 <h2 id="moneda">?</h2>
 <p>Presiona L, C o R</p>
+
 <div class="info" id="stats"></div>
 
 <div id="chat">
   <div id="messages"></div>
-  <input id="input" placeholder="Escribe..." />
+  <input id="input" placeholder="Escribe...">
 </div>
 
 <script>
 
-// ===== USUARIOS =====
-const users = {
-  owner:{pass:"1234",role:"owner"},
-  admin:{pass:"1234",role:"admin"},
-  tester:{pass:"1234",role:"tester"},
-  player:{pass:"1234",role:"player"}
-};
-
-let role="player";
-
-// ===== LOGIN =====
-function login(){
-  const u=user.value;
-  const p=pass.value;
-
-  if(users[u] && users[u].pass===p){
-    role=users[u].role;
-    loginBox.style.display="none";
-    panelBtn.style.display="block";
-    addMsg("[SYS] Logeado como "+role);
-    buildPanel();
-  }else{
-    alert("Error");
-  }
+// 🔒 BLOQUEO SI NO VIENE DEL LOGIN
+if(localStorage.getItem("logged") !== "true"){
+  location.href = "login.html";
 }
 
-// ===== PANEL =====
-function togglePanel(){
-  panel.style.display = panel.style.display==="block" ? "none" : "block";
-}
+// obtener rango
+let role = localStorage.getItem("role") || "player";
 
-function buildPanel(){
-  panelContent.innerHTML="";
-
-  if(role==="owner"){
-    addBtn("Vida infinita", ()=>{vidas=9999;update();});
-    addBtn("+20 monedas", ()=>{pesos+=20;update();});
-  }
-
-  if(role==="admin" || role==="owner"){
-    addBtn("+10 monedas", ()=>{pesos+=10;update();});
-  }
-
-  if(role==="tester"){
-    addBtn("Test", ()=>{addMsg("[SYS] Test OK");});
-  }
-}
-
-function addBtn(text,action){
-  const b=document.createElement("button");
-  b.textContent=text;
-  b.onclick=action;
-  panelContent.appendChild(b);
-}
+// limpiar bandera
+localStorage.removeItem("logged");
 
 // ===== JUEGO =====
-let pesos=0,vidas=5,record=parseInt(localStorage.getItem("record"))||0;
+let pesos=0, vidas=5, record=parseInt(localStorage.getItem("record"))||0;
 let secuencia=["R","L","C","L","R","C","R"];
-let i=0,actual="",vel=1500,loop;
+let i=0, actual="", vel=1500, loop;
 
 function nueva(){
   actual=secuencia[i];
@@ -173,7 +90,7 @@ function nueva(){
 }
 
 function update(){
-  stats.textContent=`Pesos:${pesos} | Vidas:${vidas} | Record:${record}`;
+  stats.textContent=`Pesos:${pesos} | Vidas:${vidas} | Record:${record} | Rango:${role}`;
 }
 
 function over(){
@@ -182,7 +99,7 @@ function over(){
     record=pesos;
     localStorage.setItem("record",record);
   }
-  alert("GAME OVER");
+  alert("GAME OVER\nPuntaje: "+pesos);
   start();
 }
 
@@ -194,7 +111,7 @@ function tick(){
 }
 
 function start(){
-  pesos=0;vidas=5;vel=1500;i=0;
+  pesos=0; vidas=5; vel=1500; i=0;
   update(); nueva();
   clearInterval(loop);
   loop=setInterval(tick,vel);
@@ -224,6 +141,7 @@ start();
 input.addEventListener("keydown",e=>{
   if(e.key==="Enter"){
     if(!input.value.trim()) return;
+
     addMsg("Jugador: "+input.value);
     input.value="";
   }
