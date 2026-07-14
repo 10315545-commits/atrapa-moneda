@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Atrapa la Moneda 🪙</title>
+    <title>Atrapa la Moneda Pro 🪙</title>
     <style>
         body {
             background-color: #020617;
@@ -19,6 +19,7 @@
         }
         .game-container {
             text-align: center;
+            position: relative;
         }
         .hud {
             display: flex;
@@ -36,9 +37,36 @@
             border: 4px solid #38bdf8;
             border-radius: 16px;
             box-shadow: 0 0 30px rgba(56, 189, 248, 0.2);
-            cursor: none; /* Esconde el mouse para usar solo la barra */
+            cursor: none;
         }
         .controls { margin-top: 10px; color: #64748b; font-size: 14px; }
+        
+        /* CONSOLA ADMIN MINI */
+        #admin-panel {
+            display: none;
+            position: absolute;
+            top: 60px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: rgba(9, 13, 22, 0.95);
+            border: 2px solid #22c55e;
+            padding: 12px;
+            border-radius: 8px;
+            width: 280px;
+            z-index: 10;
+            box-shadow: 0 0 20px rgba(34, 197, 94, 0.3);
+        }
+        #admin-input {
+            width: 90%;
+            background: #000;
+            border: 1px solid #22c55e;
+            color: #22c55e;
+            padding: 6px;
+            font-family: monospace;
+            border-radius: 4px;
+            outline: none;
+            text-align: center;
+        }
     </style>
 </head>
 <body>
@@ -51,8 +79,14 @@
         
         <canvas id="gameCanvas" width="440" height="540"></canvas>
         
+        <!-- PANEL DE ADMIN OCULTO -->
+        <div id="admin-panel">
+            <div style="color: #22c55e; font-size: 12px; margin-bottom: 6px; font-weight: bold;">CONSOLA CORE ADMIN</div>
+            <input type="text" id="admin-input" placeholder="Escribe comando..." autocomplete="off">
+        </div>
+
         <div class="controls">
-            Mueve el mouse de izquierda a derecha para jugar
+            Mueve el mouse lateralmente | Presiona la tecla <strong style="color: #22c55e;">Punto (.)</strong> para Admin
         </div>
     </div>
 
@@ -61,15 +95,18 @@
         const ctx = canvas.getContext('2d');
         const scoreEl = document.getElementById('score');
         const livesEl = document.getElementById('lives');
+        const adminPanel = document.getElementById('admin-panel');
+        const adminInput = document.getElementById('admin-input');
 
         let score = 0;
         let lives = 3;
         let particles = [];
+        let gameActive = true;
+        let godMode = false;
 
         const player = { x: 175, y: 480, width: 90, height: 24 };
         const coin = { x: 220, y: -30, radius: 14, speed: 4, angle: 0 };
 
-        // Sistema de chispas brillantes
         function createExplosion(x, y) {
             for (let i = 0; i < 12; i++) {
                 particles.push({
@@ -93,65 +130,107 @@
             }
         }
 
-        // Movimiento suave con el mouse
         canvas.addEventListener('mousemove', (e) => {
+            if (!gameActive) return;
             const rect = canvas.getBoundingClientRect();
             player.x = (e.clientX - rect.left) - player.width / 2;
             if (player.x < 0) player.x = 0;
             if (player.x > canvas.width - player.width) player.x = canvas.width - player.width;
         });
 
+        // DETECTOR DE TECLA PUNTO (.) PARA ABRIR LA CONSOLA
+        document.addEventListener('keydown', (e) => {
+            if (e.key === '.') {
+                e.preventDefault();
+                if (adminPanel.style.display === 'block') {
+                    adminPanel.style.display = 'none';
+                    gameActive = true;
+                } else {
+                    adminPanel.style.display = 'block';
+                    adminInput.focus();
+                    gameActive = false; // Pausa el juego mientras digitas
+                }
+            }
+        });
+
+        // PROCESADOR DE COMANDOS AL PRESIONAR ENTER
+        adminInput.addEventListener('keydown', (e) => {
+            if (e.key === 'Enter') {
+                const args = adminInput.value.trim().split(" ");
+                const command = args[0].toLowerCase();
+
+                if (command === "god") {
+                    godMode = !godMode;
+                    player.width = godMode ? 150 : 90; // Agranda la barra en Modo Dios
+                }
+                if (command === "score" && args[1]) {
+                    score = parseInt(args[1]) || 0;
+                    scoreEl.textContent = score;
+                }
+                if (command === "heal") {
+                    lives = 3;
+                    livesEl.textContent = '❤️❤️❤️';
+                }
+
+                adminInput.value = "";
+                adminPanel.style.display = 'none';
+                gameActive = true;
+            }
+        });
+
         function resetCoin() {
             coin.x = Math.random() * (canvas.width - 40) + 20;
             coin.y = -30;
-            coin.speed = 4 + (score * 0.2); // Aumenta la velocidad según tu puntaje
+            coin.speed = 4 + (score * 0.2);
         }
 
         function resetGame() {
-            score = 0; lives = 3; particles = [];
+            score = 0; lives = 3; godMode = false; player.width = 90; particles = [];
             scoreEl.textContent = score;
             livesEl.textContent = '❤️❤️❤️';
             resetCoin();
         }
 
-        // Bucle principal del juego
         function update() {
-            coin.y += coin.speed;
-            coin.angle += 0.05; // Velocidad de giro de la moneda
+            if (gameActive) {
+                coin.y += coin.speed;
+                coin.angle += 0.05;
 
-            // Colisión con la barra de neón
-            if (coin.y + coin.radius >= player.y && coin.x >= player.x && coin.x <= player.x + player.width && coin.y - coin.radius <= player.y + player.height) {
-                createExplosion(coin.x, coin.y);
-                score++;
-                scoreEl.textContent = score;
-                resetCoin();
-            }
-
-            // Moneda toca el suelo
-            if (coin.y - coin.radius > canvas.height) {
-                lives--;
-                livesEl.textContent = '❤️'.repeat(lives) + '🖤'.repeat(3 - lives);
-                if (lives <= 0) {
-                    alert(`¡Juego Terminado! Conseguiste ${score} monedas.`);
-                    resetGame();
-                } else {
+                if (coin.y + coin.radius >= player.y && coin.x >= player.x && coin.x <= player.x + player.width && coin.y - coin.radius <= player.y + player.height) {
+                    createExplosion(coin.x, coin.y);
+                    score++;
+                    scoreEl.textContent = score;
                     resetCoin();
+                }
+
+                if (coin.y - coin.radius > canvas.height) {
+                    if (!godMode) {
+                        lives--;
+                        livesEl.textContent = '❤️'.repeat(lives) + '🖤'.repeat(3 - lives);
+                    }
+                    if (lives <= 0) {
+                        alert(`Juego Terminado. Monedas: ${score}`);
+                        resetGame();
+                    } else {
+                        resetCoin();
+                    }
                 }
             }
 
-            // --- RENDERIZADO GRÁFICO (DIBUJO) ---
             ctx.clearRect(0, 0, canvas.width, canvas.height);
             updateParticles();
 
-            // Dibujar la barra de neón azul
+            // Dibujar Barra
             ctx.save();
             let pGrad = ctx.createLinearGradient(player.x, player.y, player.x, player.y + player.height);
-            pGrad.addColorStop(0, '#38bdf8'); pGrad.addColorStop(1, '#1e40af');
-            ctx.shadowColor = '#0ea5e9'; ctx.shadowBlur = 15;
+            pGrad.addColorStop(0, godMode ? '#22c55e' : '#38bdf8'); 
+            pGrad.addColorStop(1, godMode ? '#15803d' : '#1e40af');
+            ctx.shadowColor = godMode ? '#22c55e' : '#0ea5e9'; 
+            ctx.shadowBlur = 15;
             ctx.fillStyle = pGrad; ctx.beginPath(); ctx.roundRect(player.x, player.y, player.width, player.height, 6); ctx.fill();
             ctx.restore();
 
-            // Dibujar la moneda brillante girando en 3D
+            // Dibujar Moneda
             ctx.save();
             ctx.translate(coin.x, coin.y); ctx.scale(Math.abs(Math.sin(coin.angle)), 1);
             let cGrad = ctx.createRadialGradient(-3, -3, 2, 0, 0, coin.radius);
@@ -164,7 +243,6 @@
             requestAnimationFrame(update);
         }
 
-        // Iniciar el juego automáticamente al cargar
         resetCoin();
         update();
     </script>
