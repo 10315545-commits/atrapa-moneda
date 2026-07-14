@@ -184,13 +184,13 @@
             if (e.key === 'Enter') {
                 if (audioCtx.state === 'suspended') audioCtx.resume();
                 const args = adminInput.value.trim().split(" ");
-                const command = adminInput.value.trim().toLowerCase();
+                const command = args[0].toLowerCase();
 
                 if (command === "god") {
                     godMode = !godMode;
                     player.width = godMode ? 150 : 90;
                 }
-                if (args[ str = 0].toLowerCase() === "score" && args[1]) {
+                if (command === "score" && args[1]) {
                     score = parseInt(args[1]) || 0;
                     scoreEl.textContent = score;
                 }
@@ -201,7 +201,7 @@
                 if (command === "slow") {
                     coin.speed = 1.5;
                 }
-                if (args[0].toLowerCase() === "size" && args[1]) {
+                if (command === "size" && args[1]) {
                     player.width = parseInt(args[1]) || 90;
                 }
 
@@ -268,4 +268,3 @@
                     });
                 }
 
-Usa el código con precaución.if (coin.y + coin.radius >= player.y && coin.x >= player.x && coin.x <= player.x + player.width && coin.y - coin.radius <= player.y + player.height) {let explodeColor = bloodMoonMode ? '#ef4444' : (partyMode ? hsl(${Math.random() * 360}, 100%, 60%) : '#fef08a');createExplosion(coin.x, coin.y, explodeColor);score++;scoreEl.textContent = score;// Probabilidad del Admin Event de hablarte (15%)if (adminEventActive && Math.random() < 0.15) {const phrases = ["[ADMIN]: Veo lo que haces en el código.","[ADMIN]: El sistema responde a tus órdenes.","[ADMIN]: ¿Buscabas hablar conmigo?","[ADMIN]: Privilegios de Administrador validados."];adminMessage = phrases[Math.floor(Math.random() * phrases.length)];adminMessageTimer = 150;}resetCoin();}if (coin.y - coin.radius > canvas.height) {if (!godMode) {lives--;livesEl.textContent = '❤️'.repeat(lives) + '🖤'.repeat(3 - lives);}if (lives <= 0) {alert(Juego Terminado. Monedas: ${score});resetGame();} else {resetCoin();}}}ctx.clearRect(0, 0, canvas.width, canvas.height);// Filtros de pantalla según eventos activosif (partyMode) {partyColorTimer++;ctx.fillStyle = rgba(${Math.sin(partyColorTimer * 0.15) * 20 + 20}, 8, ${Math.cos(partyColorTimer * 0.15) * 35 + 35}, 1);ctx.fillRect(0, 0, canvas.width, canvas.height);} else if (bloodMoonMode) {ctx.fillStyle = 'rgba(28, 4, 4, 1)';ctx.fillRect(0, 0, canvas.width, canvas.height);}updateParticles();// Dibujar Barractx.save();let pGrad = ctx.createLinearGradient(player.x, player.y, player.x, player.y + player.height);pGrad.addColorStop(0, godMode ? '#22c55e' : (bloodMoonMode ? '#dc2626' : '#38bdf8'));pGrad.addColorStop(1, godMode ? '#166534' : (bloodMoonMode ? '#7f1d1d' : '#1e40af'));ctx.shadowColor = godMode ? '#22c55e' : (bloodMoonMode ? '#ef4444' : '#0ea5e9');ctx.shadowBlur = 15;ctx.fillStyle = pGrad; ctx.beginPath(); ctx.roundRect(player.x, player.y, player.width, player.height, 6); ctx.fill();ctx.restore();// Dibujar Moneda o Gota de sangrectx.save();ctx.translate(coin.x, coin.y); ctx.scale(Math.abs(Math.sin(coin.angle)), 1);let cGrad = ctx.createRadialGradient(-3, -3, 2, 0, 0, coin.radius);if (bloodMoonMode) {cGrad.addColorStop(0, '#fee2e2'); cGrad.addColorStop(0.5, '#ef4444'); cGrad.addColorStop(1, '#991b1b');ctx.shadowColor = '#ef4444';} else {cGrad.addColorStop(0, '#fffbeb'); cGrad.addColorStop(0.3, '#fef08a'); cGrad.addColorStop(0.7, '#eab308'); cGrad.addColorStop(1, '#854d0e');ctx.shadowColor = '#eab308';}ctx.shadowBlur = 20;ctx.fillStyle = cGrad; ctx.beginPath(); ctx.arc(0, 0, coin.radius, 0, Math.PI * 2); ctx.fill();ctx.strokeStyle = bloodMoonMode ? '#fca5a5' : '#fef08a'; ctx.lineWidth = 1.5; ctx.beginPath(); ctx.arc(0, 0, coin.radius - 4, 0, Math.PI * 2); ctx.stroke();ctx.restore();// Render del cuadro de texto para Admin Eventif (adminMessageTimer > 0) {adminMessageTimer--;ctx.fillStyle = 'rgba(0, 0, 0, 0.85)';ctx.fillRect(20, 20, canvas.width - 40, 36);ctx.strokeStyle = '#22c55e'; ctx.lineWidth = 1.5;ctx.strokeRect(20, 20, canvas.width - 40, 36);ctx.fillStyle = '#22c55e'; ctx.font = 'bold 13px monospace'; ctx.textAlign = 'center';ctx.fillText(adminMessage, canvas.width / 2, 42);}requestAnimationFrame(update);}resetCoin();update();
