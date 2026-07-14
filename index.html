@@ -1,94 +1,218 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Atrapa la Moneda</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Atrapa la Moneda 🪙</title>
+    <style>
+        /* --- ESTILOS VISUALES --- */
+        body {
+            background-color: #0f172a;
+            color: white;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+            overflow: hidden;
+        }
 
-<style>
-*{
-    margin:0;
-    padding:0;
-    box-sizing:border-box;
-}
+        .game-container {
+            text-align: center;
+        }
 
-body{
-    overflow:hidden;
-    background:linear-gradient(#4ec0ff,#87ceeb);
-    font-family:Arial, sans-serif;
-}
+        .hud {
+            display: flex;
+            justify-content: space-between;
+            width: 400px;
+            margin-bottom: 10px;
+            font-size: 20px;
+            font-weight: bold;
+        }
 
-#contador{
-    position:fixed;
-    top:15px;
-    left:15px;
-    background:white;
-    padding:10px 20px;
-    border-radius:10px;
-    font-size:22px;
-    font-weight:bold;
-    z-index:1000;
-}
+        .lives {
+            color: #ef4444;
+        }
 
-.moneda{
-    position:absolute;
-    top:-60px;
-    font-size:40px;
-    cursor:pointer;
-    user-select:none;
-    animation:caer linear forwards;
-}
+        .score {
+            color: #eab308;
+        }
 
-@keyframes caer{
-    from{
-        transform:translateY(0) rotate(0deg);
-    }
-    to{
-        transform:translateY(110vh) rotate(720deg);
-    }
-}
-</style>
+        canvas {
+            background: linear-gradient(to bottom, #1e1b4b, #311042);
+            border: 4px solid #eab308;
+            border-radius: 12px;
+            box-shadow: 0 20px 50px rgba(234, 179, 8, 0.15);
+        }
 
+        .controls {
+            margin-top: 12px;
+            color: #94a3b8;
+            font-size: 14px;
+        }
+    </style>
 </head>
 <body>
 
-<div id="contador">🪙 Monedas: <span id="coins">0</span></div>
+    <div class="game-container">
+        <div class="hud">
+            <div class="score">Monedas: <span id="score">0</span></div>
+            <div class="lives">Vidas: <span id="lives">❤️❤️❤️</span></div>
+        </div>
+        <canvas id="coinCanvas" width="400" height="500"></canvas>
+        <div class="controls">Usa las flechas ⬅️ y ➡️ o mantén presionado el mouse/pantalla</div>
+    </div>
 
-<script>
+    <script>
+        // --- LÓGICA DEL JUEGO ---
+        const canvas = document.getElementById('coinCanvas');
+        const ctx = canvas.getContext('2d');
+        const scoreEl = document.getElementById('score');
+        const livesEl = document.getElementById('lives');
 
-let monedas = 0;
+        let score = 0;
+        let lives = 3;
+        let gameActive = true;
 
-function crearMoneda(){
+        // Configuración del Cofre (Jugador)
+        const player = {
+            x: 160,
+            y: 440,
+            width: 80,
+            height: 35,
+            speed: 8
+        };
 
-    const coin = document.createElement("div");
+        // Configuración de la Moneda
+        const coin = {
+            x: Math.random() * (canvas.width - 30) + 15,
+            y: -20,
+            radius: 12,
+            speed: 4,
+            pulse: 0
+        };
 
-    coin.className = "moneda";
-    coin.textContent = "🪙";
+        // Controles de teclado
+        const keys = { Left: false, Right: false };
 
-    coin.style.left = Math.random()*window.innerWidth+"px";
-    coin.style.animationDuration = (2+Math.random()*3)+"s";
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'ArrowLeft' || e.key === 'a') keys.Left = true;
+            if (e.key === 'ArrowRight' || e.key === 'd') keys.Right = true;
+        });
 
-    coin.onclick = function(){
+        document.addEventListener('keyup', (e) => {
+            if (e.key === 'ArrowLeft' || e.key === 'a') keys.Left = false;
+            if (e.key === 'ArrowRight' || e.key === 'd') keys.Right = false;
+        });
 
-        monedas++;
-        document.getElementById("coins").textContent = monedas;
+        // Controles para Mouse y Pantallas Táctiles
+        function handleMove(clientX) {
+            const rect = canvas.getBoundingClientRect();
+            const rootX = clientX - rect.left;
+            player.x = rootX - player.width / 2;
+            
+            // Límites de la pantalla
+            if (player.x < 0) player.x = 0;
+            if (player.x > canvas.width - player.width) player.x = canvas.width - player.width;
+        }
 
-        coin.remove();
+        canvas.addEventListener('mousemove', (e) => handleMove(e.clientX));
+        canvas.addEventListener('touchmove', (e) => {
+            handleMove(e.touches[0].clientX);
+            e.preventDefault();
+        }, { passive: false });
 
-    };
+        // Reiniciar posición de la moneda
+        function resetCoin() {
+            coin.x = Math.random() * (canvas.width - 40) + 20;
+            coin.y = -20;
+            coin.speed = 4 + (score * 0.2); // Aumenta la velocidad gradualmente
+        }
 
-    coin.addEventListener("animationend",()=>{
-        coin.remove();
-    });
+        // Reiniciar partida completa
+        function resetGame() {
+            score = 0;
+            lives = 3;
+            gameActive = true;
+            scoreEl.textContent = score;
+            livesEl.textContent = '❤️❤️❤️';
+            resetCoin();
+            update();
+        }
 
-    document.body.appendChild(coin);
+        // Bucle Principal
+        function update() {
+            if (!gameActive) return;
 
-}
+            // 1. Movimiento por teclado
+            if (keys.Left && player.x > 0) player.x -= player.speed;
+            if (keys.Right && player.x < canvas.width - player.width) player.x += player.speed;
 
-// Crear una moneda cada 250 ms
-setInterval(crearMoneda,250);
+            // 2. Movimiento e interpolación de la moneda
+            coin.y += coin.speed;
+            coin.pulse += 0.1; // Animación de brillo
 
-</script>
+            // 3. Detección de colisión (Atrapar moneda)
+            if (coin.y + coin.radius >= player.y && 
+                coin.y - coin.radius <= player.y + player.height &&
+                coin.x + coin.radius >= player.x && 
+                coin.x - coin.radius <= player.x + player.width) {
+                
+                score += 1;
+                scoreEl.textContent = score;
+                resetCoin();
+            }
 
+            // 4. Si la moneda se cae (Pérdida de vida)
+            if (coin.y - coin.radius > canvas.height) {
+                lives -= 1;
+                livesEl.textContent = '❤️'.repeat(lives) + '🖤'.repeat(3 - lives);
+                
+                if (lives <= 0) {
+                    gameActive = false;
+                    setTimeout(() => {
+                        alert(`¡Fin de la partida! Conseguiste ${score} monedas.`);
+                        resetGame();
+                    }, 10);
+                    return;
+                }
+                resetCoin();
+            }
+
+            // 5. Renderizado Gráfico
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+            // Dibujar el Cofre / Barra (Dorado con bordes oscuros)
+            ctx.fillStyle = '#b45309';
+            ctx.fillRect(player.x, player.y, player.width, player.height);
+            ctx.fillStyle = '#f59e0b';
+            ctx.fillRect(player.x + 5, player.y + 5, player.width - 10, 8); // Detalle del cofre
+
+            // Dibujar Moneda Brillante
+            ctx.beginPath();
+            ctx.arc(coin.x, coin.y, coin.radius, 0, Math.PI * 2);
+            // Efecto degradado metálico
+            let gradient = ctx.createRadialGradient(coin.x, coin.y, 2, coin.x, coin.y, coin.radius);
+            gradient.addColorStop(0, '#fef08a');
+            gradient.addColorStop(1, '#eab308');
+            ctx.fillStyle = gradient;
+            ctx.shadowColor = '#eab308';
+            ctx.shadowBlur = 10 + Math.sin(coin.pulse) * 5; // Destello dinámico
+            ctx.fill();
+            ctx.lineWidth = 2;
+            ctx.strokeStyle = '#ca8a04';
+            ctx.stroke();
+            ctx.closePath();
+            
+            // Apagar sombra para otros elementos del juego
+            ctx.shadowBlur = 0;
+
+            requestAnimationFrame(update);
+        }
+
+        // Ejecutar juego al cargar la página
+        update();
+    </script>
 </body>
 </html>
