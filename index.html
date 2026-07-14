@@ -3,295 +3,254 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Coin Catcher: Neon Overdrive</title>
+    <title>Coin Catcher Pro: Cyber Arcade 🪙</title>
     <style>
-        /* --- ARQUITECTURA DE ESTILOS CSS --- */
-        :root {
-            --neon-blue: #00f0ff;
-            --neon-pink: #ff007f;
-            --neon-green: #39ff14;
-            --neon-purple: #9d00ff;
-            --neon-gold: #ffb700;
-            --dark-bg: #03001e;
-        }
-
-        body, html {
-            margin: 0;
-            padding: 0;
-            width: 100%;
-            height: 100%;
-            background-color: var(--dark-bg);
-            color: #ffffff;
-            font-family: 'Segoe UI', Roboto, Helvetica, sans-serif;
+        body {
+            background-color: #020617;
+            color: #f8fafc;
+            font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
             display: flex;
             justify-content: center;
             align-items: center;
+            height: 100vh;
+            margin: 0;
             overflow: hidden;
             user-select: none;
-            -webkit-user-select: none;
         }
-
-        /* Contenedor Maestro */
-        .wrapper {
+        .game-container {
+            text-align: center;
             position: relative;
-            width: 480px;
-            height: 640px;
-            background: #050515;
-            border: 3px solid var(--neon-blue);
+            background: #090d16;
+            padding: 20px;
             border-radius: 20px;
-            box-shadow: 0 0 30px rgba(0, 240, 255, 0.3);
-            overflow: hidden;
+            box-shadow: 0 0 40px rgba(0, 0, 0, 0.8);
         }
-
-        /* Pantallas del Juego (Sistema de Capas) */
-        .screen {
+        .hud {
+            display: flex;
+            justify-content: space-between;
+            width: 440px;
+            margin-bottom: 15px;
+            font-size: 20px;
+            font-weight: 800;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+        .score { color: #fbbf24; text-shadow: 0 0 10px rgba(251, 191, 36, 0.5); }
+        .lives { color: #ef4444; text-shadow: 0 0 10px rgba(239, 68, 68, 0.5); }
+        canvas {
+            background: radial-gradient(circle at center, #1e1b4b 0%, #05020a 100%);
+            border: 4px solid #38bdf8;
+            border-radius: 16px;
+            box-shadow: 0 0 30px rgba(56, 189, 248, 0.2);
+            cursor: none;
+        }
+        .overlay {
             position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
+            top: 55px;
+            left: 20px;
+            width: 440px;
+            height: 540px;
+            background: rgba(9, 13, 22, 0.95);
+            border-radius: 16px;
             display: flex;
             flex-direction: column;
             justify-content: center;
             align-items: center;
             z-index: 5;
-            opacity: 0;
-            pointer-events: none;
-            transition: opacity 0.4s ease;
-            box-sizing: border-box;
-            padding: 20px;
         }
-
-        .screen.active {
-            opacity: 1;
-            pointer-events: auto;
+        .overlay h2 {
+            font-size: 32px;
+            margin-bottom: 10px;
+            color: #38bdf8;
+            text-shadow: 0 0 15px rgba(56, 189, 248, 0.6);
         }
-
-        /* Capas de Interfaz Gráfica Flotantes */
-        #game-canvas {
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            z-index: 1;
-        }
-
-        .hud-overlay {
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: auto;
-            z-index: 3;
-            display: flex;
-            justify-content: space-between;
-            padding: 15px 25px;
-            box-sizing: border-box;
-            pointer-events: none;
-            font-weight: 900;
-            text-transform: uppercase;
+        .high-score-text {
+            color: #a78bfa;
             font-size: 18px;
-            letter-spacing: 1px;
+            margin-bottom: 30px;
         }
-
-        /* Tipografía Neón */
-        .neon-text-blue { text-shadow: 0 0 10px var(--neon-blue); color: var(--neon-blue); }
-        .neon-text-pink { text-shadow: 0 0 10px var(--neon-pink); color: var(--neon-pink); }
-        .neon-text-gold { text-shadow: 0 0 10px var(--neon-gold); color: var(--neon-gold); }
-        .neon-text-green { text-shadow: 0 0 10px var(--neon-green); color: var(--neon-green); }
-
-        h1.title {
-            font-size: 38px;
-            margin: 0 0 10px 0;
-            text-align: center;
-            text-transform: uppercase;
-            font-weight: 900;
-            letter-spacing: 3px;
-        }
-
-        /* Botones e Interacciones */
-        .btn {
-            background: transparent;
-            border: 2px solid var(--neon-blue);
-            color: #ffffff;
-            padding: 12px 35px;
-            font-size: 16px;
-            font-weight: 700;
-            text-transform: uppercase;
-            letter-spacing: 2px;
+        .menu-btn {
+            background: linear-gradient(135deg, #38bdf8, #1d4ed8);
+            color: white;
+            border: none;
+            padding: 12px 30px;
+            font-size: 18px;
+            font-weight: bold;
             border-radius: 8px;
             cursor: pointer;
-            margin: 10px 0;
-            transition: all 0.2s ease;
-            box-shadow: 0 0 10px rgba(0, 240, 255, 0.1);
-            width: 240px;
-            text-align: center;
+            margin: 10px;
+            transition: transform 0.2s, box-shadow 0.2s;
+            box-shadow: 0 4px 15px rgba(56, 189, 248, 0.4);
         }
-
-        .btn:hover {
-            background: var(--neon-blue);
-            color: #000000;
-            box-shadow: 0 0 20px var(--neon-blue);
+        .menu-btn:hover {
             transform: scale(1.05);
+            box-shadow: 0 6px 20px rgba(56, 189, 248, 0.6);
         }
-
-        .btn-pink { border-color: var(--neon-pink); }
-        .btn-pink:hover {
-            background: var(--neon-pink);
-            color: #ffffff;
-            box-shadow: 0 0 20px var(--neon-pink);
+        .shop-grid {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 15px;
+            width: 80%;
+            margin-bottom: 25px;
         }
-
-        /* Tienda y Elementos Internos */
-        .shop-container, .leaderboard-list {
-            width: 100%;
-            max-height: 380px;
-            overflow-y: auto;
-            background: rgba(255, 255, 255, 0.03);
-            border-radius: 12px;
-            border: 1px solid rgba(255, 255, 255, 0.1);
-            padding: 15px;
-            box-sizing: border-box;
-            margin-bottom: 15px;
-        }
-
         .shop-item {
+            background: #1e293b;
+            padding: 12px;
+            border-radius: 8px;
             display: flex;
             justify-content: space-between;
             align-items: center;
-            padding: 10px;
-            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+            border: 1px solid #475569;
         }
-
-        .shop-info {
-            display: flex;
-            flex-direction: column;
-            align-items: flex-start;
+        .shop-item span { font-weight: bold; font-size: 14px; }
+        .buy-btn {
+            background: #eab308;
+            color: #0f172a;
+            border: none;
+            padding: 6px 12px;
+            font-weight: bold;
+            border-radius: 4px;
+            cursor: pointer;
         }
-
-        .shop-title { font-weight: 700; font-size: 14px; }
-        .shop-desc { font-size: 11px; color: #8a8a9a; }
-
-        .btn-buy {
-            padding: 6px 15px;
-            font-size: 12px;
-            width: auto;
-            margin: 0;
-            border-color: var(--neon-green);
+        .buy-btn:disabled {
+            background: #475569;
+            color: #94a3b8;
+            cursor: not-allowed;
         }
-        .btn-buy:hover {
-            background: var(--neon-green);
-            box-shadow: 0 0 15px var(--neon-green);
-        }
-
-        /* Consola Admin Invisible */
-        #admin-panel {
+        #admin-console {
             display: none;
             position: absolute;
-            top: 30%;
+            top: 25%;
             left: 50%;
-            transform: translate(-50%, -30%);
-            width: 340px;
-            background: rgba(5, 5, 25, 0.98);
-            border: 2px solid var(--neon-green);
-            box-shadow: 0 0 35px rgba(57, 255, 20, 0.4);
-            border-radius: 12px;
+            transform: translateX(-50%);
+            background: rgba(2, 6, 23, 0.98);
+            border: 2px solid #22c55e;
             padding: 20px;
-            z-index: 100;
-            box-sizing: border-box;
+            border-radius: 12px;
+            width: 320px;
+            box-shadow: 0 0 30px rgba(34, 197, 94, 0.4);
+            z-index: 10;
         }
-
-        #admin-panel h3 {
-            margin: 0 0 12px 0;
-            color: var(--neon-green);
-            font-family: monospace;
-            letter-spacing: 2px;
-            font-size: 16px;
-        }
-
-        #admin-log {
-            height: 100px;
-            background: #000;
-            border: 1px solid rgba(57, 255, 20, 0.2);
-            font-family: monospace;
-            font-size: 11px;
-            color: #39ff14;
-            padding: 5px;
-            overflow-y: auto;
-            margin-bottom: 10px;
-            text-align: left;
-            white-space: pre-line;
-        }
-
         #admin-input {
-            width: 100%;
+            width: 93%;
             background: #000;
-            border: 1px solid var(--neon-green);
-            color: #39ff14;
+            border: 1px solid #22c55e;
+            color: #3ade75;
             padding: 10px;
-            font-family: monospace;
-            box-sizing: border-box;
+            font-family: 'Courier New', monospace;
             border-radius: 6px;
             outline: none;
         }
-
-        .leaderboard-row {
-            display: flex;
-            justify-content: space-between;
-            padding: 8px 5px;
-            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
-            font-family: monospace;
-            font-size: 14px;
-        }
-
-        /* Scrollbar Personalizado */
-        ::-webkit-scrollbar { width: 6px; }
-        ::-webkit-scrollbar-track { background: transparent; }
-        ::-webkit-scrollbar-thumb { background: rgba(255, 255, 255, 0.1); border-radius: 3px; }
-        ::-webkit-scrollbar-thumb:hover { background: rgba(255, 255, 255, 0.3); }
+        .controls { margin-top: 15px; color: #64748b; font-size: 13px; }
+        .hidden { display: none !important; }
     </style>
 </head>
 <body>
 
-    <div class="wrapper">
-        <!-- CAPA RENDER: Canvas de gráficos -->
-        <canvas id="game-canvas" width="480" height="640"></canvas>
+    <div class="game-container">
+        <div class="hud">
+            <div class="score">Oro: <span id="score">0</span></div>
+            <div class="lives">Vidas: <span id="lives">❤️❤️❤️</span></div>
+        </div>
+        
+        <canvas id="gameCanvas" width="440" height="540"></canvas>
 
-        <!-- CAPA INTERFAZ: HUD Activo en juego -->
-        <div class="hud-overlay" id="game-hud" style="display: none;">
-            <div>Puntos: <span id="hud-score" class="neon-text-gold">0</span></div>
-            <div>Combo: <span id="hud-combo" class="neon-text-blue">x1</span></div>
-            <div>Vidas: <span id="hud-lives" class="neon-text-pink">❤️❤️❤️</span></div>
+        <div id="start-menu" class="overlay">
+            <h2>COIN CATCHER PRO</h2>
+            <div class="high-score-text">Récord Máximo: <span id="high-score-val">0</span> 🪙</div>
+            <button class="menu-btn" onclick="startGame()">JUGAR AHORA</button>
+            <button class="menu-btn" style="background: #a78bfa;" onclick="openShop()">TIENDA DE MEJORAS</button>
         </div>
 
-        <!-- PANTALLA 1: Menú Principal -->
-        <div class="screen active" id="screen-main">
-            <h1 class="title neon-text-blue">Neon<br><span class="neon-text-pink">Overdrive</span></h1>
-            <p style="color: #64748b; font-size:13px; margin-top:-5px; margin-bottom:30px;">COIN CATCHER REMASTERED</p>
-            <button class="btn" onclick="Game.changeScreen('game')">Iniciar Simulación</button>
-            <button class="btn btn-pink" onclick="Game.changeScreen('shop')">Matriz de Tienda</button>
-            <button class="btn" onclick="Game.changeScreen('leaderboard')">Registros Core</button>
-            <p style="font-size: 11px; color:#475569; margin-top: 40px;">Presiona la tecla <span style="color:var(--neon-green)">N</span> para Consola Admin</p>
-        </div>
-
-        <!-- PANTALLA 2: Tienda de Mejoras -->
-        <div class="screen" id="screen-shop">
-            <h2 class="neon-text-pink" style="margin-top:0;">Matriz de Adquisiciones</h2>
-            <div style="font-size: 16px; margin-bottom:12px;">Créditos: <span id="shop-credits" class="neon-text-gold">0</span></div>
-            
-            <div class="shop-container">
-                <!-- Mejoras Técnicas -->
+        <div id="shop-menu" class="overlay hidden">
+            <h2>TIENDA CYBER</h2>
+            <div style="color: #fbbf24; margin-bottom: 15px;">Tu Oro: <span id="shop-gold">0</span> 🪙</div>
+            <div class="shop-grid">
                 <div class="shop-item">
-                    <div class="shop-info">
-                        <span class="shop-title">Módulo de Impulso</span>
-                        <span class="shop-desc">Aumenta la velocidad de traslación del cofre.</span>
-                    </div>
-                    <button class="btn btn-buy" id="buy-up-speed" onclick="Shop.buyUpgrade('speed')">Nivel 1 (50c)</button>
+                    <span>Tamaño Barra (+15px)</span>
+                    <button id="btn-up-size" class="buy-btn" onclick="buyUpgrade('size', 10)">Coste: 10</button>
                 </div>
                 <div class="shop-item">
-                    <div class="shop-info">
-                        <span class="shop-title">Campo Magnético</span>
-                        <span class="shop-desc">Atrae sutilmente las monedas hacia tu posición.</span>
-                    </div>
-Usa el código con precaución.Bloqueado (120c)Expansión MolecularEnsancha estructuralmente la longitud de tu barra.Nivel 1 (80c)Skin: Esmeralda MatrixComprar (40c)Skin: Protocolo MagmaComprar (75c)Skin: Singularidad de OroComprar (150c)Volver al NexoRegistros de ÉliteBorrar RegistrosVolver al NexoConexión PerdidaLa integridad estructural llegó a cero.Puntuación Final: 0Créditos Ganados: 0Reintentar EnlaceMenu de InicioNÚCLEO ADMIN LOGUEADOConsola de depuración lista...// --- 1. CONFIGURACIÓN DEL SINTETIZADOR DE AUDIO (Web Audio API) ---const SoundSystem = {ctx: null,init() {if (!this.ctx) {this.ctx = new (window.AudioContext || window.webkitAudioContext)();}if (this.ctx.state === 'suspended') {this.ctx.resume();}},play(type) {this.init();if (!this.ctx) return;const now = this.ctx.currentTime;const osc = this.ctx.createOscillator();const gain = this.ctx.createGain();osc.connect(gain);gain.connect(this.ctx.destination);switch (type) {case 'catch_common':osc.type = 'sine';osc.frequency.setValueAtTime(600, now);osc.frequency.exponentialRampToValueAtTime(900, now + 0.08);gain.gain.setValueAtTime(0.08, now);gain.gain.exponentialRampToValueAtTime(0.001, now + 0.12);osc.start(now); osc.stop(now + 0.12);break;case 'catch_rare':osc.type = 'square';osc.frequency.setValueAtTime(440, now);osc.frequency.setValueAtTime(880, now + 0.06);osc.frequency.setValueAtTime(1320, now + 0.12);gain.gain.setValueAtTime(0.05, now);gain.gain.exponentialRampToValueAtTime(0.001, now + 0.2);osc.start(now); osc.stop(now + 0.2);break;case 'damage':osc.type = 'sawtooth';osc.frequency.setValueAtTime(180, now);osc.frequency.linearRampToValueAtTime(60, now + 0.2);gain.gain.setValueAtTime(0.12, now);gain.gain.exponentialRampToValueAtTime(0.001, now + 0.22);osc.start(now); osc.stop(now + 0.22);break;case 'gameover':osc.type = 'triangle';osc.frequency.setValueAtTime(400, now);osc.frequency.linearRampToValueAtTime(80, now + 0.7);gain.gain.setValueAtTime(0.2, now);gain.gain.exponentialRampToValueAtTime(0.001, now + 0.7);osc.start(now); osc.stop(now + 0.7);break;case 'upgrade':osc.type = 'sine';osc.frequency.setValueAtTime(300, now);osc.frequency.linearRampToValueAtTime(1200, now + 0.4);gain.gain.setValueAtTime(0.07, now);gain.gain.exponentialRampToValueAtTime(0.001, now + 0.4);osc.start(now); osc.stop(now + 0.4);break;}}};// --- 2. CONFIGURACIÓN DEL SISTEMA DE TIENDA Y SKIN DATA ---const Shop = {credits: 0,upgrades: { speed: 1, magnet: 0, size: 1 },skins: { blue: true, green: false, pink: false, gold: false },activeSkin: 'blue',costs: {speed:,magnet:,size: [80, 160, 320, 600, 9999]},load() {this.credits = parseInt(localStorage.getItem('nc_credits')) || 0;this.upgrades = JSON.parse(localStorage.getItem('nc_upgrades')) || { speed: 1, magnet: 0, size: 1 };this.skins = JSON.parse(localStorage.getItem('nc_skins')) || { blue: true, green: false, pink: false, gold: false };this.activeSkin = localStorage.getItem('nc_activeskin') || 'blue';this.updateUI();},save() {localStorage.setItem('nc_credits', this.credits);localStorage.setItem('nc_upgrades', JSON.stringify(this.upgrades));localStorage.setItem('nc_skins', JSON.stringify(this.skins));localStorage.setItem('nc_activeskin', this.activeSkin);this.updateUI();},updateUI() {document.getElementById('shop-credits').textContent = this.credits;// Botones Mejorasthis.setupUpgradeBtn('speed', 'buy-up-speed', 'Nivel ');this.setupUpgradeBtn('magnet', 'buy-up-magnet', 'Nivel ');this.setupUpgradeBtn('size', 'buy-up-size', 'Nivel ');// Botones Skinsthis.setupSkinBtn('green', 'buy-skin-green', 40);this.setupSkinBtn('pink', 'buy-skin-pink', 75);this.setupSkinBtn('gold', 'buy-skin-gold', 150);},setupUpgradeBtn(key, id, prefix) {const btn = document.getElementById(id);const currentLvl = this.upgrades[key];const cost = this.costs[key][currentLvl - 1] || this.costs[key][0];if (currentLvl >= this.costs[key].length) {btn.textContent = "MÁXIMO";btn.disabled = true;} else {if(key === 'magnet' && currentLvl === 0) {btn.textContent = Desbloquear (${this.costs[key][0]}c);} else {btn.textContent = ${prefix}${currentLvl} (${cost}c);}btn.disabled = this.credits < cost;}},setupSkinBtn(key, id, price) {const btn = document.getElementById(id);if (this.skins[key]) {if (this.activeSkin === key) {btn.textContent = "EQUIPADO";btn.style.borderColor = "var(--neon-blue)";} else {btn.textContent = "EQUIPAR";btn.style.borderColor = "#ffffff";}} else {btn.textContent = Comprar (${price}c);btn.disabled = this.credits < price;}},buyUpgrade(type) {const curLvl = this.upgrades[type];const cost = this.costs[type][curLvl === 0 ? 0 : curLvl - 1];if (this.credits >= cost) {this.credits -= cost;this.upgrades[type]++;SoundSystem.play('upgrade');this.save();}},buySkin(key, price) {if (this.skins[key]) {this.activeSkin = key;this.save();} else if (this.credits >= price) {this.credits -= price;this.skins[key] = true;this.activeSkin = key;SoundSystem.play('upgrade');this.save();}}};// --- 3. MOTOR DEL MOTOR GRÁFICO Y SIMULACIÓN DE JUEGO ---const Game = {canvas: null,ctx: null,currentScreen: 'main',animationFrameId: null,// Estado interno del gameplayscore: 0,combo: 1,comboTimer: 0,lives: 3,creditsEarned: 0,isPlaying: false,godMode: false,// Entidades mecánicasplayer: { x: 200, y: 550, w: 100, h: 18, baseSpeed: 8 },coin: { x: 240, y: -40, radius: 14, speed: 4, type: 'common', angle: 0, pulse: 0 },particles: [],stars: [],init() {this.canvas = document.getElementById('game-canvas');this.ctx = this.canvas.getContext('2d');// Escuchas del teclado y ratónwindow.addEventListener('keydown', (e) => Input.handler(e, true));window.addEventListener('keyup', (e) => Input.handler(e, false));this.canvas.addEventListener('mousemove', (e) => Input.mouseHandler(e));// Configurar ambiente gráfico de fondo (estrellas espaciales)this.generateStars();// Inicializar sistemas secundariosShop.load();this.loadLeaderboard();// Loop base continuo para animaciones ambientales del fondothis.loop();},generateStars() {this.stars = [];for (let i = 0; i < 40; i++) {this.stars.push({x: Math.random() * this.canvas.width,y: Math.random() * this.canvas.height,size: Math.random() * 2,speed: Math.random() * 0.5 + 0.1});}},changeScreen(screenId) {this.currentScreen = screenId;// Alternar clases de UI DOMdocument.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));document.getElementById('game-hud').style.display = (screenId === 'game') ? 'flex' : 'none';if (screenId === 'game') {document.getElementById('game-hud').style.display = 'flex';this.startGameplay();} else {this.isPlaying = false;const domScreen = document.getElementById(screen-${screenId});if (domScreen) domScreen.classList.add('active');}if (screenId === 'shop') Shop.updateUI();if (screenId === 'leaderboard') this.renderLeaderboard();},startGameplay() {// Reiniciar variables lógicasthis.score = 0;this.combo = 1;this.comboTimer = 0;this.lives = 3;this.creditsEarned = 0;this.particles = [];// Aplicar mejoras compradas en la tienda al jugadorconst sizeLvl = Shop.upgrades.size;this.player.w = 80 + (sizeLvl * 15);this.player.x = (this.canvas.width / 2) - (this.player.w / 2);this.resetCoin();this.isPlaying = true;// Asegurar refresco del HUDthis.updateHUD();},resetCoin() {this.coin.x = Math.random() * (this.canvas.width - 40) + 20;this.coin.y = -30;this.coin.angle = 0;// Probabilidad de tipos de monedas según puntajeconst rand = Math.random() * 100;if (rand < 15) {this.coin.type = 'poison'; // Moneda trampa (Resta vida)} else if (rand < 35 && this.score > 10) {this.coin.type = 'rare';   // Moneda de plata} else if (rand < 45 && this.score > 25) {this.coin.type = 'epic';   // Diamante / Moneda mítica} else {this.coin.type = 'common'; // Moneda común de oro}// Escalado algorítmico de velocidad de caída librethis.coin.speed = 4.5 + (this.score * 0.12);if (this.coin.speed > 12) this.coin.speed = 12; // Cap de velocidad máxima},createExplosion(x, y, color) {for (let i = 0; i < 20; i++) {this.particles.push({x: x, y: y,vx: (Math.random() - 0.5) * 7,vy: (Math.random() - 0.7) * 6,radius: Math.random() * 3 + 1,alpha: 1,decay: Math.random() * 0.03 + 0.015,color: color});}},triggerDamage() {this.lives--;this.combo = 1; // Reset de rachaSoundSystem.play('damage');this.createExplosion(this.player.x + this.player.w/2, this.player.y, '#ff007f');this.updateHUD();if (this.lives <= 0 && !this.godMode) {this.endGame();}},endGame() {this.isPlaying = false;SoundSystem.play('gameover');// Conversión matemática de puntos a créditos de carterathis.creditsEarned = Math.floor(this.score * 0.5) + Math.floor(Math.random() * 3);Shop.credits += this.creditsEarned;Shop.save();// Guardar en tabla de récordsthis.saveScoreToLeaderboard(this.score);// Setear pantallas finalesdocument.getElementById('go-score').textContent = this.score;document.getElementById('go-credits').textContent = this.creditsEarned;this.changeScreen('gameover');},updateHUD() {document.getElementById('hud-score').textContent = this.score;document.getElementById('hud-combo').textContent = x${this.combo};document.getElementById('hud-lives').textContent = this.godMode ? 'INF_GOD' : '❤️'.repeat(this.lives);},
+                    <span>Velocidad Barra (+2)</span>
+                    <button id="btn-up-speed" class="buy-btn" onclick="buyUpgrade('speed', 15)">Coste: 15</button>
+                </div>
+                <div class="shop-item">
+                    <span>Imán de Monedas</span>
+                    <button id="btn-up-magnet" class="buy-btn" onclick="buyUpgrade('magnet', 35)">Coste: 35</button>
+                </div>
+            </div>
+            <button class="menu-btn" style="background: #64748b;" onclick="closeShop()">VOLVER</button>
+        </div>
+
+        <div id="game-over-menu" class="overlay hidden">
+            <h2 style="color: #ef4444;">SIMULACIÓN TERMINADA</h2>
+            <p style="font-size: 20px;">Puntuación: <span id="final-score">0</span></p>
+            <button class="menu-btn" onclick="returnToMenu()">MENÚ PRINCIPAL</button>
+        </div>
+
+        <div id="admin-console">
+            <h3 style="color: #22c55e; margin: 0 0 10px 0;">SISTEMA CORE ADMIN</h3>
+            <input type="text" id="admin-input" placeholder="Comando..." autocomplete="off">
+        </div>
+
+        <div class="controls">
+            Flechas ⬅️ ➡️ o Mouse | Presiona la tecla <strong>N</strong> para Consola Admin
+        </div>
+    </div>
+
+    <script>
+        const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+        function playSound(type) {
+            if (audioCtx.state === 'suspended') audioCtx.resume();
+            const osc = audioCtx.createOscillator();
+            const gain = audioCtx.createGain();
+            osc.connect(gain); gain.connect(audioCtx.destination);
+
+            if (type === 'coin') {
+                osc.type = 'sine';
+                osc.frequency.setValueAtTime(587.33, audioCtx.currentTime);
+                osc.frequency.setValueAtTime(880, audioCtx.currentTime + 0.08);
+                gain.gain.setValueAtTime(0.1, audioCtx.currentTime);
+                gain.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 0.3);
+                osc.start(); osc.stop(audioCtx.currentTime + 0.3);
+            } else if (type === 'hurt') {
+                osc.type = 'sawtooth';
+                osc.frequency.setValueAtTime(150, audioCtx.currentTime);
+                osc.frequency.linearRampToValueAtTime(40, audioCtx.currentTime + 0.2);
+                gain.gain.setValueAtTime(0.15, audioCtx.currentTime);
+                gain.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 0.25);
+                osc.start(); osc.stop(audioCtx.currentTime + 0.25);
+            }
+        }
+
+        const canvas = document.getElementById('gameCanvas');
+        const ctx = canvas.getContext('2d');
+        const scoreEl = document.getElementById('score');
+        const livesEl = document.getElementById('lives');
+        const consoleEl = document.getElementById('admin-console');
+        const inputEl = document.getElementById('admin-input');
+        const startMenu = document.getElementById('start-menu');
+        const shopMenu = document.getElementById('shop-menu');
+        const gameOverMenu = document.getElementById('game-over-menu');
+
+        let totalGold = parseInt(localStorage.getItem('totalGold')) || 0;
+        let highScore = parseInt(localStorage.getItem('highScore')) || 0;
+        document.getElementById('high-score-val').textContent = highScore;
+
+        let score = 0;
+        let lives = 3;
+        let gameActive = false;
+        let godMode = false;
+        let particles = [];
+
+        let upgrades = { size: 0, speed: 0, magnet: false };
+        const player = { x: 180, y: 480, width: 90, height: 24, speed: 9 };
+        const coin = { x: 220, y: -30, radius: 14, speed: 4.5, angle: 0 };
+        const keys = { Left: false, Right: false };
+
+        function openShop() {
+            startMenu.classList.add('hidden');
+            shopMenu.classList.remove('hidden');
+            document.getElementById('shop-gold').textContent = totalGold;
+            document.getElementById('btn-up-size').disabled = totalGold < 10 || upgrades.size >= 3;
+            document.getElementById('btn-up-speed').disabled = totalGold < 15 || upgrades.speed >= 3;
