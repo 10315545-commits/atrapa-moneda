@@ -3,12 +3,12 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Coin Catcher Pro: Cyber Arcade 🪙</title>
+    <title>Atrapa la Moneda 🪙</title>
     <style>
         body {
             background-color: #020617;
             color: #f8fafc;
-            font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+            font-family: 'Segoe UI', Roboto, sans-serif;
             display: flex;
             justify-content: center;
             align-items: center;
@@ -19,21 +19,15 @@
         }
         .game-container {
             text-align: center;
-            position: relative;
-            background: #090d16;
-            padding: 20px;
-            border-radius: 20px;
-            box-shadow: 0 0 40px rgba(0, 0, 0, 0.8);
         }
         .hud {
             display: flex;
             justify-content: space-between;
             width: 440px;
-            margin-bottom: 15px;
-            font-size: 20px;
+            margin-bottom: 10px;
+            font-size: 22px;
             font-weight: 800;
             text-transform: uppercase;
-            letter-spacing: 1px;
         }
         .score { color: #fbbf24; text-shadow: 0 0 10px rgba(251, 191, 36, 0.5); }
         .lives { color: #ef4444; text-shadow: 0 0 10px rgba(239, 68, 68, 0.5); }
@@ -42,107 +36,9 @@
             border: 4px solid #38bdf8;
             border-radius: 16px;
             box-shadow: 0 0 30px rgba(56, 189, 248, 0.2);
-            cursor: none;
+            cursor: none; /* Esconde el mouse para usar solo la barra */
         }
-        .overlay {
-            position: absolute;
-            top: 55px;
-            left: 20px;
-            width: 440px;
-            height: 540px;
-            background: rgba(9, 13, 22, 0.95);
-            border-radius: 16px;
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-            align-items: center;
-            z-index: 5;
-        }
-        .overlay h2 {
-            font-size: 32px;
-            margin-bottom: 10px;
-            color: #38bdf8;
-            text-shadow: 0 0 15px rgba(56, 189, 248, 0.6);
-        }
-        .high-score-text {
-            color: #a78bfa;
-            font-size: 18px;
-            margin-bottom: 30px;
-        }
-        .menu-btn {
-            background: linear-gradient(135deg, #38bdf8, #1d4ed8);
-            color: white;
-            border: none;
-            padding: 12px 30px;
-            font-size: 18px;
-            font-weight: bold;
-            border-radius: 8px;
-            cursor: pointer;
-            margin: 10px;
-            transition: transform 0.2s, box-shadow 0.2s;
-            box-shadow: 0 4px 15px rgba(56, 189, 248, 0.4);
-        }
-        .menu-btn:hover {
-            transform: scale(1.05);
-            box-shadow: 0 6px 20px rgba(56, 189, 248, 0.6);
-        }
-        .shop-grid {
-            display: grid;
-            grid-template-columns: 1fr;
-            gap: 15px;
-            width: 80%;
-            margin-bottom: 25px;
-        }
-        .shop-item {
-            background: #1e293b;
-            padding: 12px;
-            border-radius: 8px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            border: 1px solid #475569;
-        }
-        .shop-item span { font-weight: bold; font-size: 14px; }
-        .buy-btn {
-            background: #eab308;
-            color: #0f172a;
-            border: none;
-            padding: 6px 12px;
-            font-weight: bold;
-            border-radius: 4px;
-            cursor: pointer;
-        }
-        .buy-btn:disabled {
-            background: #475569;
-            color: #94a3b8;
-            cursor: not-allowed;
-        }
-        #admin-console {
-            display: none;
-            position: absolute;
-            top: 25%;
-            left: 50%;
-            transform: translateX(-50%);
-            background: rgba(2, 6, 23, 0.98);
-            border: 2px solid #22c55e;
-            padding: 20px;
-            border-radius: 12px;
-            width: 320px;
-            box-shadow: 0 0 30px rgba(34, 197, 94, 0.4);
-            z-index: 10;
-        }
-        #admin-input {
-            width: 93%;
-            background: #000;
-            border: 1px solid #22c55e;
-            color: #3ade75;
-            padding: 10px;
-            font-family: 'Courier New', monospace;
-            border-radius: 6px;
-            outline: none;
-        }
-        .controls { margin-top: 15px; color: #64748b; font-size: 13px; }
-        .hidden { display: none !important; }
+        .controls { margin-top: 10px; color: #64748b; font-size: 14px; }
     </style>
 </head>
 <body>
@@ -154,103 +50,123 @@
         </div>
         
         <canvas id="gameCanvas" width="440" height="540"></canvas>
-
-        <div id="start-menu" class="overlay">
-            <h2>COIN CATCHER PRO</h2>
-            <div class="high-score-text">Récord Máximo: <span id="high-score-val">0</span> 🪙</div>
-            <button class="menu-btn" onclick="startGame()">JUGAR AHORA</button>
-            <button class="menu-btn" style="background: #a78bfa;" onclick="openShop()">TIENDA DE MEJORAS</button>
-        </div>
-
-        <div id="shop-menu" class="overlay hidden">
-            <h2>TIENDA CYBER</h2>
-            <div style="color: #fbbf24; margin-bottom: 15px;">Tu Oro: <span id="shop-gold">0</span> 🪙</div>
-            <div class="shop-grid">
-                <div class="shop-item">
-                    <span>Tamaño Barra (+15px)</span>
-                    <button id="btn-up-size" class="buy-btn" onclick="buyUpgrade('size', 10)">Coste: 10</button>
-                </div>
-                <div class="shop-item">
-                    <span>Velocidad Barra (+2)</span>
-                    <button id="btn-up-speed" class="buy-btn" onclick="buyUpgrade('speed', 15)">Coste: 15</button>
-                </div>
-                <div class="shop-item">
-                    <span>Imán de Monedas</span>
-                    <button id="btn-up-magnet" class="buy-btn" onclick="buyUpgrade('magnet', 35)">Coste: 35</button>
-                </div>
-            </div>
-            <button class="menu-btn" style="background: #64748b;" onclick="closeShop()">VOLVER</button>
-        </div>
-
-        <div id="game-over-menu" class="overlay hidden">
-            <h2 style="color: #ef4444;">SIMULACIÓN TERMINADA</h2>
-            <p style="font-size: 20px;">Puntuación: <span id="final-score">0</span></p>
-            <button class="menu-btn" onclick="returnToMenu()">MENÚ PRINCIPAL</button>
-        </div>
-
-        <div id="admin-console">
-            <h3 style="color: #22c55e; margin: 0 0 10px 0;">SISTEMA CORE ADMIN</h3>
-            <input type="text" id="admin-input" placeholder="Comando..." autocomplete="off">
-        </div>
-
+        
         <div class="controls">
-            Flechas ⬅️ ➡️ o Mouse | Presiona la tecla <strong>N</strong> para Consola Admin
+            Mueve el mouse de izquierda a derecha para jugar
         </div>
     </div>
 
     <script>
-        const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
-        function playSound(type) {
-            if (audioCtx.state === 'suspended') audioCtx.resume();
-            const osc = audioCtx.createOscillator();
-            const gain = audioCtx.createGain();
-            osc.connect(gain); gain.connect(audioCtx.destination);
-
-            if (type === 'coin') {
-                osc.type = 'sine';
-                osc.frequency.setValueAtTime(587.33, audioCtx.currentTime);
-                osc.frequency.setValueAtTime(880, audioCtx.currentTime + 0.08);
-                gain.gain.setValueAtTime(0.1, audioCtx.currentTime);
-                gain.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 0.3);
-                osc.start(); osc.stop(audioCtx.currentTime + 0.3);
-            } else if (type === 'hurt') {
-                osc.type = 'sawtooth';
-                osc.frequency.setValueAtTime(150, audioCtx.currentTime);
-                osc.frequency.linearRampToValueAtTime(40, audioCtx.currentTime + 0.2);
-                gain.gain.setValueAtTime(0.15, audioCtx.currentTime);
-                gain.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 0.25);
-                osc.start(); osc.stop(audioCtx.currentTime + 0.25);
-            }
-        }
-
         const canvas = document.getElementById('gameCanvas');
         const ctx = canvas.getContext('2d');
         const scoreEl = document.getElementById('score');
         const livesEl = document.getElementById('lives');
-        const consoleEl = document.getElementById('admin-console');
-        const inputEl = document.getElementById('admin-input');
-        const startMenu = document.getElementById('start-menu');
-        const shopMenu = document.getElementById('shop-menu');
-        const gameOverMenu = document.getElementById('game-over-menu');
-
-        let totalGold = parseInt(localStorage.getItem('totalGold')) || 0;
-        let highScore = parseInt(localStorage.getItem('highScore')) || 0;
-        document.getElementById('high-score-val').textContent = highScore;
 
         let score = 0;
         let lives = 3;
-        let gameActive = false;
-        let godMode = false;
         let particles = [];
 
-        let upgrades = { size: 0, speed: 0, magnet: false };
-        const player = { x: 180, y: 480, width: 90, height: 24, speed: 9 };
-        const coin = { x: 220, y: -30, radius: 14, speed: 4.5, angle: 0 };
-        const keys = { Left: false, Right: false };
+        const player = { x: 175, y: 480, width: 90, height: 24 };
+        const coin = { x: 220, y: -30, radius: 14, speed: 4, angle: 0 };
 
-        function openShop() {
-            startMenu.classList.add('hidden');
-            shopMenu.classList.remove('hidden');
-            document.getElementById('shop-gold').textContent = totalGold;
-            document.getElementById('btn-up-size').disabled = totalGold < 10 || upgrades.size >= 3;
-            document.getElementById('btn-up-speed').disabled = totalGold < 15 || upgrades.speed >= 3;
+        // Sistema de chispas brillantes
+        function createExplosion(x, y) {
+            for (let i = 0; i < 12; i++) {
+                particles.push({
+                    x: x, y: y,
+                    vx: (Math.random() - 0.5) * 5, vy: (Math.random() - 0.7) * 4,
+                    radius: Math.random() * 3 + 1, alpha: 1
+                });
+            }
+        }
+
+        function updateParticles() {
+            for (let i = particles.length - 1; i >= 0; i--) {
+                let p = particles[i];
+                p.x += p.vx; p.y += p.vy; p.vy += 0.12; p.alpha -= 0.02;
+                if (p.alpha <= 0) { particles.splice(i, 1); continue; }
+                ctx.save();
+                ctx.globalAlpha = p.alpha;
+                ctx.fillStyle = '#fef08a';
+                ctx.beginPath(); ctx.arc(p.x, p.y, p.radius, 0, Math.PI * 2); ctx.fill();
+                ctx.restore();
+            }
+        }
+
+        // Movimiento suave con el mouse
+        canvas.addEventListener('mousemove', (e) => {
+            const rect = canvas.getBoundingClientRect();
+            player.x = (e.clientX - rect.left) - player.width / 2;
+            if (player.x < 0) player.x = 0;
+            if (player.x > canvas.width - player.width) player.x = canvas.width - player.width;
+        });
+
+        function resetCoin() {
+            coin.x = Math.random() * (canvas.width - 40) + 20;
+            coin.y = -30;
+            coin.speed = 4 + (score * 0.2); // Aumenta la velocidad según tu puntaje
+        }
+
+        function resetGame() {
+            score = 0; lives = 3; particles = [];
+            scoreEl.textContent = score;
+            livesEl.textContent = '❤️❤️❤️';
+            resetCoin();
+        }
+
+        // Bucle principal del juego
+        function update() {
+            coin.y += coin.speed;
+            coin.angle += 0.05; // Velocidad de giro de la moneda
+
+            // Colisión con la barra de neón
+            if (coin.y + coin.radius >= player.y && coin.x >= player.x && coin.x <= player.x + player.width && coin.y - coin.radius <= player.y + player.height) {
+                createExplosion(coin.x, coin.y);
+                score++;
+                scoreEl.textContent = score;
+                resetCoin();
+            }
+
+            // Moneda toca el suelo
+            if (coin.y - coin.radius > canvas.height) {
+                lives--;
+                livesEl.textContent = '❤️'.repeat(lives) + '🖤'.repeat(3 - lives);
+                if (lives <= 0) {
+                    alert(`¡Juego Terminado! Conseguiste ${score} monedas.`);
+                    resetGame();
+                } else {
+                    resetCoin();
+                }
+            }
+
+            // --- RENDERIZADO GRÁFICO (DIBUJO) ---
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            updateParticles();
+
+            // Dibujar la barra de neón azul
+            ctx.save();
+            let pGrad = ctx.createLinearGradient(player.x, player.y, player.x, player.y + player.height);
+            pGrad.addColorStop(0, '#38bdf8'); pGrad.addColorStop(1, '#1e40af');
+            ctx.shadowColor = '#0ea5e9'; ctx.shadowBlur = 15;
+            ctx.fillStyle = pGrad; ctx.beginPath(); ctx.roundRect(player.x, player.y, player.width, player.height, 6); ctx.fill();
+            ctx.restore();
+
+            // Dibujar la moneda brillante girando en 3D
+            ctx.save();
+            ctx.translate(coin.x, coin.y); ctx.scale(Math.abs(Math.sin(coin.angle)), 1);
+            let cGrad = ctx.createRadialGradient(-3, -3, 2, 0, 0, coin.radius);
+            cGrad.addColorStop(0, '#fffbeb'); cGrad.addColorStop(0.3, '#fef08a'); cGrad.addColorStop(0.7, '#eab308'); cGrad.addColorStop(1, '#854d0e');
+            ctx.shadowColor = '#eab308'; ctx.shadowBlur = 20;
+            ctx.fillStyle = cGrad; ctx.beginPath(); ctx.arc(0, 0, coin.radius, 0, Math.PI * 2); ctx.fill();
+            ctx.strokeStyle = '#fef08a'; ctx.lineWidth = 1.5; ctx.beginPath(); ctx.arc(0, 0, coin.radius - 4, 0, Math.PI * 2); ctx.stroke();
+            ctx.restore();
+
+            requestAnimationFrame(update);
+        }
+
+        // Iniciar el juego automáticamente al cargar
+        resetCoin();
+        update();
+    </script>
+</body>
+</html>
