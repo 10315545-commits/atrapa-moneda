@@ -3,268 +3,209 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Atrapa la Moneda Pro 🪙</title>
+    <title>Atrapa la Moneda</title>
     <style>
         body {
-            background-color: #020617;
-            color: #f8fafc;
-            font-family: 'Segoe UI', Roboto, sans-serif;
+            margin: 0;
+            padding: 0;
+            background: #202020;
             display: flex;
             justify-content: center;
             align-items: center;
             height: 100vh;
-            margin: 0;
             overflow: hidden;
-            user-select: none;
+            font-family: 'Courier New', Courier, monospace;
         }
-        .game-container {
-            text-align: center;
-            position: relative;
-        }
-        .hud {
-            display: flex;
-            justify-content: space-between;
-            width: 440px;
-            margin-bottom: 10px;
-            font-size: 22px;
-            font-weight: 800;
-            text-transform: uppercase;
-        }
-        .score { color: #fbbf24; text-shadow: 0 0 10px rgba(251, 191, 36, 0.5); }
-        .lives { color: #ef4444; text-shadow: 0 0 10px rgba(239, 68, 68, 0.5); }
         canvas {
-            background: radial-gradient(circle at center, #1e1b4b 0%, #05020a 100%);
-            border: 4px solid #38bdf8;
-            border-radius: 16px;
-            box-shadow: 0 0 30px rgba(56, 189, 248, 0.2);
-            cursor: none;
-        }
-        .controls { margin-top: 10px; color: #64748b; font-size: 14px; }
-        
-        /* CONSOLA ADMIN MINI */
-        #admin-panel {
-            display: none;
-            position: absolute;
-            top: 60px;
-            left: 50%;
-            transform: translateX(-50%);
-            background: rgba(9, 13, 22, 0.95);
-            border: 2px solid #22c55e;
-            padding: 12px;
-            border-radius: 8px;
-            width: 280px;
-            z-index: 10;
-            box-shadow: 0 0 20px rgba(34, 197, 94, 0.3);
-        }
-        #admin-input {
-            width: 90%;
-            background: #000;
-            border: 1px solid #22c55e;
-            color: #22c55e;
-            padding: 6px;
-            font-family: monospace;
-            border-radius: 4px;
-            outline: none;
-            text-align: center;
+            background: linear-gradient(to bottom, #87CEEB, #E0F6FF);
+            border: 4px solid #fff;
+            border-radius: 10px;
+            box-shadow: 0 10px 20px rgba(0,0,0,0.3);
         }
     </style>
 </head>
 <body>
 
-    <div class="game-container">
-        <div class="hud">
-            <div class="score">Oro: <span id="score">0</span></div>
-            <div class="lives">Vidas: <span id="lives">❤️❤️❤️</span></div>
-        </div>
+<canvas id="gameCanvas" width="400" height="600"></canvas>
+
+<script>
+    const canvas = document.getElementById("gameCanvas");
+    const ctx = canvas.getContext("2d");
+
+    // Variables del juego
+    let score = 0;
+    let timeLeft = 30; // 30 segundos de juego
+    let gameInterval;
+    let timerInterval;
+    let isPlaying = false;
+
+    // La Cesta (Jugador)
+    const basket = {
+        x: 160,
+        y: 540,
+        width: 80,
+        height: 20,
+        color: "#8B4513"
+    };
+
+    // La Moneda
+    const coin = {
+        x: 0,
+        y: -30,
+        radius: 15,
+        speed: 4,
+        color: "#FFD700"
+    };
+
+    // Reiniciar la moneda arriba en una posición aleatoria
+    function resetCoin() {
+        coin.y = -30;
+        coin.x = Math.random() * (canvas.width - coin.radius * 2) + coin.radius;
+    }
+
+    // Dibujar la cesta
+    function drawBasket() {
+        ctx.fillStyle = basket.color;
+        ctx.fillRect(basket.x, basket.y, basket.width, basket.height);
         
-        <canvas id="gameCanvas" width="440" height="540"></canvas>
-        
-        <!-- PANEL DE ADMIN OCULTO -->
-        <div id="admin-panel">
-            <div style="color: #22c55e; font-size: 12px; margin-bottom: 6px; font-weight: bold;">CONSOLA CORE ADMIN</div>
-            <input type="text" id="admin-input" placeholder="Escribe comando..." autocomplete="off">
-        </div>
+        // Detalles de la cesta
+        ctx.strokeStyle = "#5c2d0c";
+        ctx.lineWidth = 3;
+        ctx.strokeRect(basket.x, basket.y, basket.width, basket.height);
+    }
 
-        <div class="controls">
-            Mueve el mouse lateralmente | Presiona la tecla <strong>Punto (.)</strong> para Admin
-        </div>
-    </div>
+    // Dibujar la moneda
+    function drawCoin() {
+        ctx.beginPath();
+        ctx.arc(coin.x, coin.y, coin.radius, 0, Math.PI * 2);
+        ctx.fillStyle = coin.color;
+        ctx.fill();
+        ctx.closePath();
 
-    <script>
-        const canvas = document.getElementById('gameCanvas');
-        const ctx = canvas.getContext('2d');
-        const scoreEl = document.getElementById('score');
-        const livesEl = document.getElementById('lives');
-        const adminPanel = document.getElementById('admin-panel');
-        const adminInput = document.getElementById('admin-input');
+        // Brillo de la moneda
+        ctx.beginPath();
+        ctx.arc(coin.x - 4, coin.y - 4, coin.radius / 3, 0, Math.PI * 2);
+        ctx.fillStyle = "rgba(255, 255, 255, 0.5)";
+        ctx.fill();
+        ctx.closePath();
+    }
 
-        let score = 0;
-        let lives = 3;
-        let particles = [];
-        let gameActive = true;
-        let godMode = false;
+    // Dibujar el puntaje y tiempo
+    function drawHUD() {
+        ctx.fillStyle = "#000";
+        ctx.font = "20px Arial";
+        ctx.textAlign = "left";
+        ctx.fillText("Puntos: " + score, 20, 30);
+        ctx.fillText("Tiempo: " + timeLeft + "s", canvas.width - 120, 30);
+    }
 
-        // Variables de tus comandos especiales
-        let partyMode = false;
-        let bloodMoonMode = false;
-        let adminEventActive = false;
-        let partyColorTimer = 0;
-        let adminMessage = "";
-        let adminMessageTimer = 0;
-        let trollfaceInterval = null;
+    // Actualizar posiciones
+    function update() {
+        if (!isPlaying) return;
 
-        const player = { x: 175, y: 480, width: 90, height: 24 };
-        const coin = { x: 220, y: -30, radius: 14, speed: 4, angle: 0 };
+        // Mover la moneda hacia abajo
+        coin.y += coin.speed;
 
-        // Audio Sintetizado para el comando party
-        const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
-        
-        function playTrollfaceTone() {
-            if (!partyMode) return;
-            const notes = [293.66, 329.63, 349.23, 392.00, 440.00, 523.25];
-            const note = notes[Math.floor(Math.random() * notes.length)];
-            const osc = audioCtx.createOscillator();
-            const gain = audioCtx.createGain();
-            osc.type = 'triangle';
-            osc.frequency.setValueAtTime(note, audioCtx.currentTime);
-            gain.gain.setValueAtTime(0.04, audioCtx.currentTime);
-            gain.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + 0.15);
-            osc.connect(gain); gain.connect(audioCtx.destination);
-            osc.start(); osc.stop(audioCtx.currentTime + 0.15);
-        }
-
-        function createExplosion(x, y, customColor) {
-            const color = customColor || '#fef08a';
-            for (let i = 0; i < 12; i++) {
-                particles.push({
-                    x: x, y: y,
-                    vx: (Math.random() - 0.5) * 5, vy: (Math.random() - 0.7) * 4,
-                    radius: Math.random() * 3 + 1, alpha: 1,
-                    color: color
-                });
-            }
-        }
-
-        function updateParticles() {
-            for (let i = particles.length - 1; i >= 0; i--) {
-                let p = particles[i];
-                p.x += p.vx; p.y += p.vy; p.vy += 0.12; p.alpha -= 0.02;
-                if (p.alpha <= 0) { particles.splice(i, 1); continue; }
-                ctx.save();
-                ctx.globalAlpha = p.alpha;
-                ctx.fillStyle = p.color;
-                ctx.beginPath(); ctx.arc(p.x, p.y, p.radius, 0, Math.PI * 2); ctx.fill();
-                ctx.restore();
-            }
-        }
-
-        canvas.addEventListener('mousemove', (e) => {
-            if (!gameActive) return;
-            const rect = canvas.getBoundingClientRect();
-            player.x = (e.clientX - rect.left) - player.width / 2;
-            if (player.x < 0) player.x = 0;
-            if (player.x > canvas.width - player.width) player.x = canvas.width - player.width;
-        });
-
-        document.addEventListener('keydown', (e) => {
-            if (e.key === '.') {
-                e.preventDefault();
-                if (adminPanel.style.display === 'block') {
-                    adminPanel.style.display = 'none';
-                    gameActive = true;
-                } else {
-                    adminPanel.style.display = 'block';
-                    adminInput.focus();
-                    gameActive = false;
-                }
-            }
-        });
-
-        adminInput.addEventListener('keydown', (e) => {
-            if (e.key === 'Enter') {
-                if (audioCtx.state === 'suspended') audioCtx.resume();
-                const args = adminInput.value.trim().split(" ");
-                const command = args[0].toLowerCase();
-
-                if (command === "god") {
-                    godMode = !godMode;
-                    player.width = godMode ? 150 : 90;
-                }
-                if (command === "score" && args[1]) {
-                    score = parseInt(args[1]) || 0;
-                    scoreEl.textContent = score;
-                }
-                if (command === "heal") {
-                    lives = 3;
-                    livesEl.textContent = '❤️❤️❤️';
-                }
-                if (command === "slow") {
-                    coin.speed = 1.5;
-                }
-                if (command === "size" && args[1]) {
-                    player.width = parseInt(args[1]) || 90;
-                }
-
-                // COMANDO PARTY
-                if (command === "party") {
-                    partyMode = !partyMode;
-                    bloodMoonMode = false;
-                    if (partyMode) {
-                        trollfaceInterval = setInterval(playTrollfaceTone, 180);
-                    } else {
-                        clearInterval(trollfaceInterval);
-                    }
-                }
-
-                // COMANDO BLOOD MOON
-                if (command === "blood moon") {
-                    bloodMoonMode = !bloodMoonMode;
-                    partyMode = false;
-                    clearInterval(trollfaceInterval);
-                }
-
-                // COMANDO ADMIN EVENT
-                if (command === "admin event") {
-                    adminEventActive = !adminEventActive;
-                    if (adminEventActive) {
-                        adminMessage = "[SISTEMA]: Enlace Admin Establecido.";
-                        adminMessageTimer = 140;
-                    }
-                }
-
-                adminInput.value = "";
-                adminPanel.style.display = 'none';
-                gameActive = true;
-            }
-        });
-
-        function resetCoin() {
-            coin.x = Math.random() * (canvas.width - 40) + 20;
-            coin.y = -30;
-            coin.speed = bloodMoonMode ? 7.5 : 4 + (score * 0.2);
-        }
-
-        function resetGame() {
-            score = 0; lives = 3; godMode = false; player.width = 90; particles = [];
-            partyMode = false; bloodMoonMode = false; adminEventActive = false;
-            clearInterval(trollfaceInterval);
-            scoreEl.textContent = score;
-            livesEl.textContent = '❤️❤️❤️';
+        // Comprobar si la moneda cae al suelo (pierdes oportunidad de atraparla)
+        if (coin.y - coin.radius > canvas.height) {
             resetCoin();
         }
 
-        function update() {
-            if (gameActive) {
-                coin.y += coin.speed;
-                coin.angle += 0.05;
+        // Comprobar colisión con la cesta (Atrapar moneda)
+        if (coin.y + coin.radius > basket.y &&
+            coin.x > basket.x &&
+            coin.x < basket.x + basket.width &&
+            coin.y < basket.y + basket.height) {
+            
+            score += 10;
+            coin.speed += 0.2; // Aumenta la dificultad (caen más rápido)
+            resetCoin();
+        }
+    }
 
-                // Rastreadores de sangre constantes
-                if (bloodMoonMode && Math.random() > 0.3) {
-                    particles.push({
-                        x: coin.x, y: coin.y,
-                        vx: (Math.random() - 0.5) * 1.5, vy: Math.random() * 1.5,
-                        radius: Math.random() * 2 + 1, alpha: 0.8,
-                        color: '#ef4444'
-                    });
-                }
+    // Bucle principal del juego
+    function drawGame() {
+        ctx.clearRect(0, 0, canvas.width, canvas.height); // Limpiar pantalla
+        drawHUD();
+        drawBasket();
+        drawCoin();
+        update();
+    }
 
+    // Mover la cesta con el ratón
+    canvas.addEventListener("mousemove", (e) => {
+        if (!isPlaying) return;
+        const rect = canvas.getBoundingClientRect();
+        // Centrar la cesta donde apunta el ratón
+        basket.x = e.clientX - rect.left - (basket.width / 2);
+
+        // Evitar que la cesta se salga de la pantalla
+        if (basket.x < 0) basket.x = 0;
+        if (basket.x + basket.width > canvas.width) {
+            basket.x = canvas.width - basket.width;
+        }
+    });
+
+    // Mover la cesta con el dedo (Pantallas táctiles)
+    canvas.addEventListener("touchmove", (e) => {
+        if (!isPlaying) return;
+        e.preventDefault(); // Evita que la pantalla se mueva
+        const rect = canvas.getBoundingClientRect();
+        basket.x = e.touches[0].clientX - rect.left - (basket.width / 2);
+    });
+
+    // Temporizador
+    function startTimer() {
+        timerInterval = setInterval(() => {
+            if (timeLeft > 0) {
+                timeLeft--;
+            } else {
+                endGame();
+            }
+        }, 1000);
+    }
+
+    // Fin del juego
+    function endGame() {
+        isPlaying = false;
+        clearInterval(gameInterval);
+        clearInterval(timerInterval);
+        
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+        
+        // Mensaje de fin
+        ctx.fillStyle = "#000";
+        ctx.font = "30px Arial";
+        ctx.textAlign = "center";
+        ctx.fillText("¡TIEMPO!" , canvas.width / 2, 200);
+        ctx.fillText("Puntaje final: " + score, canvas.width / 2, 250);
+        
+        // Botón de reinicio
+        ctx.font = "20px Arial";
+        ctx.fillStyle = "#0055ff";
+        ctx.fillText("Toca la pantalla para jugar de nuevo", canvas.width / 2, 350);
+    }
+
+    // Reiniciar juego al hacer clic
+    canvas.addEventListener("click", () => {
+        if (!isPlaying && timeLeft === 0) {
+            score = 0;
+            timeLeft = 30;
+            coin.speed = 4;
+            isPlaying = true;
+            resetCoin();
+            startTimer();
+            gameInterval = setInterval(drawGame, 1000 / 60); // 60 FPS
+        }
+    });
+
+    // Iniciar el juego por primera vez
+    isPlaying = true;
+    resetCoin();
+    startTimer();
+    gameInterval = setInterval(drawGame, 1000 / 60);
+
+</script>
+
+</body>
+</html>
