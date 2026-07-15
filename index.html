@@ -70,6 +70,277 @@
             transform: scale(0.95);
         }
 
+        /* ===== ESTILOS DEL CHAT GLOBAL ===== */
+        .chat-container {
+            position: fixed;
+            bottom: 20px;
+            left: 20px;
+            width: 350px;
+            height: 500px;
+            background: #1a1a1a;
+            border: 2px solid #667eea;
+            border-radius: 10px;
+            display: flex;
+            flex-direction: column;
+            z-index: 98;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.5);
+            animation: slideInChat 0.3s ease;
+        }
+
+        @keyframes slideInChat {
+            from {
+                opacity: 0;
+                transform: translateX(-30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateX(0);
+            }
+        }
+
+        .chat-header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 15px;
+            border-radius: 8px 8px 0 0;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-weight: bold;
+        }
+
+        .chat-user-badge {
+            background: rgba(255,255,255,0.2);
+            padding: 4px 10px;
+            border-radius: 12px;
+            font-size: 10px;
+            font-weight: bold;
+            margin-left: 8px;
+        }
+
+        .chat-user-badge.owner {
+            background: #FFD700;
+            color: #000;
+        }
+
+        .chat-close-btn {
+            background: rgba(255,255,255,0.2);
+            border: none;
+            color: white;
+            cursor: pointer;
+            width: 25px;
+            height: 25px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.3s ease;
+        }
+
+        .chat-close-btn:hover {
+            background: rgba(255,255,255,0.4);
+            transform: scale(1.1);
+        }
+
+        .chat-messages {
+            flex: 1;
+            overflow-y: auto;
+            padding: 15px;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .chat-message {
+            background: #252525;
+            padding: 10px 12px;
+            border-radius: 6px;
+            border-left: 3px solid #667eea;
+            animation: slideIn 0.2s ease;
+        }
+
+        @keyframes slideIn {
+            from {
+                opacity: 0;
+                transform: translateY(10px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .chat-message-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 5px;
+        }
+
+        .chat-message-username {
+            color: #87CEEB;
+            font-size: 11px;
+            font-weight: bold;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+
+        .chat-message-badge {
+            background: #FFD700;
+            color: #000;
+            padding: 2px 6px;
+            border-radius: 3px;
+            font-size: 9px;
+            font-weight: bold;
+        }
+
+        .chat-message-time {
+            color: #666;
+            font-size: 10px;
+        }
+
+        .chat-message-text {
+            color: #fff;
+            font-size: 12px;
+            word-wrap: break-word;
+            word-break: break-word;
+        }
+
+        .chat-system {
+            background: #0d47a1;
+            border-left-color: #4caf50;
+        }
+
+        .chat-system .chat-message-username {
+            color: #4caf50;
+        }
+
+        .chat-system .chat-message-text {
+            color: #87CEEB;
+            font-size: 11px;
+            font-style: italic;
+        }
+
+        .chat-input-area {
+            display: flex;
+            gap: 10px;
+            padding: 12px;
+            background: #252525;
+            border-top: 1px solid #667eea;
+            border-radius: 0 0 8px 8px;
+        }
+
+        .chat-input {
+            flex: 1;
+            background: #1a1a1a;
+            border: 1px solid #667eea;
+            color: #fff;
+            padding: 8px 10px;
+            border-radius: 5px;
+            font-family: 'Courier New', Courier, monospace;
+            font-size: 12px;
+        }
+
+        .chat-input:focus {
+            outline: none;
+            border-color: #764ba2;
+            box-shadow: 0 0 10px rgba(118, 75, 162, 0.5);
+        }
+
+        .chat-send-btn {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border: none;
+            color: white;
+            cursor: pointer;
+            width: 40px;
+            height: 40px;
+            border-radius: 5px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.3s ease;
+            font-size: 18px;
+        }
+
+        .chat-send-btn:hover {
+            transform: scale(1.05);
+            box-shadow: 0 4px 15px rgba(102, 126, 234, 0.6);
+        }
+
+        .chat-send-btn:active {
+            transform: scale(0.95);
+        }
+
+        .chat-toggle-btn {
+            position: fixed;
+            bottom: 20px;
+            left: 20px;
+            width: 50px;
+            height: 50px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border: none;
+            border-radius: 50%;
+            color: white;
+            font-size: 20px;
+            cursor: pointer;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.3);
+            transition: all 0.3s ease;
+            z-index: 98;
+        }
+
+        .chat-toggle-btn:hover {
+            transform: scale(1.1);
+            box-shadow: 0 6px 20px rgba(102, 126, 234, 0.6);
+        }
+
+        .chat-toggle-btn:active {
+            transform: scale(0.95);
+        }
+
+        .chat-toggle-btn.hidden {
+            display: none;
+        }
+
+        .chat-container.hidden {
+            display: none;
+        }
+
+        .chat-notification {
+            position: absolute;
+            top: 5px;
+            right: 5px;
+            background: #d32f2f;
+            color: white;
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 12px;
+            font-weight: bold;
+        }
+
+        /* Scroll bar personalizado */
+        .chat-messages::-webkit-scrollbar {
+            width: 6px;
+        }
+
+        .chat-messages::-webkit-scrollbar-track {
+            background: #1a1a1a;
+            border-radius: 10px;
+        }
+
+        .chat-messages::-webkit-scrollbar-thumb {
+            background: #667eea;
+            border-radius: 10px;
+        }
+
+        .chat-messages::-webkit-scrollbar-thumb:hover {
+            background: #764ba2;
+        }
+
         /* ===== ESTILOS DEL MENÚ ADMIN ===== */
         .admin-button {
             position: fixed;
@@ -395,6 +666,21 @@
 <!-- Botón Pantalla Completa -->
 <button class="fullscreen-btn" id="fullscreenBtn" title="Pantalla Completa">⛶</button>
 
+<!-- Chat Global -->
+<button class="chat-toggle-btn" id="chatToggleBtn" title="Chat Global">💬</button>
+
+<div class="chat-container" id="chatContainer">
+    <div class="chat-header">
+        <span>💬 Chat Global</span>
+        <button class="chat-close-btn" id="chatCloseBtn">✕</button>
+    </div>
+    <div class="chat-messages" id="chatMessages"></div>
+    <div class="chat-input-area">
+        <input type="text" id="chatInput" class="chat-input" placeholder="Tu mensaje...">
+        <button class="chat-send-btn" id="chatSendBtn">➤</button>
+    </div>
+</div>
+
 <!-- Botón Admin -->
 <button class="admin-button" id="adminBtn" title="Panel de Admin (Solo para ti)">⚙️</button>
 
@@ -501,6 +787,15 @@
         adminPassword: "admin123"
     };
 
+    // ===== ESTADO DEL CHAT =====
+    const chatState = {
+        username: `Jugador${Math.floor(Math.random() * 1000)}`,
+        isOwner: true, // ¡TÚ ERES EL OWNER!
+        isOpen: true,
+        unreadMessages: 0,
+        messages: []
+    };
+
     // ===== ELEMENTOS DEL JUEGO =====
     const canvas = document.getElementById("gameCanvas");
     const ctx = canvas.getContext("2d");
@@ -543,6 +838,150 @@
             document.exitFullscreen();
         }
     });
+
+    // ===== SISTEMA DE CHAT =====
+
+    const chatContainer = document.getElementById("chatContainer");
+    const chatToggleBtn = document.getElementById("chatToggleBtn");
+    const chatCloseBtn = document.getElementById("chatCloseBtn");
+    const chatMessages = document.getElementById("chatMessages");
+    const chatInput = document.getElementById("chatInput");
+    const chatSendBtn = document.getElementById("chatSendBtn");
+
+    /**
+     * Añade un mensaje al chat
+     */
+    function addChatMessage(username, text, isSystem = false, isOwner = false) {
+        const messageDiv = document.createElement("div");
+        messageDiv.className = isSystem ? "chat-message chat-system" : "chat-message";
+
+        const now = new Date();
+        const timeStr = `${now.getHours().toString().padStart(2, '0')}:${now.getMinutes().toString().padStart(2, '0')}`;
+
+        if (isSystem) {
+            messageDiv.innerHTML = `
+                <div class="chat-message-header">
+                    <div class="chat-message-username">🔔 SISTEMA</div>
+                    <div class="chat-message-time">${timeStr}</div>
+                </div>
+                <div class="chat-message-text">${text}</div>
+            `;
+        } else {
+            const badgeHTML = isOwner ? '<span class="chat-message-badge">👑 OWNER</span>' : '';
+            messageDiv.innerHTML = `
+                <div class="chat-message-header">
+                    <div class="chat-message-username">${username} ${badgeHTML}</div>
+                    <div class="chat-message-time">${timeStr}</div>
+                </div>
+                <div class="chat-message-text">${escapeHtml(text)}</div>
+            `;
+        }
+
+        chatMessages.appendChild(messageDiv);
+        chatMessages.scrollTop = chatMessages.scrollHeight;
+
+        // Limitar a 50 mensajes
+        if (chatMessages.children.length > 50) {
+            chatMessages.removeChild(chatMessages.firstChild);
+        }
+
+        // Actualizar notificación si el chat está cerrado
+        if (!chatState.isOpen && !isSystem) {
+            chatState.unreadMessages++;
+            updateChatNotification();
+        }
+    }
+
+    /**
+     * Escapa caracteres HTML para evitar inyecciones
+     */
+    function escapeHtml(text) {
+        const map = {
+            '&': '&amp;',
+            '<': '&lt;',
+            '>': '&gt;',
+            '"': '&quot;',
+            "'": '&#039;'
+        };
+        return text.replace(/[&<>"']/g, m => map[m]);
+    }
+
+    /**
+     * Actualiza la notificación de mensajes no leídos
+     */
+    function updateChatNotification() {
+        let notification = chatToggleBtn.querySelector(".chat-notification");
+        
+        if (chatState.unreadMessages > 0) {
+            if (!notification) {
+                notification = document.createElement("div");
+                notification.className = "chat-notification";
+                chatToggleBtn.appendChild(notification);
+            }
+            notification.textContent = chatState.unreadMessages;
+        } else if (notification) {
+            notification.remove();
+        }
+    }
+
+    /**
+     * Envía un mensaje al chat
+     */
+    function sendChatMessage() {
+        const text = chatInput.value.trim();
+        
+        if (text.length === 0 || text.length > 100) return;
+
+        addChatMessage(chatState.username, text, false, chatState.isOwner);
+        chatInput.value = "";
+
+        // Simular respuesta ocasional del sistema
+        if (Math.random() > 0.7) {
+            const responses = [
+                "¡Buen jugador!",
+                "¡Sigue así!",
+                "¡A por ello!",
+                "¡Vamos!",
+                "¡Increíble!",
+                "¡Wow!",
+                "¡Dale!",
+                "¡Que emoción!"
+            ];
+            const randomResponse = responses[Math.floor(Math.random() * responses.length)];
+            setTimeout(() => {
+                addChatMessage(`Jugador${Math.floor(Math.random() * 1000)}`, randomResponse);
+            }, 500 + Math.random() * 1000);
+        }
+    }
+
+    // Event listeners del chat
+    chatSendBtn.addEventListener("click", sendChatMessage);
+    chatInput.addEventListener("keypress", (e) => {
+        if (e.key === "Enter") {
+            sendChatMessage();
+        }
+    });
+
+    chatToggleBtn.addEventListener("click", () => {
+        chatState.isOpen = !chatState.isOpen;
+        chatContainer.classList.toggle("hidden");
+        chatToggleBtn.classList.toggle("hidden");
+
+        if (chatState.isOpen) {
+            chatState.unreadMessages = 0;
+            updateChatNotification();
+            chatInput.focus();
+        }
+    });
+
+    chatCloseBtn.addEventListener("click", () => {
+        chatState.isOpen = false;
+        chatContainer.classList.add("hidden");
+        chatToggleBtn.classList.remove("hidden");
+    });
+
+    // Mensaje inicial del chat
+    addChatMessage("Sistema", `¡Bienvenido ${chatState.username}! 👑 ¡Eres el Owner! 🎮 Estás en el chat global del juego.`, true);
 
     // ===== SISTEMA DE ADMIN =====
 
@@ -900,6 +1339,9 @@
         clearInterval(gameState.timerInterval);
         drawGameOver();
         startScreen.classList.remove("hidden");
+        
+        // Anunciar puntuación en el chat
+        addChatMessage("Sistema", `${chatState.username} ha terminado con ${gameState.score} puntos 🎯`, true);
     }
 
     /**
@@ -913,6 +1355,9 @@
         gameLoop(); // Dibujar una vez antes de iniciar el loop
         startTimer();
         gameState.gameInterval = setInterval(gameLoop, 1000 / CONFIG.FPS);
+        
+        // Anunciar inicio de juego en el chat
+        addChatMessage("Sistema", `${chatState.username} ha comenzado a jugar 🎮`, true);
     }
 
     // ===== EVENT LISTENERS =====
