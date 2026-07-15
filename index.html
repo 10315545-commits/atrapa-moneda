@@ -33,11 +33,304 @@
         canvas:active {
             cursor: grabbing;
         }
+
+        /* ===== ESTILOS DEL MENÚ ADMIN ===== */
+        .admin-button {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            width: 50px;
+            height: 50px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border: none;
+            border-radius: 50%;
+            color: white;
+            font-size: 24px;
+            cursor: pointer;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.3);
+            transition: all 0.3s ease;
+            z-index: 100;
+        }
+
+        .admin-button:hover {
+            transform: scale(1.1);
+            box-shadow: 0 6px 20px rgba(102, 126, 234, 0.6);
+        }
+
+        .admin-button:active {
+            transform: scale(0.95);
+        }
+
+        .admin-panel {
+            position: fixed;
+            bottom: 80px;
+            right: 20px;
+            width: 350px;
+            background: #1a1a1a;
+            border: 2px solid #667eea;
+            border-radius: 10px;
+            padding: 20px;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.5);
+            display: none;
+            z-index: 101;
+            max-height: 500px;
+            overflow-y: auto;
+        }
+
+        .admin-panel.active {
+            display: block;
+            animation: slideIn 0.3s ease;
+        }
+
+        @keyframes slideIn {
+            from {
+                opacity: 0;
+                transform: translateY(10px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .admin-panel h2 {
+            color: #667eea;
+            margin-bottom: 15px;
+            font-size: 18px;
+            border-bottom: 2px solid #667eea;
+            padding-bottom: 10px;
+        }
+
+        .config-group {
+            margin-bottom: 15px;
+            padding: 12px;
+            background: #252525;
+            border-radius: 8px;
+            border-left: 3px solid #667eea;
+        }
+
+        .config-group label {
+            display: block;
+            color: #87CEEB;
+            font-size: 12px;
+            margin-bottom: 8px;
+            font-weight: bold;
+        }
+
+        .config-group input[type="number"],
+        .config-group input[type="text"] {
+            width: 100%;
+            padding: 8px;
+            background: #1a1a1a;
+            border: 1px solid #667eea;
+            color: #fff;
+            border-radius: 5px;
+            font-family: 'Courier New', Courier, monospace;
+            font-size: 12px;
+        }
+
+        .config-group input[type="number"]:focus,
+        .config-group input[type="text"]:focus {
+            outline: none;
+            border-color: #764ba2;
+            box-shadow: 0 0 10px rgba(118, 75, 162, 0.5);
+        }
+
+        .config-value {
+            color: #FFD700;
+            font-size: 12px;
+            margin-top: 5px;
+            font-weight: bold;
+        }
+
+        .button-group {
+            display: flex;
+            gap: 10px;
+            margin-top: 10px;
+        }
+
+        .admin-btn {
+            flex: 1;
+            padding: 10px;
+            border: none;
+            border-radius: 5px;
+            color: white;
+            cursor: pointer;
+            font-size: 12px;
+            font-weight: bold;
+            transition: all 0.3s ease;
+        }
+
+        .admin-btn-primary {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        }
+
+        .admin-btn-primary:hover {
+            box-shadow: 0 4px 15px rgba(102, 126, 234, 0.6);
+            transform: translateY(-2px);
+        }
+
+        .admin-btn-secondary {
+            background: #444;
+        }
+
+        .admin-btn-secondary:hover {
+            background: #555;
+        }
+
+        .admin-btn-danger {
+            background: #d32f2f;
+        }
+
+        .admin-btn-danger:hover {
+            background: #b71c1c;
+        }
+
+        .admin-btn:active {
+            transform: translateY(0);
+        }
+
+        .info-box {
+            background: #0d47a1;
+            color: #87CEEB;
+            padding: 10px;
+            border-radius: 5px;
+            font-size: 11px;
+            line-height: 1.4;
+            margin-bottom: 10px;
+        }
+
+        .divider {
+            height: 1px;
+            background: #667eea;
+            margin: 15px 0;
+            opacity: 0.3;
+        }
+
+        /* Scroll bar personalizado */
+        .admin-panel::-webkit-scrollbar {
+            width: 6px;
+        }
+
+        .admin-panel::-webkit-scrollbar-track {
+            background: #1a1a1a;
+            border-radius: 10px;
+        }
+
+        .admin-panel::-webkit-scrollbar-thumb {
+            background: #667eea;
+            border-radius: 10px;
+        }
+
+        .admin-panel::-webkit-scrollbar-thumb:hover {
+            background: #764ba2;
+        }
+
+        .admin-status {
+            display: inline-block;
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            margin-right: 5px;
+        }
+
+        .admin-status.online {
+            background: #4caf50;
+            animation: blink 1.5s infinite;
+        }
+
+        @keyframes blink {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.5; }
+        }
     </style>
 </head>
 <body>
 
 <canvas id="gameCanvas" width="400" height="600"></canvas>
+
+<!-- Botón Admin -->
+<button class="admin-button" id="adminBtn" title="Panel de Admin (Solo para ti)">⚙️</button>
+
+<!-- Panel Admin -->
+<div class="admin-panel" id="adminPanel">
+    <h2><span class="admin-status online"></span>Panel de Admin</h2>
+    
+    <div class="info-box">
+        ℹ️ Acceso exclusivo para administrador. Modifica los parámetros del juego en tiempo real.
+    </div>
+
+    <!-- CONFIGURACIÓN DE TIEMPO -->
+    <div class="config-group">
+        <label>⏱️ Tiempo Inicial (segundos)</label>
+        <input type="number" id="initialTime" min="5" max="120" value="30">
+        <div class="config-value" id="initialTimeValue">Actual: 30s</div>
+    </div>
+
+    <!-- CONFIGURACIÓN DE VELOCIDAD -->
+    <div class="config-group">
+        <label>🎯 Velocidad Inicial de Moneda</label>
+        <input type="number" id="initialSpeed" min="1" max="20" step="0.5" value="4">
+        <div class="config-value" id="initialSpeedValue">Actual: 4 px/frame</div>
+    </div>
+
+    <!-- INCREMENTO DE VELOCIDAD -->
+    <div class="config-group">
+        <label>⚡ Incremento de Velocidad</label>
+        <input type="number" id="speedIncrement" min="0.1" max="2" step="0.1" value="0.2">
+        <div class="config-value" id="speedIncrementValue">Actual: 0.2 px/frame</div>
+    </div>
+
+    <!-- PUNTOS POR MONEDA -->
+    <div class="config-group">
+        <label>💰 Puntos por Moneda</label>
+        <input type="number" id="scorePerCoin" min="1" max="100" value="10">
+        <div class="config-value" id="scorePerCoinValue">Actual: 10 pts</div>
+    </div>
+
+    <!-- TAMAÑO DE CESTA -->
+    <div class="config-group">
+        <label>🧺 Ancho de Cesta (píxeles)</label>
+        <input type="number" id="basketWidth" min="40" max="150" value="80">
+        <div class="config-value" id="basketWidthValue">Actual: 80 px</div>
+    </div>
+
+    <!-- TAMAÑO DE MONEDA -->
+    <div class="config-group">
+        <label>🪙 Radio de Moneda (píxeles)</label>
+        <input type="number" id="coinRadius" min="5" max="30" value="15">
+        <div class="config-value" id="coinRadiusValue">Actual: 15 px</div>
+    </div>
+
+    <!-- CONTRASEÑA ADMIN -->
+    <div class="config-group">
+        <label>🔐 Contraseña Admin</label>
+        <input type="text" id="adminPassword" placeholder="admin123" value="admin123">
+        <div class="config-value">Para activar panel en otras sesiones</div>
+    </div>
+
+    <div class="divider"></div>
+
+    <!-- INFORMACIÓN DE ESTADO -->
+    <div class="config-group">
+        <label>📊 Estado del Juego</label>
+        <div class="config-value" id="gameStatus">Estado: Inactivo</div>
+        <div class="config-value" id="gameScore">Puntos: 0</div>
+        <div class="config-value" id="gameTime">Tiempo: 0s</div>
+    </div>
+
+    <div class="divider"></div>
+
+    <!-- BOTONES DE ACCIÓN -->
+    <div class="button-group">
+        <button class="admin-btn admin-btn-primary" id="applyBtn">✅ Aplicar</button>
+        <button class="admin-btn admin-btn-secondary" id="resetBtn">↺ Resetear</button>
+    </div>
+
+    <div class="button-group">
+        <button class="admin-btn admin-btn-danger" id="clearBtn">🗑️ Limpiar Todo</button>
+    </div>
+</div>
 
 <script>
     // ===== CONFIGURACIÓN DEL JUEGO =====
@@ -58,7 +351,8 @@
         timeLeft: CONFIG.INITIAL_TIME,
         isPlaying: false,
         gameInterval: null,
-        timerInterval: null
+        timerInterval: null,
+        adminPassword: "admin123"
     };
 
     // ===== ELEMENTOS DEL JUEGO =====
@@ -80,6 +374,110 @@
         speed: CONFIG.INITIAL_COIN_SPEED,
         color: "#FFD700"
     };
+
+    // ===== SISTEMA DE ADMIN =====
+
+    const adminButton = document.getElementById("adminBtn");
+    const adminPanel = document.getElementById("adminPanel");
+    const applyBtn = document.getElementById("applyBtn");
+    const resetBtn = document.getElementById("resetBtn");
+    const clearBtn = document.getElementById("clearBtn");
+
+    // Event listeners del panel admin
+    adminButton.addEventListener("click", () => {
+        adminPanel.classList.toggle("active");
+    });
+
+    // Actualizar valores mostrados en tiempo real
+    document.getElementById("initialTime").addEventListener("input", (e) => {
+        document.getElementById("initialTimeValue").textContent = `Actual: ${e.target.value}s`;
+    });
+
+    document.getElementById("initialSpeed").addEventListener("input", (e) => {
+        document.getElementById("initialSpeedValue").textContent = `Actual: ${e.target.value} px/frame`;
+    });
+
+    document.getElementById("speedIncrement").addEventListener("input", (e) => {
+        document.getElementById("speedIncrementValue").textContent = `Actual: ${e.target.value} px/frame`;
+    });
+
+    document.getElementById("scorePerCoin").addEventListener("input", (e) => {
+        document.getElementById("scorePerCoinValue").textContent = `Actual: ${e.target.value} pts`;
+    });
+
+    document.getElementById("basketWidth").addEventListener("input", (e) => {
+        document.getElementById("basketWidthValue").textContent = `Actual: ${e.target.value} px`;
+    });
+
+    document.getElementById("coinRadius").addEventListener("input", (e) => {
+        document.getElementById("coinRadiusValue").textContent = `Actual: ${e.target.value} px`;
+    });
+
+    // Aplicar configuración
+    applyBtn.addEventListener("click", () => {
+        CONFIG.INITIAL_TIME = parseInt(document.getElementById("initialTime").value);
+        CONFIG.INITIAL_COIN_SPEED = parseFloat(document.getElementById("initialSpeed").value);
+        CONFIG.SPEED_INCREMENT = parseFloat(document.getElementById("speedIncrement").value);
+        CONFIG.SCORE_PER_COIN = parseInt(document.getElementById("scorePerCoin").value);
+        CONFIG.BASKET_WIDTH = parseInt(document.getElementById("basketWidth").value);
+        CONFIG.COIN_RADIUS = parseInt(document.getElementById("coinRadius").value);
+        gameState.adminPassword = document.getElementById("adminPassword").value;
+
+        // Actualizar cesta y moneda con nuevas dimensiones
+        basket.width = CONFIG.BASKET_WIDTH;
+        basket.x = canvas.width / 2 - CONFIG.BASKET_WIDTH / 2;
+        coin.radius = CONFIG.COIN_RADIUS;
+
+        // Mostrar confirmación
+        const originalText = applyBtn.textContent;
+        applyBtn.textContent = "✅ ¡Guardado!";
+        setTimeout(() => {
+            applyBtn.textContent = originalText;
+        }, 2000);
+    });
+
+    // Resetear a valores por defecto
+    resetBtn.addEventListener("click", () => {
+        document.getElementById("initialTime").value = "30";
+        document.getElementById("initialSpeed").value = "4";
+        document.getElementById("speedIncrement").value = "0.2";
+        document.getElementById("scorePerCoin").value = "10";
+        document.getElementById("basketWidth").value = "80";
+        document.getElementById("coinRadius").value = "15";
+
+        // Actualizar labels
+        document.getElementById("initialTimeValue").textContent = "Actual: 30s";
+        document.getElementById("initialSpeedValue").textContent = "Actual: 4 px/frame";
+        document.getElementById("speedIncrementValue").textContent = "Actual: 0.2 px/frame";
+        document.getElementById("scorePerCoinValue").textContent = "Actual: 10 pts";
+        document.getElementById("basketWidthValue").textContent = "Actual: 80 px";
+        document.getElementById("coinRadiusValue").textContent = "Actual: 15 px";
+    });
+
+    // Limpiar todo (resetear juego y configuración)
+    clearBtn.addEventListener("click", () => {
+        if (confirm("⚠️ ¿Deseas resetear TODO el juego? Se perderán los datos actuales.")) {
+            resetBtn.click(); // Resetear configuración
+            resetGameState();
+            resetCoin();
+            gameState.isPlaying = false;
+            clearInterval(gameState.gameInterval);
+            clearInterval(gameState.timerInterval);
+
+            const originalText = clearBtn.textContent;
+            clearBtn.textContent = "✅ ¡Limpiado!";
+            setTimeout(() => {
+                clearBtn.textContent = originalText;
+            }, 2000);
+        }
+    });
+
+    // Actualizar estado del juego cada 100ms
+    setInterval(() => {
+        document.getElementById("gameStatus").textContent = `Estado: ${gameState.isPlaying ? "🔴 En juego" : "🟢 Parado"}`;
+        document.getElementById("gameScore").textContent = `Puntos: ${gameState.score}`;
+        document.getElementById("gameTime").textContent = `Tiempo: ${gameState.timeLeft}s`;
+    }, 100);
 
     // ===== FUNCIONES AUXILIARES =====
     
