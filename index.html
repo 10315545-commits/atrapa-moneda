@@ -5,9 +5,13 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Atrapa la Moneda</title>
     <style>
-        body {
+        * {
             margin: 0;
             padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
             background: #202020;
             display: flex;
             justify-content: center;
@@ -16,11 +20,18 @@
             overflow: hidden;
             font-family: 'Courier New', Courier, monospace;
         }
+
         canvas {
             background: linear-gradient(to bottom, #87CEEB, #E0F6FF);
             border: 4px solid #fff;
             border-radius: 10px;
             box-shadow: 0 10px 20px rgba(0,0,0,0.3);
+            display: block;
+            cursor: none;
+        }
+
+        canvas:active {
+            cursor: grabbing;
         }
     </style>
 </head>
@@ -29,41 +40,71 @@
 <canvas id="gameCanvas" width="400" height="600"></canvas>
 
 <script>
+    // ===== CONFIGURACIÓN DEL JUEGO =====
+    const CONFIG = {
+        INITIAL_TIME: 30,
+        INITIAL_COIN_SPEED: 4,
+        SPEED_INCREMENT: 0.2,
+        SCORE_PER_COIN: 10,
+        FPS: 60,
+        BASKET_WIDTH: 80,
+        BASKET_HEIGHT: 20,
+        COIN_RADIUS: 15
+    };
+
+    // ===== ESTADO DEL JUEGO =====
+    const gameState = {
+        score: 0,
+        timeLeft: CONFIG.INITIAL_TIME,
+        isPlaying: false,
+        gameInterval: null,
+        timerInterval: null
+    };
+
+    // ===== ELEMENTOS DEL JUEGO =====
     const canvas = document.getElementById("gameCanvas");
     const ctx = canvas.getContext("2d");
 
-    // Variables del juego
-    let score = 0;
-    let timeLeft = 30; // 30 segundos de juego
-    let gameInterval;
-    let timerInterval;
-    let isPlaying = false;
-
-    // La Cesta (Jugador)
     const basket = {
-        x: 160,
-        y: 540,
-        width: 80,
-        height: 20,
+        x: canvas.width / 2 - CONFIG.BASKET_WIDTH / 2,
+        y: canvas.height - 60,
+        width: CONFIG.BASKET_WIDTH,
+        height: CONFIG.BASKET_HEIGHT,
         color: "#8B4513"
     };
 
-    // La Moneda
     const coin = {
         x: 0,
-        y: -30,
-        radius: 15,
-        speed: 4,
+        y: -CONFIG.COIN_RADIUS * 2,
+        radius: CONFIG.COIN_RADIUS,
+        speed: CONFIG.INITIAL_COIN_SPEED,
         color: "#FFD700"
     };
 
-    // Reiniciar la moneda arriba en una posición aleatoria
+    // ===== FUNCIONES AUXILIARES =====
+    
+    /**
+     * Reinicia la moneda en una posición aleatoria en la parte superior
+     */
     function resetCoin() {
-        coin.y = -30;
+        coin.y = -CONFIG.COIN_RADIUS * 2;
         coin.x = Math.random() * (canvas.width - coin.radius * 2) + coin.radius;
     }
 
-    // Dibujar la cesta
+    /**
+     * Reinicia el estado del juego
+     */
+    function resetGameState() {
+        gameState.score = 0;
+        gameState.timeLeft = CONFIG.INITIAL_TIME;
+        coin.speed = CONFIG.INITIAL_COIN_SPEED;
+    }
+
+    // ===== FUNCIONES DE DIBUJO =====
+
+    /**
+     * Dibuja la cesta del jugador
+     */
     function drawBasket() {
         ctx.fillStyle = basket.color;
         ctx.fillRect(basket.x, basket.y, basket.width, basket.height);
@@ -74,15 +115,18 @@
         ctx.strokeRect(basket.x, basket.y, basket.width, basket.height);
     }
 
-    // Dibujar la moneda
+    /**
+     * Dibuja la moneda con efecto de brillo
+     */
     function drawCoin() {
+        // Cuerpo principal
         ctx.beginPath();
         ctx.arc(coin.x, coin.y, coin.radius, 0, Math.PI * 2);
         ctx.fillStyle = coin.color;
         ctx.fill();
         ctx.closePath();
 
-        // Brillo de la moneda
+        // Efecto de brillo
         ctx.beginPath();
         ctx.arc(coin.x - 4, coin.y - 4, coin.radius / 3, 0, Math.PI * 2);
         ctx.fillStyle = "rgba(255, 255, 255, 0.5)";
@@ -90,120 +134,176 @@
         ctx.closePath();
     }
 
-    // Dibujar el puntaje y tiempo
+    /**
+     * Dibuja el HUD (puntuación y tiempo)
+     */
     function drawHUD() {
         ctx.fillStyle = "#000";
-        ctx.font = "20px Arial";
+        ctx.font = "bold 20px Arial";
         ctx.textAlign = "left";
-        ctx.fillText("Puntos: " + score, 20, 30);
-        ctx.fillText("Tiempo: " + timeLeft + "s", canvas.width - 120, 30);
+        ctx.fillText(`Puntos: ${gameState.score}`, 20, 30);
+        
+        ctx.textAlign = "right";
+        ctx.fillText(`Tiempo: ${gameState.timeLeft}s`, canvas.width - 20, 30);
     }
 
-    // Actualizar posiciones
+    /**
+     * Dibuja la pantalla de fin de juego
+     */
+    function drawGameOver() {
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+        
+        // Fondo semi-transparente
+        ctx.fillStyle = "rgba(0, 0, 0, 0.7)";
+        ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+        // Textos
+        ctx.fillStyle = "#FFF";
+        ctx.font = "bold 40px Arial";
+        ctx.textAlign = "center";
+        ctx.fillText("¡TIEMPO!", canvas.width / 2, 150);
+
+        ctx.font = "bold 32px Arial";
+        ctx.fillStyle = "#FFD700";
+        ctx.fillText(`Puntuación: ${gameState.score}`, canvas.width / 2, 220);
+
+        ctx.font = "18px Arial";
+        ctx.fillStyle = "#87CEEB";
+        ctx.fillText("Haz clic para jugar de nuevo", canvas.width / 2, 320);
+    }
+
+    // ===== FUNCIONES DE FÍSICA =====
+
+    /**
+     * Verifica si hay colisión entre la moneda y la cesta
+     */
+    function checkCollision() {
+        const coinBottom = coin.y + coin.radius;
+        const coinTop = coin.y - coin.radius;
+        const basketTop = basket.y;
+        const basketBottom = basket.y + basket.height;
+
+        return (
+            coinBottom > basketTop &&
+            coinTop < basketBottom &&
+            coin.x > basket.x &&
+            coin.x < basket.x + basket.width
+        );
+    }
+
+    /**
+     * Actualiza la posición de la moneda y verifica colisiones
+     */
     function update() {
-        if (!isPlaying) return;
+        if (!gameState.isPlaying) return;
 
         // Mover la moneda hacia abajo
         coin.y += coin.speed;
 
-        // Comprobar si la moneda cae al suelo (pierdes oportunidad de atraparla)
+        // Si la moneda cae fuera de pantalla
         if (coin.y - coin.radius > canvas.height) {
             resetCoin();
         }
 
-        // Comprobar colisión con la cesta (Atrapar moneda)
-        if (coin.y + coin.radius > basket.y &&
-            coin.x > basket.x &&
-            coin.x < basket.x + basket.width &&
-            coin.y < basket.y + basket.height) {
-            
-            score += 10;
-            coin.speed += 0.2; // Aumenta la dificultad (caen más rápido)
+        // Verificar colisión con la cesta
+        if (checkCollision()) {
+            gameState.score += CONFIG.SCORE_PER_COIN;
+            coin.speed += CONFIG.SPEED_INCREMENT;
             resetCoin();
         }
     }
 
-    // Bucle principal del juego
-    function drawGame() {
-        ctx.clearRect(0, 0, canvas.width, canvas.height); // Limpiar pantalla
+    /**
+     * Bucle principal del juego
+     */
+    function gameLoop() {
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
         drawHUD();
         drawBasket();
         drawCoin();
         update();
     }
 
-    // Mover la cesta con el ratón
-    canvas.addEventListener("mousemove", (e) => {
-        if (!isPlaying) return;
+    // ===== FUNCIONES DE ENTRADA =====
+
+    /**
+     * Actualiza la posición de la cesta según el movimiento del ratón
+     */
+    function handleMouseMove(e) {
+        if (!gameState.isPlaying) return;
+        
         const rect = canvas.getBoundingClientRect();
-        // Centrar la cesta donde apunta el ratón
-        basket.x = e.clientX - rect.left - (basket.width / 2);
+        const mouseX = e.clientX - rect.left;
 
-        // Evitar que la cesta se salga de la pantalla
-        if (basket.x < 0) basket.x = 0;
-        if (basket.x + basket.width > canvas.width) {
-            basket.x = canvas.width - basket.width;
-        }
-    });
+        // Centrar la cesta en la posición del ratón
+        basket.x = mouseX - basket.width / 2;
 
-    // Mover la cesta con el dedo (Pantallas táctiles)
-    canvas.addEventListener("touchmove", (e) => {
-        if (!isPlaying) return;
-        e.preventDefault(); // Evita que la pantalla se mueva
+        // Limitar movimiento dentro del canvas
+        basket.x = Math.max(0, Math.min(basket.x, canvas.width - basket.width));
+    }
+
+    /**
+     * Actualiza la posición de la cesta según el toque en pantalla táctil
+     */
+    function handleTouchMove(e) {
+        if (!gameState.isPlaying) return;
+        
+        e.preventDefault();
         const rect = canvas.getBoundingClientRect();
-        basket.x = e.touches[0].clientX - rect.left - (basket.width / 2);
-    });
+        const touchX = e.touches[0].clientX - rect.left;
 
-    // Temporizador
+        basket.x = touchX - basket.width / 2;
+        basket.x = Math.max(0, Math.min(basket.x, canvas.width - basket.width));
+    }
+
+    // ===== FUNCIONES DE CONTROL DE JUEGO =====
+
+    /**
+     * Inicia el temporizador del juego
+     */
     function startTimer() {
-        timerInterval = setInterval(() => {
-            if (timeLeft > 0) {
-                timeLeft--;
+        gameState.timerInterval = setInterval(() => {
+            if (gameState.timeLeft > 0) {
+                gameState.timeLeft--;
             } else {
                 endGame();
             }
         }, 1000);
     }
 
-    // Fin del juego
+    /**
+     * Finaliza el juego
+     */
     function endGame() {
-        isPlaying = false;
-        clearInterval(gameInterval);
-        clearInterval(timerInterval);
-        
-        ctx.clearRect(0, 0, canvas.width, canvas.height);
-        
-        // Mensaje de fin
-        ctx.fillStyle = "#000";
-        ctx.font = "30px Arial";
-        ctx.textAlign = "center";
-        ctx.fillText("¡TIEMPO!" , canvas.width / 2, 200);
-        ctx.fillText("Puntaje final: " + score, canvas.width / 2, 250);
-        
-        // Botón de reinicio
-        ctx.font = "20px Arial";
-        ctx.fillStyle = "#0055ff";
-        ctx.fillText("Toca la pantalla para jugar de nuevo", canvas.width / 2, 350);
+        gameState.isPlaying = false;
+        clearInterval(gameState.gameInterval);
+        clearInterval(gameState.timerInterval);
+        drawGameOver();
     }
 
-    // Reiniciar juego al hacer clic
+    /**
+     * Inicia una nueva partida
+     */
+    function startGame() {
+        resetGameState();
+        resetCoin();
+        gameState.isPlaying = true;
+        gameLoop(); // Dibujar una vez antes de iniciar el loop
+        startTimer();
+        gameState.gameInterval = setInterval(gameLoop, 1000 / CONFIG.FPS);
+    }
+
+    // ===== EVENT LISTENERS =====
+    canvas.addEventListener("mousemove", handleMouseMove);
+    canvas.addEventListener("touchmove", handleTouchMove, { passive: false });
     canvas.addEventListener("click", () => {
-        if (!isPlaying && timeLeft === 0) {
-            score = 0;
-            timeLeft = 30;
-            coin.speed = 4;
-            isPlaying = true;
-            resetCoin();
-            startTimer();
-            gameInterval = setInterval(drawGame, 1000 / 60); // 60 FPS
+        if (!gameState.isPlaying && gameState.timeLeft === 0) {
+            startGame();
         }
     });
 
-    // Iniciar el juego por primera vez
-    isPlaying = true;
-    resetCoin();
-    startTimer();
-    gameInterval = setInterval(drawGame, 1000 / 60);
+    // ===== INICIAR JUEGO =====
+    startGame();
 
 </script>
 
