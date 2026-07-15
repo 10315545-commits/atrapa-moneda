@@ -21,17 +21,53 @@
             font-family: 'Courier New', Courier, monospace;
         }
 
-        canvas {
+        #gameContainer {
+            position: relative;
+            width: 100vw;
+            height: 100vh;
             background: linear-gradient(to bottom, #87CEEB, #E0F6FF);
-            border: 4px solid #fff;
-            border-radius: 10px;
-            box-shadow: 0 10px 20px rgba(0,0,0,0.3);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        canvas {
+            width: 100%;
+            height: 100%;
             display: block;
             cursor: none;
+            max-width: 100%;
+            max-height: 100%;
         }
 
         canvas:active {
             cursor: grabbing;
+        }
+
+        .fullscreen-btn {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            width: 50px;
+            height: 50px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border: none;
+            border-radius: 50%;
+            color: white;
+            font-size: 20px;
+            cursor: pointer;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.3);
+            transition: all 0.3s ease;
+            z-index: 99;
+        }
+
+        .fullscreen-btn:hover {
+            transform: scale(1.1);
+            box-shadow: 0 6px 20px rgba(102, 126, 234, 0.6);
+        }
+
+        .fullscreen-btn:active {
+            transform: scale(0.95);
         }
 
         /* ===== ESTILOS DEL MENÚ ADMIN ===== */
@@ -243,11 +279,121 @@
             0%, 100% { opacity: 1; }
             50% { opacity: 0.5; }
         }
+
+        /* Partículas de recolección */
+        .particle {
+            position: fixed;
+            pointer-events: none;
+            font-size: 30px;
+            font-weight: bold;
+            animation: floatUp 1s ease-out forwards;
+        }
+
+        @keyframes floatUp {
+            0% {
+                opacity: 1;
+                transform: translateY(0) scale(1);
+            }
+            100% {
+                opacity: 0;
+                transform: translateY(-80px) scale(0.5);
+            }
+        }
+
+        /* Pantalla de inicio mejorada */
+        .start-screen {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            z-index: 50;
+            animation: fadeIn 0.5s ease;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+            }
+            to {
+                opacity: 1;
+            }
+        }
+
+        .start-screen.hidden {
+            display: none;
+        }
+
+        .game-title {
+            font-size: clamp(40px, 8vw, 80px);
+            color: white;
+            margin-bottom: 20px;
+            text-shadow: 0 4px 10px rgba(0,0,0,0.3);
+            animation: bounceIn 0.8s ease;
+        }
+
+        @keyframes bounceIn {
+            0% {
+                opacity: 0;
+                transform: translateY(-50px) scale(0.5);
+            }
+            50% {
+                opacity: 1;
+            }
+            100% {
+                opacity: 1;
+                transform: translateY(0) scale(1);
+            }
+        }
+
+        .game-coin {
+            font-size: clamp(50px, 10vw, 100px);
+            margin: 20px 0;
+            animation: spin 2s linear infinite;
+        }
+
+        @keyframes spin {
+            0%, 100% {
+                transform: rotateY(0deg) scale(1);
+            }
+            50% {
+                transform: rotateY(180deg) scale(1.1);
+            }
+        }
+
+        .start-instruction {
+            font-size: clamp(16px, 4vw, 24px);
+            color: rgba(255,255,255,0.9);
+            margin-top: 30px;
+            animation: pulse 1.5s ease-in-out infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% {
+                opacity: 0.7;
+            }
+            50% {
+                opacity: 1;
+            }
+        }
     </style>
 </head>
 <body>
 
-<canvas id="gameCanvas" width="400" height="600"></canvas>
+<div id="gameContainer">
+    <div class="start-screen" id="startScreen">
+        <div class="game-title">🎮 ATRAPA LA MONEDA</div>
+        <div class="game-coin">🪙</div>
+        <div class="start-instruction">Haz clic para comenzar</div>
+    </div>
+    <canvas id="gameCanvas"></canvas>
+</div>
+
+<!-- Botón Pantalla Completa -->
+<button class="fullscreen-btn" id="fullscreenBtn" title="Pantalla Completa">⛶</button>
 
 <!-- Botón Admin -->
 <button class="admin-button" id="adminBtn" title="Panel de Admin (Solo para ti)">⚙️</button>
@@ -358,13 +504,25 @@
     // ===== ELEMENTOS DEL JUEGO =====
     const canvas = document.getElementById("gameCanvas");
     const ctx = canvas.getContext("2d");
+    const gameContainer = document.getElementById("gameContainer");
+    const startScreen = document.getElementById("startScreen");
+
+    // Configurar canvas responsivo
+    function resizeCanvas() {
+        canvas.width = window.innerWidth;
+        canvas.height = window.innerHeight;
+    }
+
+    resizeCanvas();
+    window.addEventListener("resize", resizeCanvas);
 
     const basket = {
         x: canvas.width / 2 - CONFIG.BASKET_WIDTH / 2,
         y: canvas.height - 60,
         width: CONFIG.BASKET_WIDTH,
         height: CONFIG.BASKET_HEIGHT,
-        color: "#8B4513"
+        color: "#8B4513",
+        targetX: canvas.width / 2 - CONFIG.BASKET_WIDTH / 2
     };
 
     const coin = {
@@ -372,8 +530,19 @@
         y: -CONFIG.COIN_RADIUS * 2,
         radius: CONFIG.COIN_RADIUS,
         speed: CONFIG.INITIAL_COIN_SPEED,
-        color: "#FFD700"
+        color: "#FFD700",
+        rotation: 0
     };
+
+    // ===== PANTALLA COMPLETA =====
+    const fullscreenBtn = document.getElementById("fullscreenBtn");
+    fullscreenBtn.addEventListener("click", () => {
+        if (!document.fullscreenElement) {
+            gameContainer.requestFullscreen().catch(() => {});
+        } else {
+            document.exitFullscreen();
+        }
+    });
 
     // ===== SISTEMA DE ADMIN =====
 
@@ -426,6 +595,7 @@
         // Actualizar cesta y moneda con nuevas dimensiones
         basket.width = CONFIG.BASKET_WIDTH;
         basket.x = canvas.width / 2 - CONFIG.BASKET_WIDTH / 2;
+        basket.targetX = basket.x;
         coin.radius = CONFIG.COIN_RADIUS;
 
         // Mostrar confirmación
@@ -487,6 +657,7 @@
     function resetCoin() {
         coin.y = -CONFIG.COIN_RADIUS * 2;
         coin.x = Math.random() * (canvas.width - coin.radius * 2) + coin.radius;
+        coin.rotation = 0;
     }
 
     /**
@@ -498,51 +669,100 @@
         coin.speed = CONFIG.INITIAL_COIN_SPEED;
     }
 
+    /**
+     * Crea partículas flotantes cuando se recoge una moneda
+     */
+    function createParticles(x, y) {
+        for (let i = 0; i < 5; i++) {
+            const particle = document.createElement("div");
+            particle.className = "particle";
+            particle.textContent = "💰";
+            particle.style.left = x + "px";
+            particle.style.top = y + "px";
+            particle.style.transform = `translate(${(Math.random() - 0.5) * 100}px, 0)`;
+            gameContainer.appendChild(particle);
+            
+            setTimeout(() => particle.remove(), 1000);
+        }
+    }
+
     // ===== FUNCIONES DE DIBUJO =====
 
     /**
-     * Dibuja la cesta del jugador
+     * Dibuja la cesta del jugador con suavizado
      */
     function drawBasket() {
+        // Suavizar movimiento de la cesta
+        basket.x += (basket.targetX - basket.x) * 0.2;
+
         ctx.fillStyle = basket.color;
         ctx.fillRect(basket.x, basket.y, basket.width, basket.height);
         
-        // Detalles de la cesta
+        // Detalles de la cesta con efecto de profundidad
         ctx.strokeStyle = "#5c2d0c";
         ctx.lineWidth = 3;
         ctx.strokeRect(basket.x, basket.y, basket.width, basket.height);
+
+        // Efecto de brillo superior
+        ctx.fillStyle = "rgba(255, 255, 255, 0.1)";
+        ctx.fillRect(basket.x, basket.y, basket.width, basket.height / 2);
     }
 
     /**
-     * Dibuja la moneda con efecto de brillo
+     * Dibuja la moneda con rotación y efecto de brillo mejorado
      */
     function drawCoin() {
+        ctx.save();
+        ctx.translate(coin.x, coin.y);
+        ctx.rotate(coin.rotation);
+
         // Cuerpo principal
         ctx.beginPath();
-        ctx.arc(coin.x, coin.y, coin.radius, 0, Math.PI * 2);
+        ctx.arc(0, 0, coin.radius, 0, Math.PI * 2);
         ctx.fillStyle = coin.color;
         ctx.fill();
         ctx.closePath();
 
-        // Efecto de brillo
+        // Borde de la moneda
+        ctx.strokeStyle = "#DAA520";
+        ctx.lineWidth = 2;
+        ctx.stroke();
+
+        // Efecto de brillo principal
         ctx.beginPath();
-        ctx.arc(coin.x - 4, coin.y - 4, coin.radius / 3, 0, Math.PI * 2);
-        ctx.fillStyle = "rgba(255, 255, 255, 0.5)";
+        ctx.arc(-coin.radius / 3, -coin.radius / 3, coin.radius / 3, 0, Math.PI * 2);
+        ctx.fillStyle = "rgba(255, 255, 255, 0.6)";
         ctx.fill();
         ctx.closePath();
+
+        // Efecto de brillo secundario
+        ctx.beginPath();
+        ctx.arc(coin.radius / 4, coin.radius / 4, coin.radius / 5, 0, Math.PI * 2);
+        ctx.fillStyle = "rgba(255, 255, 255, 0.3)";
+        ctx.fill();
+        ctx.closePath();
+
+        ctx.restore();
     }
 
     /**
      * Dibuja el HUD (puntuación y tiempo)
      */
     function drawHUD() {
-        ctx.fillStyle = "#000";
-        ctx.font = "bold 20px Arial";
+        const fontSize = Math.max(20, window.innerWidth * 0.03);
+        
+        ctx.fillStyle = "rgba(0, 0, 0, 0.3)";
+        ctx.fillRect(0, 0, canvas.width, 60);
+
+        ctx.fillStyle = "#FFD700";
+        ctx.font = `bold ${fontSize}px Arial`;
         ctx.textAlign = "left";
-        ctx.fillText(`Puntos: ${gameState.score}`, 20, 30);
+        ctx.fillText(`💰 Puntos: ${gameState.score}`, 20, 40);
         
         ctx.textAlign = "right";
-        ctx.fillText(`Tiempo: ${gameState.timeLeft}s`, canvas.width - 20, 30);
+        const timeColor = gameState.timeLeft <= 5 ? "#FF6B6B" : "#FFD700";
+        ctx.fillStyle = timeColor;
+        ctx.fillText(`⏱️ Tiempo: ${gameState.timeLeft}s`, canvas.width - 20, 40);
     }
 
     /**
@@ -557,17 +777,17 @@
 
         // Textos
         ctx.fillStyle = "#FFF";
-        ctx.font = "bold 40px Arial";
+        ctx.font = `bold ${Math.max(40, window.innerWidth * 0.08)}px Arial`;
         ctx.textAlign = "center";
-        ctx.fillText("¡TIEMPO!", canvas.width / 2, 150);
+        ctx.fillText("¡TIEMPO!", canvas.width / 2, canvas.height / 4);
 
-        ctx.font = "bold 32px Arial";
+        ctx.font = `bold ${Math.max(32, window.innerWidth * 0.06)}px Arial`;
         ctx.fillStyle = "#FFD700";
-        ctx.fillText(`Puntuación: ${gameState.score}`, canvas.width / 2, 220);
+        ctx.fillText(`Puntuación: ${gameState.score}`, canvas.width / 2, canvas.height / 2);
 
-        ctx.font = "18px Arial";
+        ctx.font = `${Math.max(18, window.innerWidth * 0.04)}px Arial`;
         ctx.fillStyle = "#87CEEB";
-        ctx.fillText("Haz clic para jugar de nuevo", canvas.width / 2, 320);
+        ctx.fillText("Haz clic para jugar de nuevo", canvas.width / 2, canvas.height - 100);
     }
 
     // ===== FUNCIONES DE FÍSICA =====
@@ -597,6 +817,7 @@
 
         // Mover la moneda hacia abajo
         coin.y += coin.speed;
+        coin.rotation += 0.1; // Rotación constante
 
         // Si la moneda cae fuera de pantalla
         if (coin.y - coin.radius > canvas.height) {
@@ -607,6 +828,7 @@
         if (checkCollision()) {
             gameState.score += CONFIG.SCORE_PER_COIN;
             coin.speed += CONFIG.SPEED_INCREMENT;
+            createParticles(coin.x, coin.y);
             resetCoin();
         }
     }
@@ -634,10 +856,10 @@
         const mouseX = e.clientX - rect.left;
 
         // Centrar la cesta en la posición del ratón
-        basket.x = mouseX - basket.width / 2;
+        basket.targetX = mouseX - basket.width / 2;
 
         // Limitar movimiento dentro del canvas
-        basket.x = Math.max(0, Math.min(basket.x, canvas.width - basket.width));
+        basket.targetX = Math.max(0, Math.min(basket.targetX, canvas.width - basket.width));
     }
 
     /**
@@ -650,8 +872,8 @@
         const rect = canvas.getBoundingClientRect();
         const touchX = e.touches[0].clientX - rect.left;
 
-        basket.x = touchX - basket.width / 2;
-        basket.x = Math.max(0, Math.min(basket.x, canvas.width - basket.width));
+        basket.targetX = touchX - basket.width / 2;
+        basket.targetX = Math.max(0, Math.min(basket.targetX, canvas.width - basket.width));
     }
 
     // ===== FUNCIONES DE CONTROL DE JUEGO =====
@@ -677,12 +899,14 @@
         clearInterval(gameState.gameInterval);
         clearInterval(gameState.timerInterval);
         drawGameOver();
+        startScreen.classList.remove("hidden");
     }
 
     /**
      * Inicia una nueva partida
      */
     function startGame() {
+        startScreen.classList.add("hidden");
         resetGameState();
         resetCoin();
         gameState.isPlaying = true;
@@ -700,8 +924,11 @@
         }
     });
 
+    startScreen.addEventListener("click", startGame);
+
     // ===== INICIAR JUEGO =====
-    startGame();
+    // Solo mostrar pantalla de inicio
+    startScreen.classList.remove("hidden");
 
 </script>
 
