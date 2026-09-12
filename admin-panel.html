@@ -10,8 +10,8 @@
         body {
             background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
             display: flex; justify-content: center; align-items: center;
-            min-height: 100vh; font-family: 'Courier New', Courier, monospace;
-            padding: 20px;
+            min-height: 100vh; min-height: 100dvh; font-family: 'Courier New', Courier, monospace;
+            padding: max(16px, env(safe-area-inset-top)) max(16px, env(safe-area-inset-right)) max(16px, env(safe-area-inset-bottom)) max(16px, env(safe-area-inset-left));
         }
         .container { width: 100%; max-width: 600px; }
 
@@ -40,7 +40,7 @@
 
         .login-btn, .admin-btn {
             padding:10px 14px; border:none; border-radius:8px; cursor:pointer; font-weight:bold;
-            transition:all .2s ease;
+            transition:all .2s ease; min-height:44px;
         }
         .login-btn { width:100%; background:linear-gradient(135deg,#667eea,#764ba2); color:#fff; }
         .login-btn:hover { transform: translateY(-2px); box-shadow:0 8px 20px rgba(102,126,234,0.4); }
@@ -92,6 +92,10 @@
         .admin-screen::-webkit-scrollbar-thumb:hover { background:#764ba2; }
 
         @media (max-width:480px) {
+            .login-screen, .admin-screen { padding:18px 14px; border-radius:12px; }
+            .admin-header { align-items:flex-start; gap:10px; flex-direction:column; }
+            .admin-footer { align-items:stretch; flex-direction:column; }
+            .admin-footer > div:last-child { display:grid !important; grid-template-columns:1fr 1fr; }
             .control-row { flex-direction:column; }
             .btn-group { flex-direction:column; }
             .stats-grid { grid-template-columns:1fr; }

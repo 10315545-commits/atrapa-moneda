@@ -2,6 +2,7 @@
 <html lang="es">
 <head>
 <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
 <title>Login</title>
 
 <style>
@@ -13,7 +14,10 @@ body{
   display:flex;
   justify-content:center;
   align-items:center;
-  height:100vh;
+  min-height:100vh;
+  min-height:100dvh;
+  padding:max(16px, env(safe-area-inset-top)) max(16px, env(safe-area-inset-right)) max(16px, env(safe-area-inset-bottom)) max(16px, env(safe-area-inset-left));
+  overscroll-behavior:none;
 }
 
 .box{
@@ -22,7 +26,7 @@ body{
   border-radius:10px;
   border:2px solid #00ffcc;
   text-align:center;
-  width:260px;
+  width:min(320px, 100%);
 }
 
 input,button{
@@ -30,7 +34,9 @@ input,button{
   padding:8px;
   border:none;
   border-radius:6px;
-  width:90%;
+  width:100%;
+  min-height:44px;
+  font-size:16px;
 }
 
 button{
