@@ -2,20 +2,19 @@
 <html lang="es">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width,initial-scale=1.0">
-<title>Atrapa la Moneda — CHAOS MEGA UPDATE 3.0</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Atrapa la Moneda — CHAOS MEGA UPDATE 2.0</title>
 
 <style>
 *{margin:0;padding:0;box-sizing:border-box}
 html,body{width:100%;height:100%;overflow:hidden}
-body{
-  font-family:"Courier New",monospace;
-  background:#171717;
-  color:#fff
-}
+body{font-family:"Courier New",monospace;background:#171717;color:#fff}
 button,input{font:inherit}
 button{cursor:pointer}
 
+/* =========================
+   JUEGO
+========================= */
 #gameContainer{
   position:fixed;
   inset:0;
@@ -91,139 +90,86 @@ button{cursor:pointer}
 @keyframes coinSpin{
   50%{transform:rotateY(180deg) scale(1.08)}
 }
+
 @keyframes pulse{
   50%{opacity:.55}
 }
 
-/* BOTONES COMPACTOS */
+/* =========================
+   BOTONES
+========================= */
 .floating-btn{
   position:fixed;
   z-index:70;
-  width:44px;
-  height:44px;
+  width:50px;
+  height:50px;
   border:0;
   border-radius:50%;
   color:#fff;
-  font-size:18px;
+  font-size:20px;
   box-shadow:0 5px 18px #0005;
   transition:.2s
 }
+
 .floating-btn:hover{transform:scale(1.08)}
 
 #shopBtn{
-  top:14px;
-  left:14px;
+  top:20px;
+  left:20px;
   background:linear-gradient(135deg,#ffa500,#ff6b00)
 }
+
 #soundBtn{
-  top:14px;
-  right:68px;
+  top:20px;
+  right:80px;
   background:linear-gradient(135deg,#4caf50,#2e7d32)
 }
+
 #pauseBtn{
-  top:14px;
-  right:120px;
+  top:20px;
+  right:140px;
   background:linear-gradient(135deg,#2196f3,#1565c0);
   display:none
 }
+
 #fullscreenBtn{
-  top:14px;
-  right:14px;
+  top:20px;
+  right:20px;
   background:linear-gradient(135deg,#667eea,#764ba2)
 }
+
 #chatToggleBtn{
-  bottom:14px;
-  left:14px;
+  bottom:20px;
+  left:20px;
   background:linear-gradient(135deg,#667eea,#764ba2)
 }
-#tradeBtn{
-  bottom:14px;
-  left:66px;
-  background:linear-gradient(135deg,#00a8ff,#005bea)
-}
+
 #adminBtn{
-  bottom:14px;
-  right:14px;
+  bottom:20px;
+  right:20px;
   background:linear-gradient(135deg,#455a64,#263238);
-  font-size:20px
+  font-size:22px
 }
 
-#updatesButton{
-  position:fixed;
-  top:132px;
-  left:14px;
-  z-index:75;
-  border:2px solid #667eea;
-  border-radius:12px;
-  padding:10px 14px;
-  background:rgba(15,15,20,.94);
+.badge{
+  position:absolute;
+  top:-4px;
+  right:-4px;
+  min-width:22px;
+  height:22px;
+  border-radius:50%;
+  display:none;
+  align-items:center;
+  justify-content:center;
+  background:#d32f2f;
   color:#fff;
-  font-weight:900;
-  font-size:13px;
-  box-shadow:0 10px 35px #0008
-}
-
-#megaBtn{
-  position:fixed;
-  top:132px;
-  right:14px;
-  z-index:75;
-  border:2px solid #ffd700;
-  border-radius:12px;
-  padding:10px 13px;
-  background:linear-gradient(135deg,#ff1744,#7c4dff);
-  color:#fff;
-  font-weight:900;
-  font-size:12px;
-  box-shadow:0 10px 35px #0008
-}
-
-#mega30Btn{
-  position:fixed;
-  right:14px;
-  bottom:74px;
-  z-index:75;
-  border:0;
-  border-radius:13px;
-  padding:10px 13px;
-  background:linear-gradient(135deg,#ff7a00,#ff1744,#8e24aa);
-  color:#fff;
-  font-weight:900;
-  box-shadow:0 8px 28px #0008
-}
-
-#goldEventBadge{
-  position:fixed;
-  top:70px;
-  left:50%;
-  transform:translateX(-50%);
-  z-index:26;
-  padding:6px 12px;
-  border:1px solid #ffd700;
-  border-radius:10px;
-  background:#111c;
-  color:#ffd700;
   font-size:11px;
-  font-weight:900;
-  pointer-events:none;
-  text-align:center
+  font-weight:900
 }
 
-#fpsCounter{
-  position:fixed;
-  right:14px;
-  top:68px;
-  z-index:25;
-  background:#000a;
-  color:#7CFF7C;
-  border:1px solid #7CFF7C;
-  border-radius:7px;
-  padding:5px 9px;
-  font:bold 12px Arial;
-  pointer-events:none
-}
-
-/* MODALES */
+/* =========================
+   MODAL / TIENDA
+========================= */
 .modal{
   position:fixed;
   inset:0;
@@ -234,6 +180,7 @@ button{cursor:pointer}
   background:#000b;
   padding:20px
 }
+
 .modal.active{display:flex}
 
 .modal-content{
@@ -306,17 +253,18 @@ button{cursor:pointer}
   border:2px solid #444;
   border-radius:10px;
   padding:14px;
-  text-align:center
+  text-align:center;
+  transition:.2s
+}
+
+.shop-item:hover{
+  transform:translateY(-4px);
+  border-color:#ffa500
 }
 
 .shop-item.equipped{
   border-color:#ffd700;
   box-shadow:0 0 18px #ffd70055
-}
-
-.shop-item.golden{
-  border-color:#ffd700;
-  background:radial-gradient(circle at top,#ffd70022,transparent 55%),#252525
 }
 
 .item-visual{
@@ -362,14 +310,32 @@ button{cursor:pointer}
 .buy-btn{background:linear-gradient(135deg,#ffa500,#ff6b00)}
 .equip-btn{background:#2196f3}
 .equipped-btn{background:#4caf50}
-.gold-btn{background:linear-gradient(135deg,#ffd700,#ff9800);color:#111}
 
 .item-btn:disabled{
   opacity:.45;
   cursor:not-allowed
 }
 
-/* CHAT */
+.item-badge{
+  position:absolute;
+  top:5px;
+  right:5px;
+  padding:3px 6px;
+  border-radius:4px;
+  background:#d32f2f;
+  color:#fff;
+  font-size:9px;
+  font-weight:900
+}
+
+.owner-badge{
+  background:linear-gradient(135deg,#ffd700,#ff8c00)!important;
+  color:#111!important
+}
+
+/* =========================
+   CHAT
+========================= */
 .chat-container{
   position:fixed;
   left:20px;
@@ -384,6 +350,7 @@ button{cursor:pointer}
   flex-direction:column;
   box-shadow:0 10px 40px #0008
 }
+
 .chat-container.hidden{display:none}
 
 .chat-header{
@@ -395,6 +362,7 @@ button{cursor:pointer}
   border-radius:8px 8px 0 0;
   font-weight:900
 }
+
 .chat-close{
   background:#ffffff22;
   border:0;
@@ -403,11 +371,13 @@ button{cursor:pointer}
   height:26px;
   border-radius:50%
 }
+
 .chat-messages{
   flex:1;
   overflow-y:auto;
   padding:12px
 }
+
 .chat-message{
   background:#252525;
   border-left:3px solid #667eea;
@@ -416,29 +386,35 @@ button{cursor:pointer}
   margin-bottom:8px;
   font-size:12px
 }
+
 .chat-message.system{
   background:#0d47a1;
   border-left-color:#4caf50
 }
+
 .chat-message-user{
   color:#87ceeb;
   font-weight:900
 }
+
 .chat-message-time{
   float:right;
   color:#777;
   font-size:10px
 }
+
 .chat-message-text{
   margin-top:4px;
   word-break:break-word
 }
+
 .chat-input-area{
   display:flex;
   gap:8px;
   padding:10px;
   background:#252525
 }
+
 .chat-input{
   flex:1;
   min-width:0;
@@ -448,6 +424,7 @@ button{cursor:pointer}
   border-radius:5px;
   padding:8px
 }
+
 .chat-send{
   width:42px;
   border:0;
@@ -456,11 +433,13 @@ button{cursor:pointer}
   color:#fff
 }
 
-/* ADMIN */
+/* =========================
+   ADMIN
+========================= */
 .admin-panel{
   position:fixed;
   right:20px;
-  bottom:70px;
+  bottom:80px;
   z-index:90;
   width:350px;
   max-height:75vh;
@@ -472,13 +451,16 @@ button{cursor:pointer}
   display:none;
   box-shadow:0 10px 40px #0008
 }
+
 .admin-panel.active{display:block}
+
 .admin-panel h2{
   color:#9aa8ff;
   border-bottom:2px solid #667eea;
   padding-bottom:10px;
   margin-bottom:12px
 }
+
 .config-group{
   background:#252525;
   border-left:3px solid #667eea;
@@ -486,6 +468,7 @@ button{cursor:pointer}
   padding:10px;
   margin:8px 0
 }
+
 .config-group label{
   display:block;
   color:#9bdfff;
@@ -493,6 +476,7 @@ button{cursor:pointer}
   font-weight:900;
   margin-bottom:6px
 }
+
 .config-group input{
   width:100%;
   padding:7px;
@@ -501,12 +485,14 @@ button{cursor:pointer}
   background:#111;
   color:#fff
 }
+
 .admin-actions{
   display:flex;
   gap:8px;
   margin-top:10px;
   flex-wrap:wrap
 }
+
 .admin-btn{
   flex:1;
   border:0;
@@ -516,38 +502,163 @@ button{cursor:pointer}
   font-size:11px;
   font-weight:900
 }
+
 .admin-primary{background:#667eea}
 .admin-secondary{background:#555}
 .admin-danger{background:#d32f2f}
 
-/* ONLINE / TRADES */
-.trade-list{
-  display:grid;
-  gap:10px;
-  margin-top:10px
-}
-.trade-card{
-  background:#252525;
-  border:1px solid #3d4c6d;
-  border-radius:10px;
-  padding:12px
-}
-.trade-actions{
-  display:flex;
-  gap:8px;
-  margin-top:8px;
-  flex-wrap:wrap
-}
-.online-dot{
-  display:inline-block;
-  width:8px;
-  height:8px;
-  border-radius:50%;
-  background:#4caf50;
-  margin-right:5px
+.admin-status{
+  margin-top:10px;
+  color:#ffd700;
+  font-size:12px;
+  line-height:1.8
 }
 
-/* UPDATES */
+/* =========================
+   EFECTOS
+========================= */
+.particle{
+  position:fixed;
+  z-index:85;
+  pointer-events:none;
+  font-size:26px;
+  animation:floatUp 1s ease-out forwards
+}
+
+@keyframes floatUp{
+  to{
+    opacity:0;
+    transform:translateY(-90px) scale(.4)
+  }
+}
+
+.toast{
+  position:fixed;
+  top:16%;
+  left:50%;
+  z-index:120;
+  transform:translate(-50%,-10px);
+  padding:10px 18px;
+  border:2px solid #ffd700;
+  border-radius:10px;
+  background:#111e;
+  color:#fff;
+  font-weight:900;
+  opacity:0;
+  pointer-events:none;
+  transition:.25s;
+  text-align:center
+}
+
+.toast.show{
+  opacity:1;
+  transform:translate(-50%,0)
+}
+
+.oldPauseHidden{display:none!important}
+
+.inGamePause{
+  position:fixed;
+  top:50%;
+  right:18px;
+  transform:translateY(-50%);
+  z-index:25;
+  padding:12px 16px;
+  border:0;
+  border-radius:12px;
+  background:rgba(33,150,243,.9);
+  color:#fff;
+  font-weight:700;
+  cursor:pointer;
+  box-shadow:0 4px 15px #0006;
+  display:none
+}
+
+.inGamePause.show{display:block}
+
+.inGamePause:hover{
+  transform:translateY(-50%) scale(1.05)
+}
+
+.rainbow-owner-name{
+  font-weight:900;
+  background:linear-gradient(
+    90deg,
+    #ff0000,
+    #ff8a00,
+    #ffee00,
+    #22ff00,
+    #00e5ff,
+    #1877ff,
+    #8a2be2,
+    #ff00aa,
+    #ff0000
+  );
+  background-size:400% 100%;
+  -webkit-background-clip:text;
+  background-clip:text;
+  color:transparent;
+  animation:ownerRainbow 2.2s linear infinite
+}
+
+.owner-badge{
+  display:inline-block;
+  margin-left:5px;
+  padding:2px 6px;
+  border-radius:4px;
+  background:linear-gradient(135deg,#ffd700,#ff9800);
+  color:#111;
+  font-size:9px;
+  font-weight:900;
+  box-shadow:0 0 8px rgba(255,215,0,.55)
+}
+
+@keyframes ownerRainbow{
+  to{background-position:400% 0}
+}
+
+/* =========================
+   FPS
+========================= */
+#fpsCounter{
+  position:fixed;
+  right:20px;
+  top:82px;
+  z-index:25;
+  background:rgba(0,0,0,.65);
+  color:#7CFF7C;
+  border:1px solid #7CFF7C;
+  border-radius:7px;
+  padding:5px 9px;
+  font:bold 12px Arial;
+  pointer-events:none;
+  text-shadow:0 0 6px #000
+}
+
+/* =========================
+   UPDATES
+========================= */
+#updatesButton{
+  position:fixed;
+  top:145px;
+  left:20px;
+  z-index:75;
+  border:2px solid #667eea;
+  border-radius:14px;
+  padding:12px 18px;
+  background:rgba(15,15,20,.94);
+  color:#fff;
+  font-weight:900;
+  font-size:15px;
+  cursor:pointer;
+  box-shadow:0 10px 35px #0008;
+  transition:.2s
+}
+
+#updatesButton:hover{
+  transform:scale(1.04)
+}
+
 #updatesModal{
   display:none;
   position:fixed;
@@ -555,48 +666,74 @@ button{cursor:pointer}
   z-index:110;
   align-items:center;
   justify-content:center;
-  background:#000a;
+  background:rgba(0,0,0,.65);
   padding:15px
 }
+
 #updatesModal.open{display:flex}
+
 #updatesBox{
-  width:min(430px,calc(100vw - 30px));
+  width:min(400px,calc(100vw - 30px));
   max-height:90vh;
   overflow:auto;
-  background:#0f0f14;
+  background:rgba(15,15,20,.98);
   border:2px solid #667eea;
   border-radius:16px;
   padding:20px;
-  text-align:center
+  text-align:center;
+  box-shadow:0 15px 50px #000
 }
+
+#updatesBox .updates-title{
+  font-size:22px;
+  font-weight:900;
+  color:#fff;
+  margin-bottom:6px
+}
+
+#updatesBox .updates-version{
+  color:#9aa8ff;
+  font-size:13px;
+  font-weight:900
+}
+
 #updateCountdown{
   margin-top:12px;
   font:bold 25px Arial;
+  letter-spacing:1px;
   color:#ffd700
 }
+
 #updateStatus{
   margin-top:7px;
   color:#ddd;
   font-size:12px
 }
-#goldenPanel{
+
+#closeUpdates{
   margin-top:15px;
-  padding:13px;
-  background:linear-gradient(145deg,#33270a,#111);
-  border:1px solid #ffd700;
-  border-radius:12px;
-  text-align:left;
-  font-size:11px;
-  line-height:1.7
+  border:0;
+  border-radius:10px;
+  padding:9px 16px;
+  cursor:pointer;
+  font-weight:900;
+  background:#555;
+  color:#fff
 }
+
+/* =========================
+   TRÁILER DENTRO DE UPDATES
+========================= */
 #trailerBox{
   margin-top:16px;
   padding:15px;
   border:2px solid #7c4dff;
   border-radius:12px;
-  background:radial-gradient(circle,#241044,#090909 70%);
+  background:
+    radial-gradient(circle,#241044,#090909 70%);
   box-shadow:0 0 25px #7c4dff55
 }
+
 #trailerScene{
   min-height:150px;
   display:flex;
@@ -604,11 +741,37 @@ button{cursor:pointer}
   justify-content:center;
   text-align:center
 }
+
 #trailerText{
   font-size:clamp(18px,4vw,32px);
   font-weight:900;
-  line-height:1.2
+  line-height:1.2;
+  text-shadow:0 0 15px #fff8;
+  animation:trailerIn .5s ease
 }
+
+.trailer-small{
+  display:block;
+  margin-top:10px;
+  font-size:13px;
+  color:#aaa
+}
+
+.trailer-mystery{
+  font-size:80px;
+  font-weight:900;
+  text-shadow:
+    0 0 15px #fff,
+    0 0 35px #7c4dff;
+  animation:trailerGlitch .15s infinite alternate
+}
+
+.trailer-final{
+  color:#ffd700;
+  font-size:32px;
+  text-shadow:0 0 20px #ffd700
+}
+
 #trailerProgress{
   height:5px;
   margin-top:10px;
@@ -616,178 +779,50 @@ button{cursor:pointer}
   border-radius:10px;
   overflow:hidden
 }
+
 #trailerProgressBar{
-  width:0;
+  width:0%;
   height:100%;
-  background:#fff
+  background:#fff;
+  box-shadow:0 0 10px #fff
 }
-#trailerButton,#closeUpdates{
+
+#trailerButton{
   width:100%;
   margin-top:12px;
   padding:10px;
   border:0;
   border-radius:8px;
-  font-weight:900
-}
-#trailerButton{
   background:linear-gradient(135deg,#ff1744,#7c4dff);
-  color:#fff
-}
-#closeUpdates{background:#555;color:#fff}
-
-/* MEGA */
-#megaModal,#mega30Modal{
-  position:fixed;
-  inset:0;
-  z-index:140;
-  display:none;
-  align-items:center;
-  justify-content:center;
-  background:#000c;
-  padding:14px
-}
-#megaModal.open,#mega30Modal.open{display:flex}
-#megaBox,.mega30Box{
-  width:min(1000px,96vw);
-  max-height:92vh;
-  overflow:auto;
-  background:linear-gradient(145deg,#11131f,#1b1028);
-  border:2px solid #ffd700;
-  border-radius:18px;
-  padding:20px;
-  box-shadow:0 25px 80px #000
-}
-.megaHead,.mega30Head{
-  display:flex;
-  justify-content:space-between;
-  align-items:center;
-  gap:10px;
-  margin-bottom:15px
-}
-.megaHead h2,.mega30Head h2{color:#ffd700}
-.megaClose,.mega30Close{
-  border:0;
-  border-radius:8px;
-  padding:8px 12px
-}
-.megaGrid,.mega30Grid{
-  display:grid;
-  grid-template-columns:repeat(auto-fit,minmax(210px,1fr));
-  gap:10px
-}
-.megaCard,.mega30Card{
-  background:#ffffff0b;
-  border:1px solid #ffffff18;
-  border-radius:12px;
-  padding:13px
-}
-.megaCard h3{font-size:14px;color:#9bdfff}
-.megaValue{font-size:25px;color:#ffd700;font-weight:900}
-.megaSmall{font-size:11px;color:#aaa;line-height:1.5}
-.megaBar,.mega30Bar{
-  height:9px;
-  background:#0008;
-  border-radius:10px;
-  overflow:hidden;
-  margin-top:8px
-}
-.megaBar i,.mega30Bar i{
-  display:block;
-  height:100%;
-  width:0;
-  background:linear-gradient(90deg,#00e5ff,#7c4dff,#ff1744)
-}
-.megaActions{
-  display:flex;
-  gap:8px;
-  flex-wrap:wrap;
-  margin-top:10px
-}
-.megaAction{
-  border:0;
-  border-radius:8px;
-  padding:9px 12px;
   color:#fff;
   font-weight:900;
-  background:#667eea
+  transition:.2s
 }
-.megaAction.gold{background:linear-gradient(135deg,#ffd700,#ff8c00);color:#111}
-.megaAction.red{background:#b71c1c}
 
-.mega30Stats{
-  display:grid;
-  grid-template-columns:repeat(4,1fr);
-  gap:8px;
-  margin-bottom:10px
+#trailerButton:hover{
+  transform:scale(1.03)
 }
-.mega30Stat{
-  background:#0005;
-  border-radius:12px;
-  padding:10px;
-  text-align:center
+
+@keyframes trailerIn{
+  from{
+    opacity:0;
+    transform:scale(.8)
+  }
+  to{
+    opacity:1;
+    transform:scale(1)
+  }
 }
-.mega30Stat strong{
-  display:block;
-  font-size:22px
+
+@keyframes trailerGlitch{
+  from{transform:translateX(-3px)}
+  to{transform:translateX(3px)}
 }
-#mega30Toast{
-  position:fixed;
-  left:50%;
-  bottom:20px;
-  transform:translateX(-50%);
-  z-index:10001;
-  background:#111;
-  padding:11px 16px;
-  border-radius:13px;
-  opacity:0;
-  pointer-events:none;
-  border:1px solid #ff9800;
-  transition:.25s
-}
-#mega30Toast.show{opacity:1}
 
 @media(max-width:600px){
-
   .floating-btn{
-    width:40px;
-    height:40px;
-    font-size:16px
-  }
-
-  #shopBtn{top:10px;left:10px}
-  #soundBtn{top:10px;right:58px}
-  #pauseBtn{top:10px;right:105px}
-  #fullscreenBtn{top:10px;right:10px}
-
-  #chatToggleBtn{bottom:10px;left:10px}
-  #tradeBtn{bottom:10px;left:58px}
-  #adminBtn{bottom:10px;right:10px}
-
-  #updatesButton{
-    top:105px;
-    left:10px;
-    padding:8px 10px;
-    font-size:10px
-  }
-
-  #megaBtn{
-    top:105px;
-    right:10px;
-    padding:8px 10px;
-    font-size:10px
-  }
-
-  #mega30Btn{
-    right:10px;
-    bottom:62px;
-    padding:8px 10px;
-    font-size:10px
-  }
-
-  #goldEventBadge{
-    top:53px;
-    max-width:90vw;
-    font-size:9px
+    width:44px;
+    height:44px
   }
 
   .player-info{
@@ -803,14 +838,86 @@ button{cursor:pointer}
 
   .admin-panel{
     right:10px;
-    bottom:60px;
+    bottom:65px;
     width:calc(100vw - 20px)
   }
 
-  .mega30Stats{
-    grid-template-columns:repeat(2,1fr)
+  #fpsCounter{
+    right:10px;
+    top:70px;
+    font-size:11px
+  }
+
+  #updatesButton{
+    top:125px;
+    left:10px
   }
 }
+
+/* ==========================================================
+   CHAOS MEGA UPDATE 2.0
+========================================================== */
+#megaBtn{
+  position:fixed;top:145px;right:20px;z-index:75;
+  border:2px solid #ffd700;border-radius:14px;padding:12px 16px;
+  background:linear-gradient(135deg,#ff1744,#7c4dff);
+  color:#fff;font-weight:900;font-size:14px;cursor:pointer;
+  box-shadow:0 10px 35px #0008;transition:.2s
+}
+#megaBtn:hover{transform:scale(1.05)}
+#megaModal{
+  position:fixed;inset:0;z-index:140;display:none;align-items:center;
+  justify-content:center;background:#000c;padding:14px
+}
+#megaModal.open{display:flex}
+#megaBox{
+  width:min(1000px,96vw);max-height:92vh;overflow:auto;
+  background:linear-gradient(145deg,#11131f,#1b1028);
+  border:2px solid #ffd700;border-radius:18px;padding:20px;
+  box-shadow:0 25px 80px #000
+}
+.megaHead{display:flex;justify-content:space-between;align-items:center;
+  border-bottom:1px solid #ffffff22;padding-bottom:12px;margin-bottom:15px}
+.megaHead h2{color:#ffd700}
+.megaClose{background:#ffffff18;border:0;color:#fff;border-radius:8px;
+  padding:8px 12px;font-weight:900;cursor:pointer}
+.megaGrid{display:grid;grid-template-columns:repeat(auto-fit,minmax(210px,1fr));gap:12px}
+.megaCard{background:#ffffff0d;border:1px solid #ffffff18;border-radius:12px;padding:14px}
+.megaCard h3{font-size:14px;color:#9bdfff;margin-bottom:8px}
+.megaValue{font-size:25px;color:#ffd700;font-weight:900}
+.megaSmall{font-size:11px;color:#aaa;line-height:1.5}
+.megaBar{height:9px;background:#0008;border-radius:10px;overflow:hidden;margin-top:8px}
+.megaBar i{display:block;height:100%;width:0;background:linear-gradient(90deg,#00e5ff,#7c4dff,#ff1744)}
+.megaActions{display:flex;gap:8px;flex-wrap:wrap;margin-top:10px}
+.megaAction{border:0;border-radius:8px;padding:9px 12px;color:#fff;
+  font-weight:900;cursor:pointer;background:#667eea}
+.megaAction.gold{background:linear-gradient(135deg,#ffd700,#ff8c00);color:#111}
+.megaAction.green{background:#2e7d32}
+.megaAction.red{background:#b71c1c}
+.achievement{display:flex;gap:10px;align-items:center;padding:9px;
+  border-radius:8px;background:#0004;margin-top:7px;border-left:3px solid #555}
+.achievement.done{border-left-color:#ffd700;background:#3b2e0844}
+.achievementIcon{font-size:24px}
+#powerBar{margin-top:8px}
+.powerReady{color:#7cff7c}
+#megaNotice{position:fixed;left:50%;top:12%;transform:translateX(-50%);
+  z-index:150;display:none;padding:12px 18px;border-radius:12px;
+  background:#111e;border:2px solid #ffd700;color:#fff;font-weight:900;
+  box-shadow:0 10px 40px #000}
+@media(max-width:600px){
+  #megaBtn{top:175px;right:10px;padding:10px 12px;font-size:12px}
+  #megaBox{padding:14px}
+}
+
+</style>
+
+<style id="mega30-css">
+#mega30Btn{position:fixed;right:18px;bottom:92px;z-index:9998;border:0;border-radius:16px;padding:12px 16px;background:linear-gradient(135deg,#ff7a00,#ff1744,#8e24aa);color:#fff;font-weight:900;cursor:pointer;box-shadow:0 8px 28px #0008;animation:megaPulse 1.8s infinite}
+@keyframes megaPulse{50%{transform:scale(1.05);filter:brightness(1.18)}}
+#mega30Modal{display:none;position:fixed;inset:0;background:#000b;z-index:9999;align-items:center;justify-content:center;padding:14px;font-family:inherit}
+#mega30Modal.open{display:flex}.mega30Box{width:min(980px,96vw);max-height:92vh;overflow:auto;background:linear-gradient(145deg,#10131c,#171b29);border:2px solid #ff7a00;border-radius:24px;color:#fff;box-shadow:0 20px 70px #000; padding:20px}.mega30Head{display:flex;justify-content:space-between;gap:12px;align-items:center}.mega30Head h2{margin:0;font-size:clamp(22px,4vw,34px)}.mega30Close{border:0;border-radius:12px;padding:9px 13px;cursor:pointer}.mega30Grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(210px,1fr));gap:10px;margin-top:16px}.mega30Card{background:#ffffff0b;border:1px solid #ffffff18;border-radius:16px;padding:13px}.mega30Card b{display:block;margin-bottom:5px}.mega30Card small{opacity:.75}.mega30Card button{margin-top:9px;border:0;border-radius:10px;padding:8px 11px;cursor:pointer;font-weight:800}.mega30On{outline:2px solid #ff9800}.mega30Stats{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-top:14px}.mega30Stat{background:#0005;border-radius:12px;padding:10px;text-align:center}.mega30Stat strong{display:block;font-size:22px}.mega30Bar{height:9px;background:#0008;border-radius:99px;overflow:hidden;margin-top:8px}.mega30Bar i{display:block;height:100%;width:0;background:linear-gradient(90deg,#ff9800,#ff1744,#9c27b0)}#mega30Toast{position:fixed;left:50%;bottom:25px;transform:translateX(-50%) translateY(30px);opacity:0;z-index:10001;background:#111;color:#fff;padding:11px 16px;border-radius:13px;pointer-events:none;transition:.25s;border:1px solid #ff9800}#mega30Toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
+.mega30Fx{animation:megaShake .28s linear 1}@keyframes megaShake{25%{transform:translateX(-5px)}50%{transform:translateX(5px)}75%{transform:translateX(-3px)}}
+@media(max-width:600px){#mega30Btn{right:10px;bottom:82px;padding:9px 12px}.mega30Stats{grid-template-columns:repeat(2,1fr)}}
 </style>
 </head>
 
@@ -818,498 +925,390 @@ button{cursor:pointer}
 
 <div id="gameContainer">
 
-<canvas id="gameCanvas"></canvas>
+  <canvas id="gameCanvas"></canvas>
 
-<div id="startScreen" class="start-screen">
+  <div id="startScreen" class="start-screen">
 
-  <div class="game-title">
-    🎮 ATRAPA LA MONEDA
+    <div class="game-title">🎮 ATRAPA LA MONEDA</div>
+
+    <div class="game-coin">🪙</div>
+
+    <div class="start-instruction">
+      Haz clic o presiona ESPACIO para comenzar
+    </div>
+
+    <div id="startHighScore" class="highscore-text">
+      🏆 Récord: 0
+    </div>
+
   </div>
 
-  <div class="game-coin">
-    🪙
-  </div>
-
-  <div class="start-instruction">
-    Haz clic o presiona ESPACIO para comenzar
-  </div>
-
-  <div id="startHighScore" class="highscore-text">
-    🏆 Récord: 0
+  <div id="pauseOverlay" class="pause-overlay">
+    ⏸ PAUSA
   </div>
 
 </div>
 
-<div id="pauseOverlay" class="pause-overlay">
-  ⏸ PAUSA
-</div>
+<!-- FPS -->
+<div id="fpsCounter">FPS: --</div>
 
-</div>
+<!-- =========================
+     UPDATES
+========================= -->
 
-<div id="goldEventBadge">
-  🏆 ERA DORADA • 40 JUGADORES • TROLLACE DORADA x10
-</div>
-
-<div id="fpsCounter">
-  FPS: --
-</div>
-
-<button id="updatesButton">
+<button id="updatesButton" type="button">
   🚀 UPDATES
 </button>
 
-<button id="megaBtn">
-  🔥 MEGA UPDATE
-</button>
+<div id="updatesModal" aria-hidden="true">
 
-<button id="mega30Btn">
-  🔥 MEGA ×30
-</button>
+  <div id="updatesBox" role="dialog" aria-modal="true">
 
-<button id="shopBtn" class="floating-btn">
+    <div class="updates-title">
+      🚀 UPDATES
+    </div>
+
+    <div class="updates-version">
+      ACTUALIZACIÓN 2.0
+    </div>
+
+    <div id="updateCountdown">
+      CARGANDO...
+    </div>
+
+    <div id="updateStatus">
+      ⏳ Próximamente
+    </div>
+
+    <!-- =========================
+         TRÁILER DENTRO DE UPDATES
+    ========================= -->
+
+    <div id="trailerBox">
+
+      <div id="trailerScene">
+
+        <div id="trailerText">
+          🎬 TRÁILER 3.0
+        </div>
+
+      </div>
+
+      <div id="trailerProgress">
+
+        <div id="trailerProgressBar"></div>
+
+      </div>
+
+      <button id="trailerButton" type="button">
+        ▶ VER TRÁILER
+      </button>
+
+    </div>
+
+    <button id="closeUpdates" type="button">
+      CERRAR
+    </button>
+
+  </div>
+
+</div>
+
+<!-- =========================
+     BOTONES
+========================= -->
+
+<button id="shopBtn" class="floating-btn" title="Tienda">
   🛍️
+  <span id="shopBadge" class="badge">0</span>
 </button>
 
-<button id="soundBtn" class="floating-btn">
+<button id="soundBtn" class="floating-btn" title="Sonido">
   🔊
 </button>
 
-<button id="pauseBtn" class="floating-btn">
+<button id="pauseBtn" class="floating-btn oldPauseHidden" title="Pausa">
   ⏸
 </button>
 
-<button id="fullscreenBtn" class="floating-btn">
-  ⛶
-</button>
-
-<button id="chatToggleBtn" class="floating-btn">
-  💬
-</button>
-
-<button id="tradeBtn" class="floating-btn">
-  🤝
-</button>
-
-<button id="adminBtn" class="floating-btn">
-  ⚙️
-</button>
-
-<button id="inGamePause" style="display:none">
+<button id="inGamePause" class="inGamePause" title="Pausa">
   ⏸ PAUSA
 </button>
 
-<!-- =====================================================
+<button id="fullscreenBtn" class="floating-btn" title="Pantalla completa">
+  ⛶
+</button>
+
+<button id="chatToggleBtn" class="floating-btn" title="Chat">
+  💬
+</button>
+
+<button id="adminBtn" class="floating-btn" title="Admin">
+  ⚙️
+</button>
+
+
+<button id="megaBtn" type="button">🔥 MEGA UPDATE</button>
+
+<div id="megaModal" aria-hidden="true">
+  <div id="megaBox" role="dialog" aria-modal="true">
+    <div class="megaHead">
+      <h2>🔥 CHAOS MEGA UPDATE 2.0</h2>
+      <button id="megaClose" class="megaClose">✕ CERRAR</button>
+    </div>
+
+    <div class="megaGrid">
+      <div class="megaCard">
+        <h3>📊 ESTADÍSTICAS</h3>
+        <div id="megaStats" class="megaSmall"></div>
+      </div>
+
+      <div class="megaCard">
+        <h3>🎯 MISIÓN ACTUAL</h3>
+        <div id="missionText" class="megaSmall">Cargando...</div>
+        <div class="megaBar"><i id="missionBar"></i></div>
+        <div id="missionReward" class="megaSmall"></div>
+      </div>
+
+      <div class="megaCard">
+        <h3>🎁 RECOMPENSA DIARIA</h3>
+        <div id="dailyText" class="megaSmall">Cargando...</div>
+        <div class="megaActions">
+          <button id="dailyBtn" class="megaAction gold">🎁 RECLAMAR</button>
+        </div>
+      </div>
+
+      <div class="megaCard">
+        <h3>⚡ PODER CHAOS</h3>
+        <div id="powerText" class="megaValue">0%</div>
+        <div class="megaSmall">Atrapa monedas para cargarlo.</div>
+        <div class="megaBar"><i id="powerFill"></i></div>
+        <div class="megaActions">
+          <button id="powerBtn" class="megaAction">⚡ ACTIVAR</button>
+        </div>
+      </div>
+    </div>
+
+    <h3 class="section-title">🏆 LOGROS</h3>
+    <div id="achievementsList"></div>
+
+    <h3 class="section-title">🛠️ MEJORAS 2.0</h3>
+    <div class="megaCard">
+      <div class="megaSmall">
+        • Sistema de misiones y recompensas<br>
+        • Recompensa diaria persistente<br>
+        • Poder Chaos cargable<br>
+        • Logros persistentes<br>
+        • Estadísticas de partidas y monedas<br>
+        • Efectos especiales mejorados<br>
+        • Guardado local compatible con tu progreso actual<br>
+        • Compatible con mouse, teclado, touch y Chromebook
+      </div>
+    </div>
+
+    <div class="megaActions">
+      <button id="megaResetStats" class="megaAction red">♻️ REINICIAR ESTADÍSTICAS 3.0</button>
+      <button id="megaClose2" class="megaAction">CERRAR</button>
+    </div>
+  </div>
+</div>
+
+<div id="megaNotice"></div>
+
+<div id="toast" class="toast"></div>
+
+<!-- =========================
      TIENDA
-===================================================== -->
+========================= -->
 
 <div id="shopModal" class="modal">
 
-<div class="modal-content">
+  <div class="modal-content">
 
-<div class="modal-header">
+    <div class="modal-header">
 
-<h2>🛍️ Tienda</h2>
+      <h2>🛍️ Tienda</h2>
 
-<button id="shopClose" class="close-btn">
-✕
-</button>
+      <button id="shopClose" class="close-btn">
+        ✕
+      </button>
+
+    </div>
+
+    <div class="player-info">
+
+      <div>
+        <div>👤</div>
+        <div id="playerAvatar" class="player-stat-value">
+          👤
+        </div>
+        <div class="player-stat-label">
+          Avatar
+        </div>
+      </div>
+
+      <div>
+        <div>💰</div>
+        <div id="playerCoins" class="player-stat-value">
+          1000
+        </div>
+        <div class="player-stat-label">
+          Monedas
+        </div>
+      </div>
+
+      <div>
+        <div>🧺</div>
+        <div id="playerBasket" class="player-stat-value">
+          🧺
+        </div>
+        <div class="player-stat-label">
+          Cesta
+        </div>
+      </div>
+
+      <div>
+        <div>⭐</div>
+        <div id="playerLevel" class="player-stat-value">
+          1
+        </div>
+        <div class="player-stat-label">
+          Nivel
+        </div>
+      </div>
+
+    </div>
+
+    <h3 class="section-title">
+      👤 Avatares
+    </h3>
+
+    <div id="avatarsGrid" class="items-grid"></div>
+
+    <h3 class="section-title">
+      🧺 Skins de Cesta
+    </h3>
+
+    <div id="skinsGrid" class="items-grid"></div>
+
+    <h3 class="section-title">
+      🪙 Skins de Moneda
+    </h3>
+
+    <div id="coinSkinsGrid" class="items-grid"></div>
+
+  </div>
 
 </div>
 
-<div class="player-info">
-
-<div>
-<div>👤</div>
-<div id="playerAvatar" class="player-stat-value">👤</div>
-<div class="player-stat-label">Avatar</div>
-</div>
-
-<div>
-<div>💰</div>
-<div id="playerCoins" class="player-stat-value">1000</div>
-<div class="player-stat-label">Monedas</div>
-</div>
-
-<div>
-<div>🧺</div>
-<div id="playerBasket" class="player-stat-value">🧺</div>
-<div class="player-stat-label">Cesta</div>
-</div>
-
-<div>
-<div>⭐</div>
-<div id="playerLevel" class="player-stat-value">1</div>
-<div class="player-stat-label">Nivel</div>
-</div>
-
-</div>
-
-<h3 class="section-title">👤 Avatares</h3>
-<div id="avatarsGrid" class="items-grid"></div>
-
-<h3 class="section-title">🧺 Skins de Cesta</h3>
-<div id="skinsGrid" class="items-grid"></div>
-
-<h3 class="section-title">🪙 Skins de Moneda</h3>
-<div id="coinSkinsGrid" class="items-grid"></div>
-
-</div>
-
-</div>
-
-<!-- =====================================================
+<!-- =========================
      CHAT
-===================================================== -->
+========================= -->
 
 <div id="chatContainer" class="chat-container hidden">
 
-<div class="chat-header">
+  <div class="chat-header">
 
-<span>
-💬 Chat Global
-<span id="onlineStatus">
-</span>
-</span>
+    <span>💬 Chat Global</span>
 
-<button id="chatCloseBtn" class="chat-close">
-✕
-</button>
+    <button id="chatCloseBtn" class="chat-close">
+      ✕
+    </button>
 
-</div>
+  </div>
 
-<div id="chatMessages" class="chat-messages"></div>
+  <div id="chatMessages" class="chat-messages"></div>
 
-<div class="chat-input-area">
+  <div class="chat-input-area">
 
-<input
-id="chatInput"
-class="chat-input"
-maxlength="200"
-placeholder="Tu mensaje..."
->
+    <input
+      id="chatInput"
+      class="chat-input"
+      maxlength="100"
+      placeholder="Tu mensaje..."
+    >
 
-<button id="chatSendBtn" class="chat-send">
-➤
-</button>
+    <button id="chatSendBtn" class="chat-send">
+      ➤
+    </button>
 
-</div>
+  </div>
 
-</div>
-
-<!-- =====================================================
-     TRADE
-===================================================== -->
-
-<div id="tradeModal" class="modal">
-
-<div class="modal-content">
-
-<div class="modal-header">
-
-<h2>🤝 Tradeos</h2>
-
-<button id="tradeClose" class="close-btn">
-✕
-</button>
+  <div
+    id="ownerCommandHelp"
+    style="display:none;padding:8px 12px;background:#211b08;border-top:1px solid #8b6b00;color:#ffeaa7;font-size:10px;line-height:1.5"
+  >
+    👑 <b>OWNER:</b>
+    /money · /give 500 · /give Jugador500 500 ·
+    /giveall 1000 · /setcoins 999999 ·
+    /giveitem ID · /announce texto · /commands
+  </div>
 
 </div>
 
-<div class="megaSmall">
-Jugadores conectados:
-</div>
-
-<div id="playersList" class="trade-list"></div>
-
-<h3 class="section-title">
-📨 Solicitudes
-</h3>
-
-<div id="tradeRequests" class="trade-list"></div>
-
-</div>
-
-</div>
-
-<!-- =====================================================
+<!-- =========================
      ADMIN
-===================================================== -->
+========================= -->
 
 <div id="adminPanel" class="admin-panel">
 
-<h2>⚙️ Panel Admin</h2>
+  <h2>⚙️ Panel de Admin</h2>
 
-<div class="config-group">
-<label>⏱️ Tiempo inicial</label>
-<input id="initialTime" type="number" value="30">
-</div>
+  <div class="config-group">
+    <label>⏱️ Tiempo inicial</label>
+    <input id="initialTime" type="number" min="5" max="120" value="30">
+  </div>
 
-<div class="config-group">
-<label>🎯 Velocidad inicial</label>
-<input id="initialSpeed" type="number" value="4">
-</div>
+  <div class="config-group">
+    <label>🎯 Velocidad inicial</label>
+    <input id="initialSpeed" type="number" min="1" max="20" step="0.5" value="4">
+  </div>
 
-<div class="config-group">
-<label>⚡ Incremento de velocidad</label>
-<input id="speedIncrement" type="number" value=".2">
-</div>
+  <div class="config-group">
+    <label>⚡ Incremento de velocidad</label>
+    <input id="speedIncrement" type="number" min="0" max="3" step="0.1" value="0.2">
+  </div>
 
-<div class="config-group">
-<label>💰 Puntos por moneda</label>
-<input id="scorePerCoin" type="number" value="10">
-</div>
+  <div class="config-group">
+    <label>💰 Puntos por moneda</label>
+    <input id="scorePerCoin" type="number" min="1" max="100" value="10">
+  </div>
 
-<div class="admin-actions">
+  <div class="config-group">
+    <label>🧺 Ancho de cesta</label>
+    <input id="basketWidth" type="number" min="40" max="180" value="80">
+  </div>
 
-<button id="applyBtn" class="admin-btn admin-primary">
-✅ Aplicar
-</button>
+  <div class="admin-actions">
 
-<button id="resetBtn" class="admin-btn admin-secondary">
-↺ Reset
-</button>
+    <button id="applyBtn" class="admin-btn admin-primary">
+      ✅ Aplicar
+    </button>
 
-</div>
+    <button id="resetBtn" class="admin-btn admin-secondary">
+      ↺ Reset
+    </button>
 
-<div class="admin-actions">
+    <button id="clearBtn" class="admin-btn admin-danger">
+      🗑️ Borrar guardado
+    </button>
 
-<button id="devBirthdayBtn" class="admin-btn" style="background:linear-gradient(135deg,#ffd700,#ff8c00);color:#111">
-🎂 /devbirthday
-</button>
+  </div>
 
-</div>
-
-<div id="adminStatus" class="admin-status">
-Estado: 🟢 Parado
-</div>
-
-</div>
-
-<!-- =====================================================
-     UPDATES
-===================================================== -->
-
-<div id="updatesModal">
-
-<div id="updatesBox">
-
-<div style="font-size:22px;font-weight:900">
-🚀 UPDATES
-</div>
-
-<div style="color:#9aa8ff;font-size:13px;font-weight:900">
-ACTUALIZACIÓN 3.0
-</div>
-
-<div id="updateCountdown">
-¡YA DISPONIBLE!
-</div>
-
-<div id="updateStatus">
-🔥 CHAOS MEGA UPDATE 3.0
-</div>
-
-<div id="goldenPanel">
-
-<b style="color:#ffd700;font-size:15px">
-🏆 ERA DORADA
-</b>
-
-<br>
-
-Febrero fue el pico histórico de
-<b>Atrapa la Moneda</b>:
-<b>40 jugadores</b>.
-
-<br>
-
-La recompensa exclusiva es:
-
-<b style="color:#ffd700">
-Trollace Dorada
-</b>
-
-<br>
-
-Multiplicador de recompensa:
-<b style="color:#ffd700">
-x10
-</b>
-
-<br>
-
-Desbloqueo:
-<b>/devbirthday</b>
+  <div id="adminStatus" class="admin-status">
+    Estado: 🟢 Parado<br>
+    Puntos: 0<br>
+    Tiempo: 30s<br>
+    Combo: x1
+  </div>
 
 </div>
 
-<div id="trailerBox">
-
-<div id="trailerScene">
-
-<div id="trailerText">
-🎬 TRÁILER 3.0
-</div>
-
-</div>
-
-<div id="trailerProgress">
-<div id="trailerProgressBar"></div>
-</div>
-
-<button id="trailerButton">
-▶ VER TRÁILER
-</button>
-
-</div>
-
-<button id="closeUpdates">
-CERRAR
-</button>
-
-</div>
-
-</div>
-
-<!-- =====================================================
-     MEGA 2.0
-===================================================== -->
-
-<div id="megaModal">
-
-<div id="megaBox">
-
-<div class="megaHead">
-
-<h2>
-🔥 CHAOS MEGA UPDATE 3.0
-</h2>
-
-<button id="megaClose">
-✕
-</button>
-
-</div>
-
-<div class="megaGrid">
-
-<div class="megaCard">
-
-<h3>📊 ESTADÍSTICAS</h3>
-
-<div id="megaStats" class="megaSmall">
-Cargando...
-</div>
-
-</div>
-
-<div class="megaCard">
-
-<h3>🎁 RECOMPENSA DIARIA</h3>
-
-<div id="dailyText" class="megaSmall">
-Cargando...
-</div>
-
-<button id="dailyBtn" class="megaAction gold">
-🎁 RECLAMAR
-</button>
-
-</div>
-
-<div class="megaCard">
-
-<h3>⚡ PODER CHAOS</h3>
-
-<div id="powerText" class="megaValue">
-0%
-</div>
-
-<div class="megaBar">
-<i id="powerFill"></i>
-</div>
-
-<button id="powerBtn" class="megaAction">
-⚡ ACTIVAR
-</button>
-
-</div>
-
-</div>
-
-<h3 class="section-title">
-🏆 LOGROS
-</h3>
-
-<div id="achievementsList"></div>
-
-</div>
-
-</div>
-
-<!-- =====================================================
-     MEGA ×30
-===================================================== -->
-
-<div id="mega30Modal">
-
-<div class="mega30Box">
-
-<div class="mega30Head">
-
-<h2>
-🔥 CHAOS MEGA UPDATE ×30
-</h2>
-
-<button
-id="mega30Close"
-class="mega30Close"
->
-✕
-</button>
-
-</div>
-
-<div class="mega30Stats">
-
-<div class="mega30Stat">
-🏆
-<strong id="m30Best">0</strong>
-<small>Récord</small>
-</div>
-
-<div class="mega30Stat">
-💰
-<strong id="m30Coins">0</strong>
-<small>Monedas</small>
-</div>
-
-<div class="mega30Stat">
-🔥
-<strong id="m30Combo">0</strong>
-<small>Combo</small>
-</div>
-
-<div class="mega30Stat">
-⚡
-<strong id="m30Power">0%</strong>
-<small>Chaos Power</small>
-</div>
-
-</div>
-
-<div class="mega30Bar">
-<i id="m30Bar"></i>
-</div>
-
-<div id="mega30Grid" class="mega30Grid"></div>
-
-</div>
-
-</div>
-
-<div id="mega30Toast"></div>
-
-<div id="toast" class="toast"></div>
+<!-- =========================
+     SUPABASE
+     IMPORTANTE:
+     Este script va separado.
+========================= -->
 
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
@@ -1317,76 +1316,70 @@ class="mega30Close"
 "use strict";
 
 /* ==========================================================
-   SUPABASE
+   1. REFERENCIAS
 ========================================================== */
 
-const SUPABASE_URL="PEGA_AQUI_TU_SUPABASE_URL";
-const SUPABASE_KEY="PEGA_AQUI_TU_SB_PUBLISHABLE_KEY";
+const canvas=document.getElementById("gameCanvas");
+const ctx=canvas.getContext("2d");
 
-let supabaseClient=null;
-let currentUser=null;
+const startScreen=document.getElementById("startScreen");
+const pauseOverlay=document.getElementById("pauseOverlay");
+const pauseBtn=document.getElementById("pauseBtn");
+const inGamePause=document.getElementById("inGamePause");
+const soundBtn=document.getElementById("soundBtn");
+const toastEl=document.getElementById("toast");
 
 /* ==========================================================
-   JUGADOR
+   2. CONFIGURACIÓN
 ========================================================== */
 
-const state={
-  score:0,
-  highScore:Number(
-    localStorage.getItem("atm_highscore")||0
-  ),
-  timeLeft:30,
-  coins:1000,
-  level:1,
-  xp:0,
-  combo:1,
-  playing:false,
-  paused:false,
-  sound:true,
-  selectedAvatar:"avatar1",
-  selectedBasket:"basket1",
-  selectedCoinSkin:"coin1",
-  owned:{
-    avatar1:true,
-    basket1:true,
-    coin1:true,
-    goldenTrollace:false
-  },
-  goldenTrollace:false
+const ONLINE_CONFIG={
+  url:"PEGA_AQUI_TU_SUPABASE_URL",
+  key:"PEGA_AQUI_TU_SUPABASE_PUBLISHABLE_KEY",
+  enabled:true
 };
 
-let player={
-  id:null,
-  number:null,
-  name:"Conectando...",
-  role:"player"
-};
+let supabaseClient=null;
+let onlineSession=null;
+let onlinePlayerData=null;
 
 const CONFIG={
   initialTime:30,
   initialSpeed:4,
-  speedIncrement:.2,
+  speedIncrement:0.2,
   scorePerCoin:10,
   basketWidth:80,
   basketHeight:22,
   coinRadius:15,
-  maxCombo:10
+  maxCombo:10,
+  comboWindow:1800
 };
 
 /* ==========================================================
-   SHOP
+   3. TIENDA / SKINS
 ========================================================== */
 
 const SHOP={
 
   avatars:[
+
+    {
+      id:"ownerSkin",
+      name:"OWNER LEGEND",
+      visual:"👑🔥",
+      price:999999,
+      ownerOnly:true,
+      description:"Skin exclusiva del dueño"
+    },
+
     {
       id:"avatar1",
       name:"Clásico",
       visual:"👤",
       price:0,
-      description:"Avatar original"
+      description:"El avatar original"
     },
+
     {
       id:"avatar2",
       name:"Frío",
@@ -1394,6 +1387,7 @@ const SHOP={
       price:150,
       description:"Estilo relajado"
     },
+
     {
       id:"avatar3",
       name:"Robot",
@@ -1401,16 +1395,61 @@ const SHOP={
       price:200,
       description:"Modo robot"
     },
+
     {
       id:"avatar4",
       name:"Rey",
       visual:"👑",
       price:300,
       description:"El jefe"
+    },
+
+    {
+      id:"avatar5",
+      name:"Mago",
+      visual:"🧙",
+      price:250,
+      description:"Poder mágico"
+    },
+
+    {
+      id:"avatar6",
+      name:"Astronauta",
+      visual:"🚀",
+      price:350,
+      description:"Hasta el espacio"
+    },
+
+    {
+      id:"avatar7",
+      name:"Ninja",
+      visual:"🥷",
+      price:450,
+      description:"Difícil de atrapar"
+    },
+
+    {
+      id:"avatar8",
+      name:"Alien",
+      visual:"👽",
+      price:600,
+      description:"Visitante"
     }
+
   ],
 
   baskets:[
+
+    {
+      id:"ownerBasket",
+      name:"OWNER CESTA",
+      visual:"👑🧺",
+      price:999999,
+      ownerOnly:true,
+      colors:["#ffd700","#8b6508"],
+      description:"Cesta exclusiva del dueño"
+    },
+
     {
       id:"basket1",
       name:"Clásica",
@@ -1419,6 +1458,7 @@ const SHOP={
       colors:["#8b4513","#5c2d0c"],
       description:"Cesta original"
     },
+
     {
       id:"basket2",
       name:"Mágica",
@@ -1427,6 +1467,7 @@ const SHOP={
       colors:["#ff1493","#00bfff"],
       description:"Brilla al atrapar"
     },
+
     {
       id:"basket3",
       name:"Fuego",
@@ -1435,6 +1476,7 @@ const SHOP={
       colors:["#ffd700","#ff4500"],
       description:"Muy caliente"
     },
+
     {
       id:"basket4",
       name:"Hielo",
@@ -1443,6 +1485,7 @@ const SHOP={
       colors:["#e0ffff","#00ced1"],
       description:"Congelada"
     },
+
     {
       id:"basket5",
       name:"Diamante",
@@ -1451,6 +1494,7 @@ const SHOP={
       colors:["#eefcff","#45c9ff"],
       description:"Brilla muchísimo"
     },
+
     {
       id:"basket6",
       name:"Arcoíris",
@@ -1461,17 +1505,101 @@ const SHOP={
     },
 
     {
-      id:"goldenTrollace",
-      name:"Trollace Dorada",
-      visual:"🏆🧺",
-      price:0,
-      eventOnly:true,
-      colors:["#fff176","#d4a500"],
-      description:"Era Dorada • Recompensa exclusiva • x10"
+      id:"basket7",
+      name:"Neón",
+      visual:"💜",
+      price:280,
+      colors:["#1a0033","#ff00ff"],
+      description:"Luz neón"
+    },
+
+    {
+      id:"basket8",
+      name:"Veneno",
+      visual:"☠️",
+      price:320,
+      colors:["#39ff14","#006400"],
+      description:"Tóxica"
+    },
+
+    {
+      id:"basket9",
+      name:"Oro",
+      visual:"🏆",
+      price:500,
+      colors:["#ffd700","#b8860b"],
+      description:"La más valiosa"
+    },
+
+    {
+      id:"basket10",
+      name:"Lava",
+      visual:"🌋",
+      price:650,
+      colors:["#ff8c00","#8b0000"],
+      description:"Parece salir de un volcán"
+    },
+
+    {
+      id:"basket11",
+      name:"Galaxia",
+      visual:"🌌",
+      price:800,
+      colors:["#12002f","#5f27cd"],
+      description:"Una cesta del espacio"
+    },
+
+    {
+      id:"basket12",
+      name:"Fantasma",
+      visual:"👻",
+      price:725,
+      colors:["#eefcff","#8ea7ff"],
+      description:"Casi transparente"
+    },
+
+    {
+      id:"basket13",
+      name:"Plasma",
+      visual:"🌀",
+      price:950,
+      colors:["#00ffff","#7b00ff"],
+      description:"Energía concentrada"
+    },
+
+    {
+      id:"basket14",
+      name:"Magma",
+      visual:"♨️",
+      price:1100,
+      colors:["#fff000","#ff3300"],
+      description:"Calor extremo"
+    },
+
+    {
+      id:"basket15",
+      name:"Vacío",
+      visual:"🕳️",
+      price:1500,
+      colors:["#050505","#2b2b2b"],
+      description:"La cesta más oscura"
     }
+
   ],
 
   coins:[
+
+    {
+      id:"ownerCoin",
+      name:"OWNER COIN",
+      visual:"👑",
+      price:999999,
+      ownerOnly:true,
+      color:"#ffd700",
+      trail:"👑",
+      description:"Moneda exclusiva del dueño"
+    },
+
     {
       id:"coin1",
       name:"Dorada",
@@ -1481,6 +1609,7 @@ const SHOP={
       trail:"✨",
       description:"Moneda original"
     },
+
     {
       id:"coin2",
       name:"Esmeralda",
@@ -1490,36 +1619,551 @@ const SHOP={
       trail:"💚",
       description:"Verde brillante"
     },
+
     {
       id:"coin3",
+      name:"Zafiro",
+      visual:"🔵",
+      price:220,
+      color:"#00bfff",
+      trail:"💧",
+      description:"Azul veloz"
+    },
+
+    {
+      id:"coin4",
+      name:"Rubí",
+      visual:"🔴",
+      price:260,
+      color:"#ff1744",
+      trail:"🔥",
+      description:"Roja y ardiente"
+    },
+
+    {
+      id:"coin5",
+      name:"Arcoíris",
+      visual:"🌈",
+      price:350,
+      color:"#ff69b4",
+      trail:"🌈",
+      description:"Cambia de color"
+    },
+
+    {
+      id:"coin6",
+      name:"Neón",
+      visual:"💠",
+      price:450,
+      color:"#ff00ff",
+      trail:"⚡",
+      description:"Efecto eléctrico"
+    },
+
+    {
+      id:"coin7",
+      name:"Amatista",
+      visual:"🔮",
+      price:600,
+      color:"#9b59ff",
+      trail:"💜",
+      description:"Energía misteriosa"
+    },
+
+    {
+      id:"coin8",
+      name:"Sol",
+      visual:"☀️",
+      price:700,
+      color:"#ffae00",
+      trail:"☀️",
+      description:"Brilla como una estrella"
+    },
+
+    {
+      id:"coin9",
+      name:"Luna",
+      visual:"🌙",
+      price:750,
+      color:"#b8d8ff",
+      trail:"⭐",
+      description:"Fría y luminosa"
+    },
+
+    {
+      id:"coin10",
+      name:"Infernal",
+      visual:"🔥",
+      price:900,
+      color:"#ff4500",
+      trail:"🔥",
+      description:"Una moneda en llamas"
+    },
+
+    {
+      id:"coin11",
       name:"Diamante",
       visual:"💎",
-      price:400,
+      price:1100,
       color:"#e8ffff",
       trail:"💎",
       description:"Ultra brillante"
+    },
+
+    {
+      id:"coin12",
+      name:"Galaxia",
+      visual:"🌌",
+      price:1300,
+      color:"#7c4dff",
+      trail:"✨",
+      description:"Trae el cosmos a la partida"
+    },
+
+    {
+      id:"coin13",
+      name:"Trueno",
+      visual:"⚡",
+      price:1500,
+      color:"#00e5ff",
+      trail:"⚡",
+      description:"Carga eléctrica intensa"
+    },
+
+    {
+      id:"coin14",
+      name:"Void",
+      visual:"🕳️",
+      price:1800,
+      color:"#1b0b2f",
+      trail:"🟣",
+      description:"Una moneda del vacío"
+    },
+
+    {
+      id:"coin15",
+      name:"Cristal",
+      visual:"🔷",
+      price:2000,
+      color:"#00d9ff",
+      trail:"❄️",
+      description:"Cristal de energía"
     }
+
   ]
+
 };
 
 /* ==========================================================
-   REFERENCIAS
+   4. ESTADO
 ========================================================== */
 
-const canvas=
-  document.getElementById("gameCanvas");
+const state={
 
-const ctx=
-  canvas.getContext("2d");
+  score:0,
 
-const startScreen=
-  document.getElementById("startScreen");
+  highScore:0,
 
-const pauseOverlay=
-  document.getElementById("pauseOverlay");
+  timeLeft:CONFIG.initialTime,
 
-const toastEl=
-  document.getElementById("toast");
+  coins:1000,
+
+  level:1,
+
+  xp:0,
+
+  totalXP:0,
+
+  combo:1,
+
+  lastCatchTime:0,
+
+  playing:false,
+
+  paused:false,
+
+  sound:true,
+
+  selectedAvatar:"avatar1",
+
+  selectedBasket:"basket1",
+
+  selectedCoinSkin:"coin1",
+
+  owned:{
+    avatar1:true,
+    basket1:true,
+    coin1:true
+  }
+
+};
+
+const PLAYER_NUMBER_KEY="atmPermanentPlayerNumber";
+
+function getPermanentPlayerNumber(){
+
+  let number=localStorage.getItem(PLAYER_NUMBER_KEY);
+
+  if(!number){
+
+    number=String(
+      Math.floor(100+Math.random()*900)
+    );
+
+    localStorage.setItem(
+      PLAYER_NUMBER_KEY,
+      number
+    );
+
+  }
+
+  return number;
+}
+
+const player={
+  number:getPermanentPlayerNumber(),
+  name:`Jugador${getPermanentPlayerNumber()}`,
+  owner:true
+};
+
+/* ==========================================================
+   ONLINE
+========================================================== */
+
+function onlineConfigured(){
+
+  return ONLINE_CONFIG.enabled &&
+    ONLINE_CONFIG.url.startsWith("http") &&
+    ONLINE_CONFIG.key.length>20;
+
+}
+
+async function initOnlineMode(){
+
+  if(
+    !onlineConfigured() ||
+    typeof window.supabase==="undefined"
+  ){
+    return false;
+  }
+
+  try{
+
+    supabaseClient=
+      window.supabase.createClient(
+        ONLINE_CONFIG.url,
+        ONLINE_CONFIG.key
+      );
+
+    const {
+      data,
+      error
+    }=
+      await supabaseClient.auth.getSession();
+
+    if(error)throw error;
+
+    onlineSession=data.session;
+
+    if(!onlineSession){
+
+      const auth=
+        await supabaseClient.auth.signInAnonymously();
+
+      if(auth.error)throw auth.error;
+
+      onlineSession=auth.data.session;
+
+    }
+
+    if(!onlineSession){
+      throw new Error(
+        "No se pudo crear la sesión online"
+      );
+    }
+
+    await syncOnlinePlayer(
+      onlineSession.user.id
+    );
+
+    subscribeOnlineEvents();
+
+    return true;
+
+  }catch(error){
+
+    console.warn("Supabase:",error);
+
+    addSystemMessage(
+      "⚠️ No se pudo conectar al servidor. El juego seguirá en modo local."
+    );
+
+    return false;
+
+  }
+
+}
+
+async function syncOnlinePlayer(userId){
+
+  if(!supabaseClient)return;
+
+  let {
+    data,
+    error
+  }=
+    await supabaseClient
+      .from("players")
+      .select(
+        "id,player_number,display_name,coins,is_owner,avatar,basket_skin,coin_skin"
+      )
+      .eq("id",userId)
+      .maybeSingle();
+
+  if(error)throw error;
+
+  if(!data){
+
+    const created=
+      await supabaseClient.rpc(
+        "create_player",
+        {
+          p_display_name:player.name
+        }
+      );
+
+    if(created.error)throw created.error;
+
+    data=created.data;
+
+  }
+
+  if(Array.isArray(data)){
+    data=data[0];
+  }
+
+  onlinePlayerData=data;
+
+  player.number=String(data.player_number);
+
+  player.name=
+    data.display_name ||
+    `Jugador${player.number}`;
+
+  player.owner=!!data.is_owner;
+
+  state.coins=
+    Number(data.coins??state.coins);
+
+  if(data.avatar){
+    state.selectedAvatar=data.avatar;
+  }
+
+  if(data.basket_skin){
+    state.selectedBasket=data.basket_skin;
+  }
+
+  if(data.coin_skin){
+    state.selectedCoinSkin=data.coin_skin;
+  }
+
+  addSystemMessage(
+    `☁️ Conectado como ${player.name} #${player.number}${player.owner?" 👑 OWNER":""}.`
+  );
+
+  renderShop();
+
+}
+
+async function syncRemoteProfile(){
+
+  if(!supabaseClient||!onlineSession)return;
+
+  const payload={
+
+    display_name:player.name,
+
+    coins:Math.floor(state.coins),
+
+    avatar:state.selectedAvatar,
+
+    basket_skin:state.selectedBasket,
+
+    coin_skin:state.selectedCoinSkin
+
+  };
+
+  const {
+    error
+  }=
+    await supabaseClient
+      .from("players")
+      .update(payload)
+      .eq(
+        "id",
+        onlineSession.user.id
+      );
+
+  if(error){
+
+    console.warn(
+      "No se pudo guardar en servidor:",
+      error.message
+    );
+
+  }
+
+}
+
+function subscribeOnlineEvents(){
+
+  if(
+    !supabaseClient ||
+    !onlineSession
+  )return;
+
+  supabaseClient
+    .channel("atm-global-events")
+    .on(
+      "postgres_changes",
+      {
+        event:"INSERT",
+        schema:"public",
+        table:"global_events"
+      },
+      payload=>{
+
+        const ev=payload.new;
+
+        if(
+          ev.actor_id===
+          onlineSession.user.id
+        )return;
+
+        if(ev.type==="give"){
+
+          addSystemMessage(
+            `🎁 ${ev.actor_name} regaló ${Number(ev.amount).toLocaleString()} monedas a #${ev.target_number}.`
+          );
+
+        }else if(ev.type==="giveall"){
+
+          addSystemMessage(
+            `🎁 EVENTO GLOBAL: ${ev.actor_name} dio ${Number(ev.amount).toLocaleString()} monedas a todos.`
+          );
+
+        }else if(ev.type==="announce"){
+
+          addSystemMessage(
+            `📢 ${ev.message}`
+          );
+
+        }else if(ev.type==="giveitem"){
+
+          addSystemMessage(
+            `🎁 ${ev.actor_name} entregó ${ev.item_id}.`
+          );
+
+        }
+
+      }
+    )
+    .subscribe();
+
+  supabaseClient
+    .channel("atm-player-sync")
+    .on(
+      "postgres_changes",
+      {
+        event:"UPDATE",
+        schema:"public",
+        table:"players",
+        filter:`id=eq.${onlineSession.user.id}`
+      },
+      payload=>{
+
+        const row=payload.new;
+
+        if(
+          row &&
+          row.coins!==undefined
+        ){
+
+          state.coins=Number(row.coins);
+
+          updateShopHeader();
+
+        }
+
+        if(row&&row.display_name){
+
+          player.name=row.display_name;
+
+        }
+
+        if(
+          row &&
+          row.is_owner!==undefined
+        ){
+
+          player.owner=!!row.is_owner;
+
+        }
+
+      }
+    )
+    .subscribe();
+
+}
+
+async function sendGlobalOwnerEvent(
+  type,
+  data
+){
+
+  if(
+    !supabaseClient ||
+    !onlineSession ||
+    !player.owner
+  ){
+    return false;
+  }
+
+  const {
+    error
+  }=
+    await supabaseClient.rpc(
+      "owner_publish_event",
+      {
+        p_type:type,
+        p_target_number:
+          data.target_number??null,
+        p_amount:
+          data.amount??null,
+        p_item_id:
+          data.item_id??null,
+        p_message:
+          data.message??null
+      }
+    );
+
+  if(error){
+
+    addSystemMessage(
+      `⚠️ ${error.message}`
+    );
+
+    return false;
+
+  }
+
+  return true;
+
+}
+
+/* ==========================================================
+   OBJETOS
+========================================================== */
 
 const basket={
   x:0,
@@ -1538,32 +2182,121 @@ const fallingCoin={
   special:"normal"
 };
 
-let timerHandle=null;
+const keys=Object.create(null);
 
-function clamp(v,min,max){
-  return Math.max(min,Math.min(max,v));
+let timerHandle=null;
+let eventHandle=null;
+let audioContext=null;
+let specialTrail=[];
+
+/* ==========================================================
+   UTILIDADES
+========================================================== */
+
+function clamp(
+  value,
+  min,
+  max
+){
+
+  return Math.max(
+    min,
+    Math.min(max,value)
+  );
+
+}
+
+function selectedCoinSkin(){
+
+  return SHOP.coins.find(
+    x=>x.id===state.selectedCoinSkin
+  )||SHOP.coins[0];
+
+}
+
+function selectedBasketSkin(){
+
+  return SHOP.baskets.find(
+    x=>x.id===state.selectedBasket
+  )||SHOP.baskets[0];
+
+}
+
+function selectedAvatar(){
+
+  return SHOP.avatars.find(
+    x=>x.id===state.selectedAvatar
+  )||SHOP.avatars[0];
+
 }
 
 function showToast(text){
 
   toastEl.textContent=text;
+
   toastEl.classList.add("show");
 
-  clearTimeout(showToast.t);
+  clearTimeout(
+    showToast.timeout
+  );
 
-  showToast.t=
+  showToast.timeout=
     setTimeout(
       ()=>toastEl.classList.remove("show"),
-      1800
+      1600
     );
 
 }
+
+function escapeHtml(text){
+
+  return String(text).replace(
+    /[&<>"']/g,
+    ch=>({
+      "&":"&amp;",
+      "<":"&lt;",
+      ">":"&gt;",
+      "\"":"&quot;",
+      "'":"&#039;"
+    }[ch])
+  );
+
+}
+
+/* ==========================================================
+   GUARDADO
+========================================================== */
 
 function saveState(){
 
   localStorage.setItem(
     "atrapaMonedaSave",
-    JSON.stringify(state)
+    JSON.stringify({
+
+      coins:state.coins,
+
+      highScore:state.highScore,
+
+      level:state.level,
+
+      xp:state.xp,
+
+      totalXP:state.totalXP,
+
+      sound:state.sound,
+
+      selectedAvatar:
+        state.selectedAvatar,
+
+      selectedBasket:
+        state.selectedBasket,
+
+      selectedCoinSkin:
+        state.selectedCoinSkin,
+
+      owned:state.owned
+
+    })
   );
 
 }
@@ -1572,21 +2305,140 @@ function loadState(){
 
   try{
 
-    const data=
+    const saved=
       JSON.parse(
         localStorage.getItem(
           "atrapaMonedaSave"
         )||"null"
       );
 
-    if(data){
-      Object.assign(
-        state,
-        data
-      );
+    if(saved){
+
+      state.coins=
+        Number.isFinite(saved.coins)
+          ?saved.coins
+          :state.coins;
+
+      state.highScore=
+        Number.isFinite(saved.highScore)
+          ?saved.highScore
+          :0;
+
+      state.level=
+        Number.isFinite(saved.level)
+          ?saved.level
+          :1;
+
+      state.xp=
+        Number.isFinite(saved.xp)
+          ?saved.xp
+          :0;
+
+      state.totalXP=
+        Number.isFinite(saved.totalXP)
+          ?saved.totalXP
+          :0;
+
+      state.sound=
+        saved.sound!==false;
+
+      state.selectedAvatar=
+        saved.selectedAvatar||
+        "avatar1";
+
+      state.selectedBasket=
+        saved.selectedBasket||
+        "basket1";
+
+      state.selectedCoinSkin=
+        saved.selectedCoinSkin||
+        "coin1";
+
+      state.owned={
+        ...state.owned,
+        ...(saved.owned||{})
+      };
+
     }
 
-  }catch{}
+  }catch(error){
+
+    console.warn(
+      "No se pudo cargar el guardado.",
+      error
+    );
+
+  }
+
+  document.getElementById(
+    "startHighScore"
+  ).textContent=
+    `🏆 Récord: ${state.highScore}`;
+
+  soundBtn.textContent=
+    state.sound?"🔊":"🔇";
+
+}
+
+/* ==========================================================
+   AUDIO
+========================================================== */
+
+function playSound(type){
+
+  if(!state.sound)return;
+
+  try{
+
+    audioContext||=
+      new(
+        window.AudioContext||
+        window.webkitAudioContext
+      )();
+
+    const oscillator=
+      audioContext.createOscillator();
+
+    const gain=
+      audioContext.createGain();
+
+    oscillator.connect(gain);
+
+    gain.connect(
+      audioContext.destination
+    );
+
+    const frequencies={
+
+      catch:820,
+
+      start:520,
+
+      level:1100,
+
+      bad:180,
+
+      event:680
+
+    };
+
+    oscillator.frequency.value=
+      frequencies[type]||500;
+
+    gain.gain.value=0.06;
+
+    oscillator.start();
+
+    oscillator.stop(
+      audioContext.currentTime+
+      (type==="bad"?.22:.1)
+    );
+
+  }catch(error){
+
+    /* Audio bloqueado */
+
+  }
 
 }
 
@@ -1597,10 +2449,10 @@ function loadState(){
 function resizeCanvas(){
 
   canvas.width=
-    innerWidth;
+    window.innerWidth;
 
   canvas.height=
-    innerHeight;
+    window.innerHeight;
 
   basket.y=
     canvas.height-60;
@@ -1612,19 +2464,25 @@ function resizeCanvas(){
     clamp(
       basket.x,
       0,
-      canvas.width-basket.width
+      Math.max(
+        0,
+        canvas.width-basket.width
+      )
     );
 
   basket.targetX=
     clamp(
       basket.targetX,
       0,
-      canvas.width-basket.width
+      Math.max(
+        0,
+        canvas.width-basket.width
+      )
     );
 
 }
 
-addEventListener(
+window.addEventListener(
   "resize",
   resizeCanvas
 );
@@ -1633,7 +2491,8 @@ resizeCanvas();
 
 function resetCoin(){
 
-  fallingCoin.y=-40;
+  fallingCoin.y=
+    -fallingCoin.radius*2;
 
   fallingCoin.x=
     fallingCoin.radius+
@@ -1645,129 +2504,270 @@ function resetCoin(){
 
   fallingCoin.rotation=0;
 
-  const r=Math.random();
+  specialTrail=[];
 
-  fallingCoin.special=
-    r<.08
-      ?"lightning"
-      :r<.13
-        ?"diamond"
-        :r<.17
-          ?"trap"
-          :"normal";
+  const chance=Math.random();
+
+  if(chance<.08){
+
+    fallingCoin.special=
+      "lightning";
+
+  }else if(chance<.13){
+
+    fallingCoin.special=
+      "diamond";
+
+  }else if(chance<.17){
+
+    fallingCoin.special=
+      "trap";
+
+  }else{
+
+    fallingCoin.special=
+      "normal";
+
+  }
 
 }
 
 /* ==========================================================
-   DIBUJADO
+   PARTÍCULAS
 ========================================================== */
 
-function selectedBasket(){
+function createParticles(
+  x,
+  y,
+  count=7,
+  emoji="✨"
+){
 
-  return SHOP.baskets.find(
-    x=>
-      x.id===state.selectedBasket
-  )||SHOP.baskets[0];
+  for(let i=0;i<count;i++){
+
+    const particle=
+      document.createElement("div");
+
+    particle.className="particle";
+
+    particle.textContent=emoji;
+
+    particle.style.left=
+      `${x+(Math.random()-.5)*70}px`;
+
+    particle.style.top=
+      `${y+(Math.random()-.5)*25}px`;
+
+    document.body.appendChild(
+      particle
+    );
+
+    setTimeout(
+      ()=>particle.remove(),
+      1000
+    );
+
+  }
 
 }
 
-function selectedCoin(){
+/* ==========================================================
+   NIVELES / XP
+========================================================== */
 
-  return SHOP.coins.find(
-    x=>
-      x.id===state.selectedCoinSkin
-  )||SHOP.coins[0];
+function xpNeeded(){
+
+  return state.level*100;
 
 }
 
-function drawBasket(){
+function addXP(amount){
+
+  state.xp+=amount;
+
+  state.totalXP+=amount;
+
+  while(
+    state.xp>=xpNeeded()
+  ){
+
+    state.xp-=xpNeeded();
+
+    state.level++;
+
+    createParticles(
+      canvas.width/2,
+      canvas.height/2,
+      18,
+      "⭐"
+    );
+
+    showToast(
+      `🎉 ¡NIVEL ${state.level}!`
+    );
+
+    addSystemMessage(
+      `🎉 ${player.name} subió al nivel ${state.level}!`
+    );
+
+    playSound("level");
+
+  }
+
+}
+
+/* ==========================================================
+   DIBUJAR CESTA
+========================================================== */
+
+function drawBasketSkin(){
 
   const skin=
-    selectedBasket();
+    selectedBasketSkin();
 
-  const x=basket.x;
-  const y=basket.y;
-  const w=basket.width;
-  const h=basket.height;
+  const {
+    x,
+    y,
+    width,
+    height
+  }=basket;
 
   ctx.save();
 
-  const g=
-    ctx.createLinearGradient(
-      x,y,
-      x+w,y+h
+  if(skin.id==="basket6"){
+
+    const stripeHeight=
+      height/6;
+
+    const colors=[
+      "#ff0000",
+      "#ff7f00",
+      "#ffff00",
+      "#00ff00",
+      "#0000ff",
+      "#8b00ff"
+    ];
+
+    colors.forEach(
+      (color,index)=>{
+
+        ctx.fillStyle=color;
+
+        ctx.fillRect(
+          x,
+          y+index*stripeHeight,
+          width,
+          stripeHeight
+        );
+
+      }
     );
 
-  g.addColorStop(
-    0,
-    skin.colors
-      ?skin.colors[0]
-      :"#ffd700"
-  );
+  }else{
 
-  g.addColorStop(
-    1,
-    skin.colors
-      ?skin.colors[1]
-      :"#a86f00"
-  );
+    const gradient=
+      ctx.createLinearGradient(
+        x,
+        y,
+        x+width,
+        y+height
+      );
 
-  ctx.fillStyle=g;
+    gradient.addColorStop(
+      0,
+      skin.colors[0]
+    );
 
-  if(
-    skin.id==="goldenTrollace"
-  ){
+    gradient.addColorStop(
+      1,
+      skin.colors[1]
+    );
 
-    ctx.shadowColor="#ffd700";
-    ctx.shadowBlur=30;
+    ctx.fillStyle=gradient;
+
+    ctx.fillRect(
+      x,
+      y,
+      width,
+      height
+    );
 
   }
 
-  ctx.fillRect(
-    x,y,w,h
-  );
-
-  ctx.strokeStyle="#fff";
-  ctx.lineWidth=2;
-
-  ctx.strokeRect(
-    x,y,w,h
-  );
-
   if(
-    skin.id==="goldenTrollace"
+    skin.id==="basket7"||
+    skin.id==="basket5"||
+    skin.id==="ownerBasket"
   ){
 
+    ctx.shadowColor=
+      skin.id==="basket7"
+        ?"#ff00ff"
+        :skin.id==="basket5"
+          ?"#00eaff"
+          :"#ffd700";
+
+    ctx.shadowBlur=
+      skin.id==="ownerBasket"
+        ?24
+        :16;
+
+  }
+
+  if(skin.id==="ownerBasket"){
+
+    ctx.fillStyle="#fff";
+
     ctx.font="18px Arial";
+
     ctx.textAlign="center";
+
     ctx.textBaseline="middle";
 
     ctx.fillText(
-      "🏆",
-      x+w/2,
-      y+h/2
+      "👑",
+      x+width/2,
+      y+height/2
     );
 
   }
+
+  ctx.strokeStyle="#fff";
+
+  ctx.lineWidth=2;
+
+  ctx.strokeRect(
+    x,
+    y,
+    width,
+    height
+  );
+
+  ctx.shadowBlur=0;
 
   ctx.restore();
 
 }
 
+/* ==========================================================
+   AVATAR
+========================================================== */
+
 function drawAvatar(){
 
-  const a=
-    SHOP.avatars.find(
-      x=>x.id===state.selectedAvatar
-    )||SHOP.avatars[0];
+  const avatar=
+    selectedAvatar();
 
   ctx.save();
 
-  ctx.font="30px Arial";
   ctx.textAlign="center";
 
+  ctx.textBaseline="middle";
+
+  ctx.font="30px Arial";
+
   ctx.fillText(
-    a.visual,
+    avatar.visual,
     basket.x+basket.width/2,
     basket.y-24
   );
@@ -1776,35 +2776,73 @@ function drawAvatar(){
 
 }
 
-function drawCoin(){
+/* ==========================================================
+   MONEDA
+========================================================== */
 
-  let color=
-    selectedCoin().color;
-
-  let symbol=
-    "";
+function coinColor(){
 
   if(
     fallingCoin.special==="lightning"
   ){
-    color="#00e5ff";
-    symbol="⚡";
-  }else if(
+    return "#00e5ff";
+  }
+
+  if(
     fallingCoin.special==="diamond"
   ){
-    color="#00ffff";
-    symbol="💎";
-  }else if(
+    return "#00ffff";
+  }
+
+  if(
     fallingCoin.special==="trap"
   ){
-    color="#ff3333";
-    symbol="💣";
-  }else{
-    symbol=
-      selectedCoin().id==="coin1"
-        ?""
-        :selectedCoin().visual;
+    return "#ff3333";
   }
+
+  return selectedCoinSkin().color;
+
+}
+
+function coinSymbol(){
+
+  if(
+    fallingCoin.special==="lightning"
+  ){
+    return "⚡";
+  }
+
+  if(
+    fallingCoin.special==="diamond"
+  ){
+    return "💎";
+  }
+
+  if(
+    fallingCoin.special==="trap"
+  ){
+    return "💣";
+  }
+
+  const skin=
+    selectedCoinSkin();
+
+  return skin.id==="coin1"
+    ?null
+    :skin.visual;
+
+}
+
+function drawCoin(){
+
+  const color=
+    coinColor();
+
+  const symbol=
+    coinSymbol();
+
+  const skin=
+    selectedCoinSkin();
 
   ctx.save();
 
@@ -1818,30 +2856,45 @@ function drawCoin(){
   );
 
   ctx.shadowColor=color;
-  ctx.shadowBlur=15;
 
-  ctx.fillStyle=color;
+  ctx.shadowBlur=
+    state.selectedCoinSkin==="ownerCoin"
+      ?30
+      :fallingCoin.special==="normal"
+        ?7
+        :22;
 
   ctx.beginPath();
 
   ctx.arc(
-    0,0,
+    0,
+    0,
     fallingCoin.radius,
     0,
     Math.PI*2
   );
 
+  ctx.fillStyle=color;
+
   ctx.fill();
 
   ctx.strokeStyle="#fff";
+
+  ctx.lineWidth=2;
+
   ctx.stroke();
 
   ctx.shadowBlur=0;
 
   if(symbol){
 
-    ctx.font="18px Arial";
+    ctx.font=
+      skin.id==="ownerCoin"
+        ?"20px Arial"
+        :"18px Arial";
+
     ctx.textAlign="center";
+
     ctx.textBaseline="middle";
 
     ctx.fillText(
@@ -1850,109 +2903,258 @@ function drawCoin(){
       0
     );
 
+  }else{
+
+    ctx.beginPath();
+
+    ctx.arc(
+      -fallingCoin.radius/3,
+      -fallingCoin.radius/3,
+      fallingCoin.radius/3,
+      0,
+      Math.PI*2
+    );
+
+    ctx.fillStyle=
+      "rgba(255,255,255,.55)";
+
+    ctx.fill();
+
   }
 
   ctx.restore();
 
+  if(
+    fallingCoin.special==="normal"&&
+    skin.id!=="coin1"&&
+    Math.random()<.25
+  ){
+
+    specialTrail.push({
+
+      x:fallingCoin.x,
+
+      y:fallingCoin.y,
+
+      life:1,
+
+      emoji:skin.trail||"✨"
+
+    });
+
+  }
+
+  specialTrail=
+    specialTrail.filter(
+      p=>p.life>0
+    );
+
+  specialTrail.forEach(
+    p=>{
+
+      ctx.save();
+
+      ctx.globalAlpha=
+        p.life*.35;
+
+      ctx.fillStyle=color;
+
+      ctx.beginPath();
+
+      ctx.arc(
+        p.x,
+        p.y,
+        4,
+        0,
+        Math.PI*2
+      );
+
+      ctx.fill();
+
+      ctx.restore();
+
+      p.life-=.08;
+
+    }
+  );
+
 }
+
+/* ==========================================================
+   HUD
+========================================================== */
 
 function drawHUD(){
 
-  ctx.fillStyle="#0006";
-  ctx.fillRect(
-    0,0,
-    canvas.width,
-    105
-  );
+  const fontSize=
+    Math.max(
+      18,
+      window.innerWidth*.026
+    );
 
-  ctx.fillStyle="#ffd700";
-  ctx.font="bold 19px Arial";
+  ctx.fillStyle=
+    "rgba(0,0,0,.38)";
+
+  ctx.fillRect(
+    0,
+    0,
+    canvas.width,
+    112
+  );
 
   ctx.textAlign="left";
 
+  ctx.fillStyle="#ffd700";
+
+  ctx.font=
+    `bold ${fontSize}px Arial`;
+
   ctx.fillText(
     `💰 ${state.score}`,
-    15,
-    28
+    18,
+    30
   );
 
   ctx.fillStyle="#fff";
-  ctx.font="14px Arial";
+
+  ctx.font=
+    `${fontSize*.7}px Arial`;
 
   ctx.fillText(
     `🔥 Combo x${state.combo}`,
-    15,
-    52
+    18,
+    55
   );
 
   ctx.fillText(
     `⭐ Nivel ${state.level}`,
-    15,
-    74
+    18,
+    80
   );
 
   ctx.textAlign="right";
 
   ctx.fillStyle=
     state.timeLeft<=5
-      ?"red"
+      ?"#ff5c5c"
       :"#ffd700";
 
-  ctx.font="bold 19px Arial";
+  ctx.font=
+    `bold ${fontSize}px Arial`;
 
   ctx.fillText(
-    `⏱️ ${state.timeLeft}`,
-    canvas.width-15,
-    28
+    `⏱️ ${state.timeLeft}s`,
+    canvas.width-18,
+    30
   );
 
-  ctx.fillStyle="#fff";
-  ctx.font="14px Arial";
+  ctx.fillStyle="#ffd700";
+
+  ctx.font=
+    `${fontSize*.7}px Arial`;
 
   ctx.fillText(
     `🏆 ${state.highScore}`,
-    canvas.width-15,
-    52
+    canvas.width-18,
+    55
+  );
+
+  const width=220;
+
+  const height=14;
+
+  const x=
+    canvas.width/2-width/2;
+
+  const y=88;
+
+  const progress=
+    Math.min(
+      state.xp/xpNeeded(),
+      1
+    );
+
+  ctx.fillStyle="#0009";
+
+  ctx.fillRect(
+    x,
+    y,
+    width,
+    height
+  );
+
+  ctx.fillStyle="#9b59b6";
+
+  ctx.fillRect(
+    x,
+    y,
+    width*progress,
+    height
+  );
+
+  ctx.strokeStyle="#fff";
+
+  ctx.strokeRect(
+    x,
+    y,
+    width,
+    height
+  );
+
+  ctx.textAlign="center";
+
+  ctx.font="10px Arial";
+
+  ctx.fillStyle="#fff";
+
+  ctx.fillText(
+    `${state.xp}/${xpNeeded()} XP`,
+    canvas.width/2,
+    y+10
   );
 
   if(
-    state.goldenTrollace&&
-    state.selectedBasket==="goldenTrollace"
+    fallingCoin.special!=="normal"
   ){
 
-    ctx.fillStyle="#ffd700";
-    ctx.font="bold 12px Arial";
+    const labels={
+
+      lightning:"⚡ X3 PUNTOS",
+
+      diamond:"💎 +50 PUNTOS",
+
+      trap:"💣 ¡CUIDADO!"
+
+    };
+
+    const colors={
+
+      lightning:"#00e5ff",
+
+      diamond:"#00ffff",
+
+      trap:"#ff6666"
+
+    };
+
+    ctx.fillStyle=
+      colors[fallingCoin.special];
+
+    ctx.font=
+      "bold 15px Arial";
 
     ctx.fillText(
-      "🏆 TROLLACE x10",
-      canvas.width-15,
-      74
+      labels[fallingCoin.special],
+      canvas.width/2,
+      132
     );
 
   }
 
 }
 
-function render(){
-
-  ctx.clearRect(
-    0,0,
-    canvas.width,
-    canvas.height
-  );
-
-  drawHUD();
-  drawBasket();
-  drawAvatar();
-  drawCoin();
-  updateGame();
-
-  requestAnimationFrame(render);
-
-}
-
 /* ==========================================================
-   GAMEPLAY
+   COLISIÓN
 ========================================================== */
 
 function checkCollision(){
@@ -1960,19 +3162,72 @@ function checkCollision(){
   return(
     fallingCoin.y+
       fallingCoin.radius>
-      basket.y&&
+      basket.y &&
+
+    fallingCoin.y-
+      fallingCoin.radius<
+      basket.y+basket.height &&
 
     fallingCoin.x>
-      basket.x&&
+      basket.x &&
 
     fallingCoin.x<
-      basket.x+
-      basket.width
+      basket.x+basket.width
   );
 
 }
 
 function catchCoin(){
+
+  const now=Date.now();
+
+  state.combo=
+    now-state.lastCatchTime<
+    CONFIG.comboWindow
+      ?Math.min(
+        state.combo+1,
+        CONFIG.maxCombo
+      )
+      :1;
+
+  state.lastCatchTime=now;
+
+  if(
+    fallingCoin.special==="trap"
+  ){
+
+    state.combo=1;
+
+    state.score=
+      Math.max(
+        0,
+        state.score-20
+      );
+
+    createParticles(
+      fallingCoin.x,
+      fallingCoin.y,
+      12,
+      "💥"
+    );
+
+    showToast(
+      "💣 ¡TRAMPA! -20 puntos"
+    );
+
+    addSystemMessage(
+      "💣 ¡Alguien atrapó una moneda trampa!"
+    );
+
+    playSound("bad");
+
+    resetCoin();
+
+    saveState();
+
+    return;
+
+  }
 
   let points=
     CONFIG.scorePerCoin*
@@ -1990,49 +3245,214 @@ function catchCoin(){
     points+=50;
   }
 
-  /* TROLLACE DORADA x10 */
-  if(
-    state.goldenTrollace&&
-    state.selectedBasket==="goldenTrollace"
-  ){
-
-    points*=10;
-
-    showToast(
-      `🏆 TROLLACE DORADA x10 • +${points}`
-    );
-
-  }
-
   state.score+=points;
+
   state.coins+=points;
 
-  state.combo=
-    Math.min(
-      state.combo+1,
-      CONFIG.maxCombo
-    );
+  addXP(
+    Math.max(
+      1,
+      points
+    )
+  );
+
+  fallingCoin.speed+=
+    CONFIG.speedIncrement;
+
+  const particleEmoji=
+    fallingCoin.special==="lightning"
+      ?"⚡"
+      :fallingCoin.special==="diamond"
+        ?"💎"
+        :selectedCoinSkin().trail;
+
+  createParticles(
+    fallingCoin.x,
+    fallingCoin.y,
+    fallingCoin.special==="normal"
+      ?6
+      :15,
+    particleEmoji
+  );
 
   if(
-    state.score>
-    state.highScore
+    fallingCoin.special==="lightning"
   ){
 
-    state.highScore=
-      state.score;
-
-    localStorage.setItem(
-      "atm_highscore",
-      state.highScore
+    showToast(
+      `⚡ ¡MONEDA RAYO! +${points}`
     );
 
   }
 
-  saveState();
+  if(
+    fallingCoin.special==="diamond"
+  ){
+
+    showToast(
+      `💎 ¡DIAMANTE! +${points}`
+    );
+
+  }
+
+  playSound("catch");
 
   resetCoin();
 
+  saveState();
+
 }
+
+/* ==========================================================
+   EVENTOS
+========================================================== */
+
+function startRandomEvents(){
+
+  clearInterval(eventHandle);
+
+  eventHandle=
+    setInterval(
+      ()=>{
+
+        if(
+          !state.playing||
+          state.paused
+        ){
+          return;
+        }
+
+        const roll=Math.random();
+
+        if(roll<.34){
+
+          state.coins+=100;
+
+          createParticles(
+            canvas.width/2,
+            canvas.height/2,
+            18,
+            "💰"
+          );
+
+          showToast(
+            "💰 ¡BONO +100 MONEDAS!"
+          );
+
+          addSystemMessage(
+            "💰 Evento: bono de 100 monedas"
+          );
+
+          playSound("event");
+
+        }else if(roll<.67){
+
+          state.combo=
+            Math.min(
+              CONFIG.maxCombo,
+              state.combo+3
+            );
+
+          createParticles(
+            canvas.width/2,
+            canvas.height/2,
+            15,
+            "🔥"
+          );
+
+          showToast(
+            "🔥 ¡SUPER COMBO!"
+          );
+
+          addSystemMessage(
+            "🔥 Evento: super combo"
+          );
+
+          playSound("event");
+
+        }else{
+
+          fallingCoin.speed+=2;
+
+          createParticles(
+            canvas.width/2,
+            canvas.height/2,
+            15,
+            "⚡"
+          );
+
+          showToast(
+            "⚡ ¡FIEBRE DE VELOCIDAD!"
+          );
+
+          addSystemMessage(
+            "⚡ Evento: monedas más rápidas"
+          );
+
+          playSound("event");
+
+        }
+
+        saveState();
+
+      },
+      7000
+    );
+
+}
+
+/* ==========================================================
+   FPS
+========================================================== */
+
+let fpsFrames=0;
+
+let fpsValue=0;
+
+let fpsLast=
+  performance.now();
+
+function updateFPS(now){
+
+  fpsFrames++;
+
+  if(
+    now-fpsLast>=500
+  ){
+
+    fpsValue=
+      Math.round(
+        (
+          fpsFrames*1000
+        )/
+        (
+          now-fpsLast
+        )
+      );
+
+    fpsFrames=0;
+
+    fpsLast=now;
+
+    const el=
+      document.getElementById(
+        "fpsCounter"
+      );
+
+    if(el){
+
+      el.textContent=
+        `FPS: ${fpsValue}`;
+
+    }
+
+  }
+
+}
+
+/* ==========================================================
+   LOOP
+========================================================== */
 
 function updateGame(){
 
@@ -2046,29 +3466,23 @@ function updateGame(){
   fallingCoin.y+=
     fallingCoin.speed;
 
-  fallingCoin.rotation+=.1;
+  fallingCoin.rotation+=.12;
 
   if(
-    fallingCoin.y>
-    canvas.height+50
+    fallingCoin.y-
+      fallingCoin.radius>
+      canvas.height
   ){
-
-    fallingCoin.speed=
-      Math.max(
-        2,
-        fallingCoin.speed+
-        CONFIG.speedIncrement
-      );
-
-    state.combo=1;
 
     resetCoin();
 
+    state.combo=1;
+
+    return;
+
   }
 
-  if(
-    checkCollision()
-  ){
+  if(checkCollision()){
 
     catchCoin();
 
@@ -2076,21 +3490,64 @@ function updateGame(){
 
 }
 
-function startGame(){
+function render(
+  now=performance.now()
+){
 
-  if(state.playing)return;
+  updateFPS(now);
 
-  state.playing=true;
-  state.paused=false;
+  ctx.clearRect(
+    0,
+    0,
+    canvas.width,
+    canvas.height
+  );
+
+  drawHUD();
+
+  drawBasketSkin();
+
+  drawAvatar();
+
+  drawCoin();
+
+  updateGame();
+
+  requestAnimationFrame(render);
+
+}
+
+/* ==========================================================
+   PARTIDA
+========================================================== */
+
+function resetRun(){
+
   state.score=0;
+
   state.timeLeft=
     CONFIG.initialTime;
+
   state.combo=1;
+
+  state.lastCatchTime=0;
 
   fallingCoin.speed=
     CONFIG.initialSpeed;
 
   resetCoin();
+
+}
+
+function startGame(){
+
+  if(state.playing)return;
+
+  resetRun();
+
+  state.playing=true;
+
+  state.paused=false;
 
   startScreen.classList.add(
     "hidden"
@@ -2100,9 +3557,18 @@ function startGame(){
     "active"
   );
 
-  clearInterval(
-    timerHandle
+  pauseBtn.style.display="none";
+
+  inGamePause.classList.add(
+    "show"
   );
+
+  inGamePause.textContent=
+    "⏸ PAUSA";
+
+  clearInterval(timerHandle);
+
+  clearInterval(eventHandle);
 
   timerHandle=
     setInterval(
@@ -2111,13 +3577,17 @@ function startGame(){
         if(
           !state.playing||
           state.paused
-        )return;
-
-        state.timeLeft--;
+        ){
+          return;
+        }
 
         if(
-          state.timeLeft<=0
+          state.timeLeft>0
         ){
+
+          state.timeLeft--;
+
+        }else{
 
           endGame();
 
@@ -2127,29 +3597,65 @@ function startGame(){
       1000
     );
 
+  startRandomEvents();
+
+  addSystemMessage(
+    `${player.name} empezó a jugar 🎮`
+  );
+
+  playSound("start");
+
 }
 
 function endGame(){
 
   state.playing=false;
 
-  clearInterval(
-    timerHandle
-  );
-
-  startScreen.classList.remove(
-    "hidden"
-  );
+  state.paused=false;
 
   pauseOverlay.classList.remove(
     "active"
   );
 
+  pauseBtn.style.display="none";
+
+  inGamePause.classList.remove(
+    "show"
+  );
+
+  clearInterval(timerHandle);
+
+  clearInterval(eventHandle);
+
+  if(
+    state.score>state.highScore
+  ){
+
+    state.highScore=
+      state.score;
+
+    document.getElementById(
+      "startHighScore"
+    ).textContent=
+      `🏆 Récord: ${state.highScore}`;
+
+    showToast(
+      "🏆 ¡NUEVO RÉCORD!"
+    );
+
+  }
+
   saveState();
 
-  showToast(
-    `🎮 Partida terminada • ${state.score} puntos`
+  startScreen.classList.remove(
+    "hidden"
   );
+
+  addSystemMessage(
+    `${player.name} terminó con ${state.score} puntos 🎯`
+  );
+
+  playSound("bad");
 
 }
 
@@ -2165,12 +3671,15 @@ function togglePause(){
     state.paused
   );
 
-  document.getElementById(
-    "pauseBtn"
-  ).textContent=
+  pauseBtn.textContent=
     state.paused
       ?"▶"
       :"⏸";
+
+  inGamePause.textContent=
+    state.paused
+      ?"▶ REANUDAR"
+      :"⏸ PAUSA";
 
 }
 
@@ -2178,24 +3687,26 @@ function togglePause(){
    CONTROLES
 ========================================================== */
 
-function moveBasketTo(x){
+function moveBasketTo(clientX){
 
   if(
     !state.playing||
     state.paused
-  )return;
+  ){
+    return;
+  }
 
   const rect=
     canvas.getBoundingClientRect();
 
   basket.targetX=
     clamp(
-      x-
-      rect.left-
-      basket.width/2,
+      clientX-
+        rect.left-
+        basket.width/2,
       0,
       canvas.width-
-      basket.width
+        basket.width
     );
 
 }
@@ -2238,26 +3749,20 @@ canvas.addEventListener(
   {passive:false}
 );
 
-let keys={};
-
-addEventListener(
+window.addEventListener(
   "keydown",
   e=>{
 
     keys[e.key.toLowerCase()]=true;
 
-    if(
-      e.code==="Space"
-    ){
+    if(e.code==="Space"){
 
       e.preventDefault();
 
-      if(
-        !state.playing
-      ){
+      if(!state.playing){
+
         startGame();
-      }else{
-        togglePause();
+
       }
 
     }
@@ -2265,10 +3770,14 @@ addEventListener(
   }
 );
 
-addEventListener(
+window.addEventListener(
   "keyup",
   e=>{
-    keys[e.key.toLowerCase()]=false;
+
+    keys[
+      e.key.toLowerCase()
+    ]=false;
+
   }
 );
 
@@ -2278,23 +3787,27 @@ setInterval(
     if(
       !state.playing||
       state.paused
-    )return;
+    ){
+      return;
+    }
+
+    const speed=14;
 
     if(
-      keys.arrowleft||
-      keys.a
+      keys["arrowleft"]||
+      keys["a"]
     ){
 
-      basket.targetX-=14;
+      basket.targetX-=speed;
 
     }
 
     if(
-      keys.arrowright||
-      keys.d
+      keys["arrowright"]||
+      keys["d"]
     ){
 
-      basket.targetX+=14;
+      basket.targetX+=speed;
 
     }
 
@@ -2303,51 +3816,34 @@ setInterval(
         basket.targetX,
         0,
         canvas.width-
-        basket.width
+          basket.width
       );
 
     basket.x+=
       (
         basket.targetX-
         basket.x
-      )*.2;
+      )*.22;
 
   },
   16
 );
 
-/* CLICK FIX */
+function tryStartGame(e){
 
-startScreen.addEventListener(
-  "click",
-  e=>{
+  if(e)e.preventDefault();
 
-    e.preventDefault();
+  if(!state.playing){
 
-    if(
-      !state.playing
-    ){
-
-      startGame();
-
-    }
+    startGame();
 
   }
-);
+
+}
 
 canvas.addEventListener(
   "click",
-  e=>{
-
-    if(
-      !state.playing
-    ){
-
-      startGame();
-
-    }
-
-  }
+  tryStartGame
 );
 
 canvas.addEventListener(
@@ -2355,73 +3851,61 @@ canvas.addEventListener(
   e=>{
 
     if(
-      e.pointerType!=="mouse"&&
-      !state.playing
+      e.pointerType!=="mouse"
     ){
 
-      e.preventDefault();
-      startGame();
+      tryStartGame(e);
 
     }
 
-  },
-  {passive:false}
+  }
+);
+
+startScreen.addEventListener(
+  "click",
+  tryStartGame
+);
+
+startScreen.addEventListener(
+  "pointerdown",
+  e=>{
+
+    if(
+      e.pointerType!=="mouse"
+    ){
+
+      tryStartGame(e);
+
+    }
+
+  }
 );
 
 /* ==========================================================
    TIENDA
 ========================================================== */
 
-function renderShop(){
-
-  const avatarGrid=
-    document.getElementById(
-      "avatarsGrid"
-    );
-
-  const basketGrid=
-    document.getElementById(
-      "skinsGrid"
-    );
-
-  const coinGrid=
-    document.getElementById(
-      "coinSkinsGrid"
-    );
-
-  avatarGrid.innerHTML="";
-  basketGrid.innerHTML="";
-  coinGrid.innerHTML="";
-
-  SHOP.avatars.forEach(
-    item=>
-      avatarGrid.appendChild(
-        shopCard(
-          item,
-          "avatar"
-        )
-      )
+const shopModal=
+  document.getElementById(
+    "shopModal"
   );
 
-  SHOP.baskets.forEach(
-    item=>
-      basketGrid.appendChild(
-        shopCard(
-          item,
-          "basket"
-        )
-      )
+const shopBadge=
+  document.getElementById(
+    "shopBadge"
   );
 
-  SHOP.coins.forEach(
-    item=>
-      coinGrid.appendChild(
-        shopCard(
-          item,
-          "coin"
-        )
-      )
-  );
+function getShopGroups(){
+
+  return[
+    SHOP.avatars,
+    SHOP.baskets,
+    SHOP.coins
+  ];
+
+}
+
+function updateShopHeader(){
 
   document.getElementById(
     "playerCoins"
@@ -2429,188 +3913,376 @@ function renderShop(){
     state.coins;
 
   document.getElementById(
-    "playerAvatar"
-  ).textContent=
-    SHOP.avatars.find(
-      x=>
-        x.id===
-        state.selectedAvatar
-    )?.visual||"👤";
-
-  document.getElementById(
-    "playerBasket"
-  ).textContent=
-    selectedBasket().visual;
-
-  document.getElementById(
     "playerLevel"
   ).textContent=
     state.level;
 
+  document.getElementById(
+    "playerAvatar"
+  ).textContent=
+    selectedAvatar().visual;
+
+  document.getElementById(
+    "playerBasket"
+  ).textContent=
+    selectedBasketSkin().visual;
+
+  const totalPurchasable=
+    getShopGroups()
+      .flat()
+      .filter(
+        item=>item.price>0
+      ).length;
+
+  const purchased=
+    getShopGroups()
+      .flat()
+      .filter(
+        item=>
+          item.price>0&&
+          state.owned[item.id]
+      ).length;
+
+  const missing=
+    totalPurchasable-
+    purchased;
+
+  shopBadge.textContent=
+    missing;
+
+  shopBadge.style.display=
+    missing
+      ?"flex"
+      :"none";
+
 }
 
-function shopCard(
+function makeShopCard(
   item,
   type
 ){
 
-  const div=
-    document.createElement(
-      "div"
-    );
-
-  div.className=
-    "shop-item";
-
   if(
-    item.eventOnly
+    item.ownerOnly&&
+    !player.owner
   ){
 
-    div.classList.add(
-      "golden"
-    );
+    return document.createDocumentFragment();
 
   }
 
-  const key=
+  const wrapper=
+    document.createElement("div");
+
+  wrapper.className="shop-item";
+
+  const isOwnerFree=
+    player.owner&&
+    type!=="";
+
+  const isOwned=
+    Boolean(
+      state.owned[item.id]
+    );
+
+  const selectedKey=
     type==="avatar"
       ?"selectedAvatar"
       :type==="basket"
         ?"selectedBasket"
         :"selectedCoinSkin";
 
-  const owned=
-    !!state.owned[item.id];
+  const isEquipped=
+    state[selectedKey]===
+    item.id;
 
-  const equipped=
-    state[key]===item.id;
+  if(isEquipped){
 
-  div.innerHTML=
-    `
-    <div class="item-visual">
-      ${item.visual}
-    </div>
-
-    <div class="item-name">
-      ${item.name}
-    </div>
-
-    <div class="item-price">
-      ${
-        item.eventOnly
-          ?"🏆 ERA DORADA • x10"
-          :item.price===0
-            ?"GRATIS"
-            :item.price+" 💰"
-      }
-    </div>
-
-    <div class="item-description">
-      ${item.description}
-    </div>
-
-    <button class="item-btn"></button>
-    `;
-
-  const btn=
-    div.querySelector(
-      "button"
+    wrapper.classList.add(
+      "equipped"
     );
-
-  if(
-    item.eventOnly&&
-    !state.goldenTrollace
-  ){
-
-    btn.className=
-      "item-btn gold-btn";
-
-    btn.textContent=
-      "🔒 /devbirthday";
-
-    btn.disabled=true;
-
-  }else if(
-    equipped
-  ){
-
-    btn.classList.add(
-      "equipped-btn"
-    );
-
-    btn.textContent=
-      "✓ EQUIPADA";
-
-    btn.disabled=true;
-
-  }else if(
-    owned
-  ){
-
-    btn.classList.add(
-      "equip-btn"
-    );
-
-    btn.textContent=
-      "Equipar";
-
-    btn.onclick=
-      ()=>{
-        equipItem(
-          item,
-          type
-        );
-      };
-
-  }else{
-
-    btn.classList.add(
-      "buy-btn"
-    );
-
-    btn.textContent=
-      item.price+
-      " 💰";
-
-    btn.disabled=
-      state.coins<
-      item.price;
-
-    btn.onclick=
-      ()=>{
-
-        if(
-          state.coins<
-          item.price
-        )return;
-
-        state.coins-=
-          item.price;
-
-        state.owned[
-          item.id
-        ]=true;
-
-        equipItem(
-          item,
-          type,
-          false
-        );
-
-        saveState();
-
-        renderShop();
-
-        showToast(
-          "✅ Comprado: "+
-          item.name
-        );
-
-      };
 
   }
 
-  return div;
+  if(item.ownerOnly){
+
+    const badge=
+      document.createElement("div");
+
+    badge.className=
+      "item-badge owner-badge";
+
+    badge.textContent=
+      "👑 SOLO OWNER";
+
+    wrapper.appendChild(
+      badge
+    );
+
+  }else if(
+    item.price>0&&
+    !isOwned&&
+    !isOwnerFree
+  ){
+
+    const badge=
+      document.createElement("div");
+
+    badge.className=
+      "item-badge";
+
+    badge.textContent=
+      item.price>=400
+        ?"⭐ PREMIUM"
+        :"NUEVO";
+
+    wrapper.appendChild(
+      badge
+    );
+
+  }
+
+  const visual=
+    document.createElement("div");
+
+  visual.className=
+    "item-visual";
+
+  visual.textContent=
+    item.visual;
+
+  wrapper.appendChild(
+    visual
+  );
+
+  const name=
+    document.createElement("div");
+
+  name.className=
+    "item-name";
+
+  name.textContent=
+    item.name;
+
+  wrapper.appendChild(
+    name
+  );
+
+  const price=
+    document.createElement("div");
+
+  price.className=
+    "item-price";
+
+  price.textContent=
+    isOwnerFree
+      ?"GRATIS 👑"
+      :item.price===0
+        ?"GRATIS"
+        :`${item.price} 💰`;
+
+  wrapper.appendChild(
+    price
+  );
+
+  const desc=
+    document.createElement("div");
+
+  desc.className=
+    "item-description";
+
+  desc.textContent=
+    item.description;
+
+  wrapper.appendChild(
+    desc
+  );
+
+  const button=
+    document.createElement("button");
+
+  button.className=
+    "item-btn";
+
+  if(!isOwned){
+
+    button.classList.add(
+      "buy-btn"
+    );
+
+    button.textContent=
+      isOwnerFree
+        ?"👑 RECLAMAR GRATIS"
+        :`Comprar ${item.price} 💰`;
+
+    button.disabled=
+      !isOwnerFree&&
+      state.coins<item.price;
+
+    button.addEventListener(
+      "click",
+      ()=>buyItem(
+        item,
+        type
+      )
+    );
+
+  }else if(isEquipped){
+
+    button.classList.add(
+      "equipped-btn"
+    );
+
+    button.textContent=
+      "✓ EQUIPADO";
+
+    button.disabled=true;
+
+  }else{
+
+    button.classList.add(
+      "equip-btn"
+    );
+
+    button.textContent=
+      "Equipar";
+
+    button.addEventListener(
+      "click",
+      ()=>equipItem(
+        item,
+        type
+      )
+    );
+
+  }
+
+  wrapper.appendChild(
+    button
+  );
+
+  return wrapper;
+
+}
+
+function renderShop(){
+
+  const groups=[
+
+    [
+      document.getElementById(
+        "avatarsGrid"
+      ),
+      SHOP.avatars,
+      "avatar"
+    ],
+
+    [
+      document.getElementById(
+        "skinsGrid"
+      ),
+      SHOP.baskets,
+      "basket"
+    ],
+
+    [
+      document.getElementById(
+        "coinSkinsGrid"
+      ),
+      SHOP.coins,
+      "coin"
+    ]
+
+  ];
+
+  groups.forEach(
+    ([container,items,type])=>{
+
+      container.innerHTML="";
+
+      items.forEach(
+        item=>
+          container.appendChild(
+            makeShopCard(
+              item,
+              type
+            )
+          )
+      );
+
+    }
+  );
+
+  updateShopHeader();
+
+}
+
+function buyItem(
+  item,
+  type
+){
+
+  if(player.owner){
+
+    if(state.owned[item.id]){
+
+      equipItem(
+        item,
+        type
+      );
+
+      return;
+
+    }
+
+    state.owned[item.id]=true;
+
+    equipItem(
+      item,
+      type,
+      false
+    );
+
+    showToast(
+      `👑 ${item.name} desbloqueada GRATIS`
+    );
+
+    addSystemMessage(
+      `👑 ${player.name} desbloqueó ${item.name} gratis.`
+    );
+
+    return;
+
+  }
+
+  if(
+    state.owned[item.id]||
+    state.coins<item.price
+  ){
+
+    return;
+
+  }
+
+  state.coins-=
+    item.price;
+
+  state.owned[item.id]=
+    true;
+
+  equipItem(
+    item,
+    type,
+    false
+  );
+
+  showToast(
+    `🛍️ Compraste ${item.name}`
+  );
+
+  addSystemMessage(
+    `${player.name} compró ${item.name} 🎉`
+  );
 
 }
 
@@ -2621,862 +4293,50 @@ function equipItem(
 ){
 
   if(
-    item.eventOnly&&
-    !state.goldenTrollace
+    item.ownerOnly&&
+    !player.owner
   ){
+
+    showToast(
+      "🔒 Esta skin es exclusiva del OWNER"
+    );
+
     return;
+
   }
 
   if(type==="avatar"){
+
     state.selectedAvatar=
       item.id;
-  }else if(type==="basket"){
+
+  }else if(
+    type==="basket"
+  ){
+
     state.selectedBasket=
       item.id;
+
   }else{
+
     state.selectedCoinSkin=
       item.id;
+
   }
 
   saveState();
+
   renderShop();
 
   if(notify){
-    showToast(
-      "✅ Equipado"
-    );
-  }
-
-}
-
-/* ==========================================================
-   EVENTO DEV BIRTHDAY
-========================================================== */
-
-function activateDevBirthday(){
-
-  if(
-    player.role!=="owner"
-  ){
 
     showToast(
-      "🔒 Solo OWNER"
-    );
-
-    return;
-
-  }
-
-  state.goldenTrollace=
-    true;
-
-  state.owned.goldenTrollace=
-    true;
-
-  state.selectedBasket=
-    "goldenTrollace";
-
-  saveState();
-
-  renderShop();
-
-  addSystemMessage(
-    "🎂 EVENTO ERA DORADA ACTIVADO — TROLLACE DORADA x10"
-  );
-
-  showToast(
-    "🏆 TROLLACE DORADA DESBLOQUEADA"
-  );
-
-}
-
-document.getElementById(
-  "devBirthdayBtn"
-).addEventListener(
-  "click",
-  activateDevBirthday
-);
-
-/* ==========================================================
-   CHAT ONLINE
-========================================================== */
-
-function addSystemMessage(text){
-  addChat(
-    "SISTEMA",
-    text,
-    true
-  );
-}
-
-function addChat(
-  name,
-  text,
-  system=false
-){
-
-  const div=
-    document.createElement(
-      "div"
-    );
-
-  div.className=
-    "chat-message"+
-    (
-      system
-        ?" system"
-        :""
-    );
-
-  div.innerHTML=
-    `
-    <div class="chat-message-user">
-      ${escapeHtml(name)}
-    </div>
-    <div class="chat-message-text">
-      ${escapeHtml(text)}
-    </div>
-    `;
-
-  document.getElementById(
-    "chatMessages"
-  ).appendChild(
-    div
-  );
-
-  const box=
-    document.getElementById(
-      "chatMessages"
-    );
-
-  box.scrollTop=
-    box.scrollHeight;
-
-}
-
-function escapeHtml(text){
-
-  return String(text)
-    .replaceAll("&","&amp;")
-    .replaceAll("<","&lt;")
-    .replaceAll(">","&gt;")
-    .replaceAll('"',"&quot;")
-    .replaceAll("'","&#039;");
-
-}
-
-async function sendChat(){
-
-  const input=
-    document.getElementById(
-      "chatInput"
-    );
-
-  const text=
-    input.value.trim();
-
-  if(!text)return;
-
-  if(
-    text.startsWith("/")
-  ){
-
-    await runCommand(
-      text
-    );
-
-    input.value="";
-
-    return;
-
-  }
-
-  if(!supabaseClient){
-
-    addChat(
-      player.name,
-      text
-    );
-
-    input.value="";
-
-    return;
-
-  }
-
-  const {error}=
-    await supabaseClient
-      .from("chat_messages")
-      .insert({
-        player_id:player.id,
-        display_name:player.name,
-        message:text
-      });
-
-  if(error){
-
-    showToast(
-      "❌ No se pudo enviar"
-    );
-
-  }
-
-  input.value="";
-
-}
-
-document.getElementById(
-  "chatSendBtn"
-).addEventListener(
-  "click",
-  sendChat
-);
-
-document.getElementById(
-  "chatInput"
-).addEventListener(
-  "keydown",
-  e=>{
-
-    if(
-      e.key==="Enter"
-    ){
-      sendChat();
-    }
-
-  }
-);
-
-/* ==========================================================
-   COMANDOS
-========================================================== */
-
-async function runCommand(
-  text
-){
-
-  if(
-    player.role!=="owner"&&
-    player.role!=="admin"
-  ){
-
-    addSystemMessage(
-      "❌ No tienes permisos de administración."
-    );
-
-    return;
-
-  }
-
-  const parts=
-    text.split(/\s+/);
-
-  const cmd=
-    parts[0].toLowerCase();
-
-  if(
-    cmd===
-    "/commands"
-  ){
-
-    addSystemMessage(
-      "/money /give /giveall /setcoins /giveitem /announce /devbirthday"
-    );
-
-    return;
-
-  }
-
-  if(
-    cmd===
-    "/devbirthday"
-  ){
-
-    if(
-      player.role!=="owner"
-    ){
-
-      addSystemMessage(
-        "🔒 Solo OWNER"
-      );
-
-      return;
-
-    }
-
-    activateDevBirthday();
-
-    return;
-
-  }
-
-  if(
-    cmd===
-    "/money"
-  ){
-
-    if(
-      player.role!=="owner"&&
-      player.role!=="admin"
-    ){
-
-      return;
-
-    }
-
-    state.coins=
-      999999999;
-
-    saveState();
-
-    renderShop();
-
-    showToast(
-      "💰 OWNER MONEY"
-    );
-
-    return;
-
-  }
-
-  if(
-    cmd===
-    "/setcoins"
-  ){
-
-    const amount=
-      Number(parts[1]);
-
-    if(
-      !Number.isFinite(amount)||
-      amount<0
-    ){
-
-      return;
-
-    }
-
-    if(
-      supabaseClient&&
-      player.id
-    ){
-
-      const {error}=
-        await supabaseClient.rpc(
-          "owner_set_coins",
-          {
-            p_target_id:player.id,
-            p_amount:Math.floor(amount)
-          }
-        );
-
-      if(error){
-
-        addSystemMessage(
-          "❌ "+error.message
-        );
-
-        return;
-
-      }
-
-    }else{
-
-      state.coins=
-        Math.floor(amount);
-
-      saveState();
-
-    }
-
-    renderShop();
-
-    return;
-
-  }
-
-  if(
-    cmd===
-    "/give"
-  ){
-
-    const amount=
-      Number(parts[1]);
-
-    if(
-      !Number.isFinite(amount)||
-      amount<=0
-    )return;
-
-    if(
-      supabaseClient
-    ){
-
-      const {error}=
-        await supabaseClient.rpc(
-          "owner_give_coins",
-          {
-            p_target_id:player.id,
-            p_amount:Math.floor(amount)
-          }
-        );
-
-      if(error){
-
-        addSystemMessage(
-          "❌ "+error.message
-        );
-
-        return;
-
-      }
-
-    }else{
-
-      state.coins+=
-        Math.floor(amount);
-
-      saveState();
-
-    }
-
-    renderShop();
-
-    return;
-
-  }
-
-  if(
-    cmd===
-    "/giveitem"
-  ){
-
-    const item=
-      SHOP.baskets.concat(
-        SHOP.avatars,
-        SHOP.coins
-      ).find(
-        x=>
-          x.id===parts[1]
-      );
-
-    if(!item){
-
-      addSystemMessage(
-        "❌ Item no encontrado."
-      );
-
-      return;
-
-    }
-
-    if(
-      item.id===
-      "goldenTrollace"
-    ){
-
-      activateDevBirthday();
-
-      return;
-
-    }
-
-    state.owned[
-      item.id
-    ]=true;
-
-    saveState();
-
-    renderShop();
-
-    return;
-
-  }
-
-  if(
-    cmd===
-    "/announce"
-  ){
-
-    addSystemMessage(
-      parts
-        .slice(1)
-        .join(" ")
+      `✅ Equipado: ${item.name}`
     );
 
   }
 
 }
-
-/* ==========================================================
-   ONLINE
-========================================================== */
-
-async function connectOnline(){
-
-  if(
-    SUPABASE_URL.includes(
-      "PEGA_AQUI"
-    )||
-    SUPABASE_KEY.includes(
-      "PEGA_AQUI"
-    )
-  ){
-
-    document.getElementById(
-      "onlineStatus"
-    ).innerHTML=
-      " • 🟡 LOCAL";
-
-    return;
-
-  }
-
-  try{
-
-    supabaseClient=
-      window.supabase.createClient(
-        SUPABASE_URL,
-        SUPABASE_KEY
-      );
-
-    const auth=
-      await supabaseClient.auth
-        .signInAnonymously();
-
-    if(auth.error){
-      throw auth.error;
-    }
-
-    currentUser=
-      auth.data.user;
-
-    const {data,error}=
-      await supabaseClient.rpc(
-        "create_player",
-        {
-          p_display_name:
-            "Jugador"
-        }
-      );
-
-    if(error){
-      throw error;
-    }
-
-    player.id=
-      data.id;
-
-    player.number=
-      data.player_number;
-
-    player.name=
-      data.display_name;
-
-    player.role=
-      data.role;
-
-    state.coins=
-      Number(data.coins);
-
-    state.selectedAvatar=
-      data.avatar||"avatar1";
-
-    state.selectedBasket=
-      data.basket_skin||
-      "basket1";
-
-    state.selectedCoinSkin=
-      data.coin_skin||
-      "coin1";
-
-    document.getElementById(
-      "onlineStatus"
-    ).innerHTML=
-      " • 🟢 ONLINE";
-
-    /* ADMIN SOLO OWNER/ADMIN */
-
-    const adminButton=
-      document.getElementById(
-        "adminBtn"
-      );
-
-    const adminPanel=
-      document.getElementById(
-        "adminPanel"
-      );
-
-    if(
-      player.role!=="owner"&&
-      player.role!=="admin"
-    ){
-
-      adminButton.remove();
-
-      adminPanel.remove();
-
-    }
-
-    renderShop();
-
-    subscribeRealtime();
-
-    addSystemMessage(
-      `☁️ Conectado como ${player.name} #${player.number}`
-    );
-
-  }catch(error){
-
-    console.error(
-      "Online error:",
-      error
-    );
-
-    document.getElementById(
-      "onlineStatus"
-    ).innerHTML=
-      " • 🔴 OFFLINE";
-
-    addSystemMessage(
-      "⚠️ No se pudo conectar al servidor."
-    );
-
-  }
-
-}
-
-function subscribeRealtime(){
-
-  if(!supabaseClient)return;
-
-  supabaseClient
-    .channel(
-      "atm-chat"
-    )
-    .on(
-      "postgres_changes",
-      {
-        event:"INSERT",
-        schema:"public",
-        table:"chat_messages"
-      },
-      payload=>{
-
-        const row=
-          payload.new;
-
-        addChat(
-          row.display_name,
-          row.message
-        );
-
-      }
-    )
-    .subscribe();
-
-}
-
-/* ==========================================================
-   TRADEOS
-========================================================== */
-
-const tradeModal=
-  document.getElementById(
-    "tradeModal"
-  );
-
-async function loadPlayers(){
-
-  if(!supabaseClient){
-
-    document.getElementById(
-      "playersList"
-    ).innerHTML=
-      `
-      <div class="trade-card">
-        🟡
-      </div>
-      `;
-
-    return;
-
-  }
-
-  const {data,error}=
-    await supabaseClient
-      .from("players")
-      .select(
-        "id,display_name,player_number,role"
-      )
-      .neq(
-        "id",
-        player.id
-      )
-      .limit(50);
-
-  if(error){
-
-    document.getElementById(
-      "playersList"
-    ).innerHTML=
-      `
-      <div class="trade-card">
-        ❌ No se pudieron cargar los jugadores.
-      </div>
-      `;
-
-    return;
-
-  }
-
-  const box=
-    document.getElementById(
-      "playersList"
-    );
-
-  box.innerHTML="";
-
-  data.forEach(
-    p=>{
-
-      const card=
-        document.createElement(
-          "div"
-        );
-
-      card.className=
-        "trade-card";
-
-      card.innerHTML=
-        `
-        <b>
-          <span class="online-dot"></span>
-          ${escapeHtml(p.display_name)}
-        </b>
-
-        <div class="megaSmall">
-          #${p.player_number}
-        </div>
-
-        <div class="trade-actions">
-
-          <button class="megaAction">
-            🤝 TRADE
-          </button>
-
-        </div>
-        `;
-
-      card
-        .querySelector("button")
-        .onclick=
-          ()=>{
-            requestTrade(
-              p.id,
-              p.display_name
-            );
-          };
-
-      box.appendChild(
-        card
-      );
-
-    }
-  );
-
-}
-
-async function requestTrade(
-  receiverId,
-  receiverName
-){
-
-  if(!supabaseClient){
-
-    showToast(
-      "🟡 Supabase no configurado"
-    );
-
-    return;
-
-  }
-
-  const {data,error}=
-    await supabaseClient.rpc(
-      "create_trade",
-      {
-        p_receiver_id:
-          receiverId
-      }
-    );
-
-  if(error){
-
-    showToast(
-      "❌ "+error.message
-    );
-
-    return;
-
-  }
-
-  showToast(
-    "🤝 Solicitud enviada a "+
-    receiverName
-  );
-
-}
-
-document.getElementById(
-  "tradeBtn"
-).addEventListener(
-  "click",
-  ()=>{
-
-    tradeModal.classList.add(
-      "active"
-    );
-
-    loadPlayers();
-
-  }
-);
-
-document.getElementById(
-  "tradeClose"
-).addEventListener(
-  "click",
-  ()=>{
-
-    tradeModal.classList.remove(
-      "active"
-    );
-
-  }
-);
-
-tradeModal.addEventListener(
-  "click",
-  e=>{
-
-    if(
-      e.target===
-      tradeModal
-    ){
-
-      tradeModal.classList.remove(
-        "active"
-      );
-
-    }
-
-  }
-);
-
-/* ==========================================================
-   BOTONES
-========================================================== */
 
 document.getElementById(
   "shopBtn"
@@ -3484,10 +4344,7 @@ document.getElementById(
   "click",
   ()=>{
     renderShop();
-
-    document.getElementById(
-      "shopModal"
-    ).classList.add(
+    shopModal.classList.add(
       "active"
     );
   }
@@ -3498,24 +4355,565 @@ document.getElementById(
 ).addEventListener(
   "click",
   ()=>{
-    document.getElementById(
-      "shopModal"
-    ).classList.remove(
+    shopModal.classList.remove(
       "active"
     );
   }
 );
+
+shopModal.addEventListener(
+  "click",
+  e=>{
+    if(e.target===shopModal){
+
+      shopModal.classList.remove(
+        "active"
+      );
+
+    }
+  }
+);
+
+/* ==========================================================
+   CHAT
+========================================================== */
+
+const chatContainer=
+  document.getElementById(
+    "chatContainer"
+  );
+
+const chatMessages=
+  document.getElementById(
+    "chatMessages"
+  );
+
+const chatInput=
+  document.getElementById(
+    "chatInput"
+  );
+
+let chatOpen=false;
+
+const ownerCommandHelp=
+  document.getElementById(
+    "ownerCommandHelp"
+  );
+
+function addSystemMessage(text){
+
+  addChatMessage(
+    "SISTEMA",
+    text,
+    true
+  );
+
+}
+
+function addChatMessage(
+  username,
+  text,
+  isSystem=false
+){
+
+  const message=
+    document.createElement(
+      "div"
+    );
+
+  message.className=
+    `chat-message${
+      isSystem
+        ?" system"
+        :""
+    }`;
+
+  const time=
+    new Date().toLocaleTimeString(
+      [],
+      {
+        hour:"2-digit",
+        minute:"2-digit"
+      }
+    );
+
+  const isThisOwner=
+    !isSystem&&
+    player.owner&&
+    username===player.name;
+
+  const displayName=
+    isThisOwner
+      ?
+        `<span class="rainbow-owner-name">${escapeHtml(username)}</span><span class="owner-badge">👑 OWNER</span>`
+      :
+        escapeHtml(username);
+
+  message.innerHTML=
+    `<div class="chat-message-user">${
+      isSystem
+        ?"🔔 SISTEMA"
+        :displayName
+    } <span class="chat-message-time">${time}</span></div><div class="chat-message-text">${escapeHtml(text)}</div>`;
+
+  chatMessages.appendChild(
+    message
+  );
+
+  chatMessages.scrollTop=
+    chatMessages.scrollHeight;
+
+  while(
+    chatMessages.children.length>
+    50
+  ){
+
+    chatMessages.firstChild.remove();
+
+  }
+
+}
+
+function findShopItem(itemId){
+
+  return[
+    ...SHOP.avatars,
+    ...SHOP.baskets,
+    ...SHOP.coins
+  ].find(
+    item=>item.id===itemId
+  );
+
+}
+
+async function runOwnerCommand(text){
+
+  if(!player.owner)return false;
+
+  const parts=
+    text.trim().split(/\s+/);
+
+  const command=
+    (parts[0]||"").toLowerCase();
+
+  if(command==="/commands"){
+
+    addSystemMessage(
+      "👑 /money | /give cantidad | /give jugador cantidad | /giveall cantidad | /setcoins cantidad | /giveitem ID | /announce texto"
+    );
+
+    return true;
+
+  }
+
+  if(command==="/money"){
+
+    if(
+      onlineConfigured()&&
+      supabaseClient&&
+      onlineSession&&
+      player.owner
+    ){
+
+      const r=
+        await supabaseClient.rpc(
+          "owner_add_coins",
+          {
+            p_amount:999999999999
+          }
+        );
+
+      if(r.error){
+
+        addSystemMessage(
+          `⚠️ ${r.error.message}`
+        );
+
+        return true;
+
+      }
+
+      state.coins=
+        Number(r.data.coins);
+
+    }else{
+
+      state.coins=
+        999999999;
+
+    }
+
+    saveState();
+
+    updateShopHeader();
+
+    showToast(
+      "💰 ¡DINERO DEL OWNER!"
+    );
+
+    addSystemMessage(
+      `👑 ${player.name} activó dinero ilimitado.`
+    );
+
+    return true;
+
+  }
+
+  if(command==="/give"){
+
+    let target=player.name;
+
+    let amount=
+      Number(parts[1]);
+
+    if(parts.length>=3){
+
+      target=parts[1];
+
+      amount=Number(parts[2]);
+
+    }
+
+    if(
+      !Number.isFinite(amount)||
+      amount<=0
+    ){
+
+      addSystemMessage(
+        "❌ Uso: /give 500 o /give Jugador500 500"
+      );
+
+      return true;
+
+    }
+
+    amount=Math.floor(amount);
+
+    if(target===player.name){
+
+      state.coins+=amount;
+
+      saveState();
+
+      updateShopHeader();
+
+      syncRemoteProfile();
+
+      addSystemMessage(
+        `🎁 Regalo recibido: +${amount.toLocaleString()} monedas.`
+      );
+
+      showToast(
+        `🎁 +${amount.toLocaleString()} monedas`
+      );
+
+    }else{
+
+      const targetNumber=
+        Number(
+          String(target)
+            .replace(
+              /^Jugador/i,
+              ""
+            )
+        );
+
+      if(
+        onlineConfigured()&&
+        supabaseClient&&
+        onlineSession&&
+        player.owner&&
+        Number.isFinite(
+          targetNumber
+        )
+      ){
+
+        sendGlobalOwnerEvent(
+          "give",
+          {
+            target_number:
+              targetNumber,
+            amount
+          }
+        );
+
+      }else{
+
+        addSystemMessage(
+          `👑 ${player.name} regaló ${amount.toLocaleString()} monedas a ${target}.`
+        );
+
+      }
+
+      showToast(
+        "🎁 Regalo enviado"
+      );
+
+    }
+
+    return true;
+
+  }
+
+  if(command==="/giveall"){
+
+    const amount=
+      Math.floor(
+        Number(parts[1])
+      );
+
+    if(
+      !Number.isFinite(amount)||
+      amount<=0
+    ){
+
+      addSystemMessage(
+        "❌ Uso: /giveall 1000"
+      );
+
+      return true;
+
+    }
+
+    state.coins+=amount;
+
+    saveState();
+
+    updateShopHeader();
+
+    syncRemoteProfile();
+
+    if(
+      onlineConfigured()&&
+      supabaseClient&&
+      onlineSession&&
+      player.owner
+    ){
+
+      sendGlobalOwnerEvent(
+        "giveall",
+        {amount}
+      );
+
+    }
+
+    addSystemMessage(
+      `🎁 EVENTO OWNER: todos reciben ${amount.toLocaleString()} monedas.`
+    );
+
+    return true;
+
+  }
+
+  if(command==="/setcoins"){
+
+    const amount=
+      Math.floor(
+        Number(parts[1])
+      );
+
+    if(
+      !Number.isFinite(amount)||
+      amount<0
+    ){
+
+      addSystemMessage(
+        "❌ Uso: /setcoins 999999"
+      );
+
+      return true;
+
+    }
+
+    if(
+      onlineConfigured()&&
+      supabaseClient&&
+      onlineSession&&
+      player.owner
+    ){
+
+      const r=
+        await supabaseClient.rpc(
+          "owner_set_coins",
+          {
+            p_amount:amount
+          }
+        );
+
+      if(r.error){
+
+        addSystemMessage(
+          `⚠️ ${r.error.message}`
+        );
+
+        return true;
+
+      }
+
+      state.coins=
+        Number(r.data.coins);
+
+    }else{
+
+      state.coins=amount;
+
+    }
+
+    saveState();
+
+    updateShopHeader();
+
+    addSystemMessage(
+      `👑 Monedas del Owner establecidas en ${amount.toLocaleString()}.`
+    );
+
+    return true;
+
+  }
+
+  if(command==="/giveitem"){
+
+    const id=parts[1];
+
+    const item=
+      id
+        ?findShopItem(id)
+        :null;
+
+    if(!item){
+
+      addSystemMessage(
+        "❌ Item no encontrado. Usa /giveitem ID"
+      );
+
+      return true;
+
+    }
+
+    state.owned[item.id]=true;
+
+    saveState();
+
+    renderShop();
+
+    addSystemMessage(
+      `🎁 ${item.name} desbloqueada para el Owner.`
+    );
+
+    showToast(
+      `✅ ${item.name}`
+    );
+
+    return true;
+
+  }
+
+  if(command==="/announce"){
+
+    const message=
+      parts
+        .slice(1)
+        .join(" ")
+        .trim();
+
+    if(!message){
+
+      addSystemMessage(
+        "❌ Uso: /announce Hola jugadores"
+      );
+
+      return true;
+
+    }
+
+    if(
+      onlineConfigured()&&
+      supabaseClient&&
+      onlineSession&&
+      player.owner
+    ){
+
+      sendGlobalOwnerEvent(
+        "announce",
+        {message}
+      );
+
+    }
+
+    addSystemMessage(
+      `📢 ${message}`
+    );
+
+    return true;
+
+  }
+
+  return false;
+
+}
+
+function sendChat(){
+
+  const text=
+    chatInput.value.trim();
+
+  if(!text)return;
+
+  if(
+    text.startsWith("/")
+  ){
+
+    runOwnerCommand(text)
+      .then(
+        ok=>{
+          if(!ok){
+
+            addSystemMessage(
+              "❌ Comando desconocido. Usa /commands."
+            );
+
+          }
+        }
+      )
+      .catch(
+        error=>
+          addSystemMessage(
+            `⚠️ ${error.message||error}`
+          )
+      );
+
+  }else{
+
+    addChatMessage(
+      player.name,
+      text,
+      false
+    );
+
+  }
+
+  chatInput.value="";
+
+}
 
 document.getElementById(
   "chatToggleBtn"
 ).addEventListener(
   "click",
   ()=>{
-    document.getElementById(
-      "chatContainer"
-    ).classList.toggle(
-      "hidden"
+    chatOpen=!chatOpen;
+
+    chatContainer.classList.toggle(
+      "hidden",
+      !chatOpen
     );
+
+    if(chatOpen){
+
+      chatInput.focus();
+
+    }
+
   }
 );
 
@@ -3524,69 +4922,59 @@ document.getElementById(
 ).addEventListener(
   "click",
   ()=>{
-    document.getElementById(
-      "chatContainer"
-    ).classList.add(
+    chatOpen=false;
+
+    chatContainer.classList.add(
       "hidden"
     );
+
   }
 );
 
 document.getElementById(
-  "soundBtn"
+  "chatSendBtn"
 ).addEventListener(
   "click",
-  ()=>{
-    state.sound=
-      !state.sound;
+  sendChat
+);
 
-    document.getElementById(
-      "soundBtn"
-    ).textContent=
-      state.sound
-        ?"🔊"
-        :"🔇";
+chatInput.addEventListener(
+  "keydown",
+  e=>{
 
-    saveState();
+    if(e.key==="Enter"){
+
+      sendChat();
+
+    }
+
   }
 );
 
-document.getElementById(
-  "pauseBtn"
-).addEventListener(
-  "click",
-  togglePause
-);
-
-document.getElementById(
-  "fullscreenBtn"
-).addEventListener(
-  "click",
-  async()=>{
-
-    try{
-
-      if(
-        !document.fullscreenElement
-      ){
-
-        await document.documentElement
-          .requestFullscreen();
-
-      }else{
-
-        await document.exitFullscreen();
-
-      }
-
-    }catch{}
-
-  }
-);
+ownerCommandHelp.style.display=
+  player.owner
+    ?"block"
+    :"none";
 
 /* ==========================================================
    ADMIN
 ========================================================== */
+
+const adminPanel=
+  document.getElementById(
+    "adminPanel"
+  );
+
+document.getElementById(
+  "adminBtn"
+).addEventListener(
+  "click",
+  ()=>{
+    adminPanel.classList.toggle(
+      "active"
+    );
+  }
+);
 
 document.getElementById(
   "applyBtn"
@@ -3595,32 +4983,72 @@ document.getElementById(
   ()=>{
 
     CONFIG.initialTime=
-      Number(
-        document.getElementById(
-          "initialTime"
-        ).value
-      )||30;
+      clamp(
+        parseInt(
+          document.getElementById(
+            "initialTime"
+          ).value,
+          10
+        )||30,
+        5,
+        120
+      );
 
     CONFIG.initialSpeed=
-      Number(
-        document.getElementById(
-          "initialSpeed"
-        ).value
-      )||4;
+      clamp(
+        parseFloat(
+          document.getElementById(
+            "initialSpeed"
+          ).value
+        )||4,
+        1,
+        20
+      );
 
     CONFIG.speedIncrement=
-      Number(
-        document.getElementById(
-          "speedIncrement"
-        ).value
-      )||.2;
+      Math.max(
+        0,
+        parseFloat(
+          document.getElementById(
+            "speedIncrement"
+          ).value
+        )||.2
+      );
 
     CONFIG.scorePerCoin=
-      Number(
-        document.getElementById(
-          "scorePerCoin"
-        ).value
-      )||10;
+      clamp(
+        parseInt(
+          document.getElementById(
+            "scorePerCoin"
+          ).value,
+          10
+        )||10,
+        1,
+        100
+      );
+
+    CONFIG.basketWidth=
+      clamp(
+        parseInt(
+          document.getElementById(
+            "basketWidth"
+          ).value,
+          10
+        )||80,
+        40,
+        180
+      );
+
+    basket.width=
+      CONFIG.basketWidth;
+
+    basket.targetX=
+      clamp(
+        basket.targetX,
+        0,
+        canvas.width-
+          basket.width
+      );
 
     showToast(
       "✅ Configuración aplicada"
@@ -3634,6 +5062,7 @@ document.getElementById(
 ).addEventListener(
   "click",
   ()=>{
+
     document.getElementById(
       "initialTime"
     ).value=30;
@@ -3650,118 +5079,383 @@ document.getElementById(
       "scorePerCoin"
     ).value=10;
 
+    document.getElementById(
+      "basketWidth"
+    ).value=80;
+
+  }
+);
+
+document.getElementById(
+  "clearBtn"
+).addEventListener(
+  "click",
+  ()=>{
+
+    if(
+      confirm(
+        "⚠️ ¿Borrar todo el progreso guardado?"
+      )
+    ){
+
+      localStorage.removeItem(
+        "atrapaMonedaSave"
+      );
+
+      location.reload();
+
+    }
+
+  }
+);
+
+setInterval(
+  ()=>{
+
+    const status=
+      state.playing
+        ?(
+          state.paused
+            ?"⏸ Pausado"
+            :"🔴 En juego"
+        )
+        :"🟢 Parado";
+
+    document.getElementById(
+      "adminStatus"
+    ).innerHTML=
+      `Estado: ${status}<br>`+
+      `Puntos: ${state.score}<br>`+
+      `Tiempo: ${state.timeLeft}s<br>`+
+      `Combo: x${state.combo}<br>`+
+      `Nivel: ${state.level}`;
+
+    document.getElementById(
+      "playerCoins"
+    ).textContent=
+      state.coins;
+
+  },
+  100
+);
+
+/* ==========================================================
+   BOTONES GLOBALES
+========================================================== */
+
+soundBtn.addEventListener(
+  "click",
+  ()=>{
+
+    state.sound=
+      !state.sound;
+
+    soundBtn.textContent=
+      state.sound
+        ?"🔊"
+        :"🔇";
+
+    saveState();
+
+  }
+);
+
+pauseBtn.addEventListener(
+  "click",
+  togglePause
+);
+
+inGamePause.addEventListener(
+  "click",
+  togglePause
+);
+
+document.getElementById(
+  "fullscreenBtn"
+).addEventListener(
+  "click",
+  async()=>{
+
+    try{
+
+      if(!document.fullscreenElement){
+
+        await document.documentElement
+          .requestFullscreen();
+
+      }else{
+
+        await document.exitFullscreen();
+
+      }
+
+    }catch(error){
+
+      showToast(
+        "⚠️ Pantalla completa no disponible"
+      );
+
+    }
+
   }
 );
 
 /* ==========================================================
-   UPDATES
+   UPDATES — CONTADOR
 ========================================================== */
+
+const UPDATE_VERSION="3.0";
+
+const UPDATE_TARGET_DATE=
+  new Date(
+    "2026-09-14"
+  );
+
+const updateCountdownEl=
+  document.getElementById(
+    "updateCountdown"
+  );
+
+const updateStatusEl=
+  document.getElementById(
+    "updateStatus"
+  );
+
+function updateReleaseCounter(){
+
+  const remaining=
+    UPDATE_TARGET_DATE.getTime()-
+    Date.now();
+
+  if(remaining<=0){
+
+    updateCountdownEl.textContent=
+      "¡YA DISPONIBLE!";
+
+    updateStatusEl.textContent=
+      `🎉 Actualización ${UPDATE_VERSION} activada`;
+
+    return;
+
+  }
+
+  const totalSeconds=
+    Math.floor(
+      remaining/1000
+    );
+
+  const days=
+    Math.floor(
+      totalSeconds/86400
+    );
+
+  const hours=
+    Math.floor(
+      (totalSeconds%86400)/3600
+    );
+
+  const minutes=
+    Math.floor(
+      (totalSeconds%3600)/60
+    );
+
+  const seconds=
+    totalSeconds%60;
+
+  updateCountdownEl.textContent=
+    `${String(days).padStart(2,"0")}d `+
+    `${String(hours).padStart(2,"0")}:`+
+    `${String(minutes).padStart(2,"0")}:`+
+    `${String(seconds).padStart(2,"0")}`;
+
+  updateStatusEl.textContent=
+    `⏳ Faltan para la actualización ${UPDATE_VERSION}`;
+
+}
+
+updateReleaseCounter();
+
+setInterval(
+  updateReleaseCounter,
+  1000
+);
+
+/* ==========================================================
+   🚀 UPDATES — CLIC
+========================================================== */
+
+const updatesButton=
+  document.getElementById(
+    "updatesButton"
+  );
 
 const updatesModal=
   document.getElementById(
     "updatesModal"
   );
 
-document.getElementById(
-  "updatesButton"
-).addEventListener(
-  "click",
-  ()=>{
-    updatesModal.classList.add(
-      "open"
-    );
-  }
-);
-
-document.getElementById(
-  "closeUpdates"
-).addEventListener(
-  "click",
-  ()=>{
-    updatesModal.classList.remove(
-      "open"
-    );
-  }
-);
-
-const targetDate=
-  new Date(
-    "2026-09-14T00:00:00-06:00"
+const closeUpdates=
+  document.getElementById(
+    "closeUpdates"
   );
 
-function updateCounter(){
+function openUpdates(){
 
-  const diff=
-    targetDate-Date.now();
+  updatesModal.classList.add(
+    "open"
+  );
 
-  const el=
-    document.getElementById(
-      "updateCountdown"
-    );
-
-  if(diff<=0){
-
-    el.textContent=
-      "¡YA DISPONIBLE!";
-
-    return;
-
-  }
-
-  const sec=
-    Math.floor(
-      diff/1000
-    );
-
-  const d=
-    Math.floor(
-      sec/86400
-    );
-
-  const h=
-    Math.floor(
-      (sec%86400)/3600
-    );
-
-  const m=
-    Math.floor(
-      (sec%3600)/60
-    );
-
-  const s=
-    sec%60;
-
-  el.textContent=
-    `${d}d ${h}h ${m}m ${s}s`;
+  updatesModal.setAttribute(
+    "aria-hidden",
+    "false"
+  );
 
 }
 
-setInterval(
-  updateCounter,
-  1000
+function closeUpdatesPanel(){
+
+  updatesModal.classList.remove(
+    "open"
+  );
+
+  updatesModal.setAttribute(
+    "aria-hidden",
+    "true"
+  );
+
+}
+
+updatesButton.addEventListener(
+  "click",
+  openUpdates
 );
 
-updateCounter();
+closeUpdates.addEventListener(
+  "click",
+  closeUpdatesPanel
+);
+
+updatesModal.addEventListener(
+  "click",
+  e=>{
+
+    if(
+      e.target===updatesModal
+    ){
+
+      closeUpdatesPanel();
+
+    }
+
+  }
+);
 
 /* ==========================================================
-   TRAILER
+   🎬 TRÁILER 3.0
+   Está DENTRO de UPDATES.
+   No crea una pantalla completa.
 ========================================================== */
 
-const scenes=[
-  "PENSABAS QUE YA LO HABÍAS VISTO TODO...",
-  "⚡ UNA NUEVA ERA COMIENZA",
-  "🆕 NUEVAS SKINS",
-  "⚡ NUEVOS EFECTOS",
-  "🏆 NUEVOS DESAFÍOS",
-  "🎁 NUEVAS RECOMPENSAS",
-  "🏆 ERA DORADA",
-  "🧺 TROLLACE DORADA",
-  "✖️ MULTIPLICADOR x10",
-  "🔥 CHAOS MEGA UPDATE 3.0"
+const trailerButton=
+  document.getElementById(
+    "trailerButton"
+  );
+
+const trailerScene=
+  document.getElementById(
+    "trailerScene"
+  );
+
+const trailerProgressBar=
+  document.getElementById(
+    "trailerProgressBar"
+  );
+
+const trailerScenes=[
+
+  {
+    time:3000,
+    html:
+      "PENSABAS QUE YA LO HABÍAS VISTO TODO..."
+  },
+
+  {
+    time:3000,
+    html:
+      "⚡ UNA NUEVA ERA COMIENZA"
+  },
+
+  {
+    time:3000,
+    html:
+      "🆕 NUEVAS SKINS<br>"+
+      "<span class='trailer-small'>Más estilos. Más caos.</span>"
+  },
+
+  {
+    time:3000,
+    html:
+      "⚡ NUEVOS EFECTOS<br>"+
+      "<span class='trailer-small'>El juego cambia.</span>"
+  },
+
+  {
+    time:3000,
+    html:
+      "🏆 NUEVOS DESAFÍOS<br>"+
+      "<span class='trailer-small'>¿Podrás superarlos?</span>"
+  },
+
+  {
+    time:3000,
+    html:
+      "🎁 NUEVAS RECOMPENSAS<br>"+
+      "<span class='trailer-small'>Hay algo esperando...</span>"
+  },
+
+  {
+    time:3000,
+    html:
+      "PERO HAY ALGO QUE TODAVÍA NO HAS VISTO..."
+  },
+
+  {
+    time:3000,
+    html:
+      "<div class='trailer-mystery'>???</div>"
+  },
+
+  {
+    time:3000,
+    html:
+      "<div class='trailer-final'>🔥 ACTUALIZACIÓN 3.0 🔥</div>"
+  },
+
+  {
+    time:4000,
+    html:
+      "¿ESTÁS LISTO?<br>"+
+      "<span class='trailer-small'>01 • 10 • 2026</span>"
+  }
+
 ];
 
-let trailerIndex=0;
 let trailerTimer=null;
+
+let trailerRunning=false;
+
+let trailerIndex=0;
+
+let trailerElapsed=0;
+
+let trailerStart=0;
+
+const trailerTotal=
+  trailerScenes.reduce(
+    (sum,scene)=>
+      sum+scene.time,
+    0
+  );
 
 function playTrailer(){
 
@@ -3769,225 +5463,143 @@ function playTrailer(){
     trailerTimer
   );
 
+  trailerRunning=true;
+
   trailerIndex=0;
 
-  const bar=
-    document.getElementById(
-      "trailerProgressBar"
-    );
+  trailerElapsed=0;
 
-  const text=
-    document.getElementById(
-      "trailerText"
-    );
+  trailerStart=
+    performance.now();
 
-  const step=()=>{
+  trailerButton.textContent=
+    "⏹ REPRODUCIENDO...";
 
-    if(
-      trailerIndex>=
-      scenes.length
-    ){
+  trailerButton.disabled=true;
 
-      bar.style.width="100%";
+  trailerProgressBar.style.width=
+    "0%";
 
-      return;
+  showTrailerScene();
 
-    }
-
-    text.textContent=
-      scenes[trailerIndex];
-
-    bar.style.width=
-      (
-        trailerIndex/
-        scenes.length*
-        100
-      )+
-      "%";
-
-    trailerIndex++;
-
-    trailerTimer=
-      setTimeout(
-        step,
-        1800
-      );
-
-  };
-
-  step();
+  updateTrailerProgress();
 
 }
 
-document.getElementById(
-  "trailerButton"
-).addEventListener(
+function showTrailerScene(){
+
+  if(!trailerRunning)return;
+
+  const scene=
+    trailerScenes[
+      trailerIndex
+    ];
+
+  trailerScene.innerHTML=
+    `<div id="trailerText">${scene.html}</div>`;
+
+  trailerScene.style.animation=
+    "none";
+
+  void trailerScene.offsetWidth;
+
+  trailerScene.style.animation=
+    "trailerIn .5s ease";
+
+  if(
+    scene.html.includes("???")
+  ){
+
+    playSound("event");
+
+  }
+
+  trailerTimer=
+    setTimeout(
+      ()=>{
+
+        trailerElapsed+=
+          scene.time;
+
+        trailerIndex++;
+
+        if(
+          trailerIndex>=
+          trailerScenes.length
+        ){
+
+          trailerRunning=false;
+
+          trailerProgressBar.style.width=
+            "100%";
+
+          trailerButton.disabled=
+            false;
+
+          trailerButton.textContent=
+            "▶ REPETIR TRÁILER";
+
+          return;
+
+        }
+
+        showTrailerScene();
+
+      },
+      scene.time
+    );
+
+}
+
+function updateTrailerProgress(){
+
+  if(!trailerRunning)return;
+
+  const currentElapsed=
+    trailerElapsed+
+    (
+      performance.now()-
+      trailerStart
+    );
+
+  const percent=
+    Math.min(
+      100,
+      (
+        currentElapsed/
+        trailerTotal
+      )*100
+    );
+
+  trailerProgressBar.style.width=
+    `${percent}%`;
+
+  requestAnimationFrame(
+    updateTrailerProgress
+  );
+
+}
+
+trailerButton.addEventListener(
   "click",
   playTrailer
 );
 
 /* ==========================================================
-   MEGA 2.0
+   ESCAPE
 ========================================================== */
 
-document.getElementById(
-  "megaBtn"
-).addEventListener(
-  "click",
-  ()=>{
-    document.getElementById(
-      "megaModal"
-    ).classList.add(
-      "open"
-    );
-  }
-);
+document.addEventListener(
+  "keydown",
+  e=>{
 
-document.getElementById(
-  "megaClose"
-).addEventListener(
-  "click",
-  ()=>{
-    document.getElementById(
-      "megaModal"
-    ).classList.remove(
-      "open"
-    );
-  }
-);
+    if(e.key==="Escape"){
 
-/* ==========================================================
-   MEGA ×30
-========================================================== */
+      closeUpdatesPanel();
 
-const features=[
-  "💰 Doble monedas",
-  "🧲 Imán",
-  "🛡️ Escudo",
-  "🐌 Tiempo lento",
-  "🍀 Lucky",
-  "🔥 Fever",
-  "🤖 Auto",
-  "💥 Crit",
-  "🔒 Combo Lock",
-  "🌧️ Coin Rush",
-  "🌙 Night",
-  "🌈 Rainbow",
-  "👻 Ghost",
-  "☠️ Hard",
-  "🔍 Mini",
-  "🪙 Giant",
-  "🌙 Low Gravity",
-  "🚀 Zero Gravity",
-  "❄️ Freeze",
-  "📈 Score Boost",
-  "⏱️ Time Boost",
-  "⚡ Instant",
-  "🎲 Reroll",
-  "🔥 Streak",
-  "🎉 Party",
-  "💡 Flash",
-  "📳 Shake",
-  "👹 Boss",
-  "🏆 Record",
-  "⚙️ Console"
-];
-
-const mega30Grid=
-  document.getElementById(
-    "mega30Grid"
-  );
-
-features.forEach(
-  (name,i)=>{
-
-    const card=
-      document.createElement(
-        "div"
-      );
-
-    card.className=
-      "mega30Card";
-
-    card.innerHTML=
-      `
-      <b>
-        ${i+1}. ${name}
-      </b>
-
-      <button>
-        ACTIVAR
-      </button>
-      `;
-
-    mega30Grid.appendChild(
-      card
-    );
+    }
 
   }
-);
-
-document.getElementById(
-  "mega30Btn"
-).addEventListener(
-  "click",
-  ()=>{
-    document.getElementById(
-      "mega30Modal"
-    ).classList.add(
-      "open"
-    );
-  }
-);
-
-document.getElementById(
-  "mega30Close"
-).addEventListener(
-  "click",
-  ()=>{
-    document.getElementById(
-      "mega30Modal"
-    ).classList.remove(
-      "open"
-    );
-  }
-);
-
-/* ==========================================================
-   FPS
-========================================================== */
-
-let frames=0;
-let lastFPS=
-  performance.now();
-
-function fpsLoop(now){
-
-  frames++;
-
-  if(
-    now-lastFPS>=1000
-  ){
-
-    document.getElementById(
-      "fpsCounter"
-    ).textContent=
-      `FPS: ${frames}`;
-
-    frames=0;
-
-    lastFPS=now;
-
-  }
-
-  requestAnimationFrame(
-    fpsLoop
-  );
-
-}
-
-requestAnimationFrame(
-  fpsLoop
 );
 
 /* ==========================================================
@@ -3996,19 +5608,296 @@ requestAnimationFrame(
 
 loadState();
 
-state.goldenTrollace=
-  !!state.goldenTrollace||
-  !!state.owned.goldenTrollace;
-
 renderShop();
 
 resetCoin();
 
+addSystemMessage(
+  `¡Bienvenido ${player.name}! ${
+    player.owner
+      ?"👑 Eres el Owner."
+      :"👤 Jugador."
+  } Número: #${player.number}`
+);
+
 render();
 
-connectOnline();
+initOnlineMode();
+
+
+/* ==========================================================
+   CHAOS MEGA UPDATE x30 — 30 NUEVAS COSAS
+========================================================== */
+(()=>{
+ const KEY='atmMega30';
+ const defaults={double:false,magnet:false,shield:false,slow:false,lucky:false,fever:false,auto:false,crit:false,comboLock:false,coinRush:false,night:false,rainbow:false,ghost:false,hard:false,mini:false,giant:false,lowGravity:false,zeroGravity:false,freeze:false,scoreBoost:false,timeBoost:false,instant:false,reroll:false,streak:false,party:false,flash:false,shake:false,boss:false,rerollCount:0,best:0,coins:0,combo:0,power:0};
+ let m=Object.assign({},defaults,JSON.parse(localStorage.getItem(KEY)||'{}'));
+ const save=()=>localStorage.setItem(KEY,JSON.stringify(m));
+ const $=id=>document.getElementById(id);
+ const toast=t=>{const e=$('mega30Toast');if(!e)return;e.textContent=t;e.classList.add('show');clearTimeout(e._t);e._t=setTimeout(()=>e.classList.remove('show'),1800)};
+ const features=[
+ ['💰','Doble monedas','double','Duplica la recompensa de monedas.'],
+ ['🧲','Imán de monedas','magnet','Aumenta la zona de captura.'],
+ ['🛡️','Escudo','shield','Protege una caída perdida.'],
+ ['🐌','Tiempo lento','slow','Reduce la velocidad de las monedas.'],
+ ['🍀','Moneda afortunada','lucky','Probabilidad de recompensa extra.'],
+ ['🔥','Modo Fiebre','fever','Mantén combos altos durante más tiempo.'],
+ ['🤖','Auto combo','auto','Ayuda a mantener el combo.'],
+ ['💥','Golpe crítico','crit','Algunas capturas dan recompensa x3.'],
+ ['🔒','Combo bloqueado','comboLock','El combo no baja por un fallo.'],
+ ['🌧️','Lluvia de monedas','coinRush','Genera una ráfaga visual de monedas.'],
+ ['🌙','Modo noche','night','Oscurece la arena para un reto extra.'],
+ ['🌈','Modo arcoíris','rainbow','Efecto visual multicolor.'],
+ ['👻','Modo fantasma','ghost','Hace el HUD semitransparente.'],
+ ['☠️','Modo difícil','hard','Aumenta el desafío.'],
+ ['🔍','Mini monedas','mini','Monedas más pequeñas.'],
+ ['🪙','Moneda gigante','giant','Monedas más grandes.'],
+ ['🌙','Gravedad baja','lowGravity','Caída más lenta.'],
+ ['🚀','Gravedad cero','zeroGravity','Efecto de flotación.'],
+ ['❄️','Congelación','freeze','Congela temporalmente el caos.'],
+ ['📈','Score Boost','scoreBoost','Aumenta el score temporalmente.'],
+ ['⏱️','Time Boost','timeBoost','Añade tiempo al activar.'],
+ ['⚡','Captura instantánea','instant','Activa una ráfaga instantánea.'],
+ ['🎲','Re-roll','reroll','Cambia la misión/recompensa local.'],
+ ['🔥','Racha diaria','streak','Bonificación por jugar seguido.'],
+ ['🎉','Party Mode','party','Más efectos y partículas.'],
+ ['💡','Flash','flash','Destello al activar poderes.'],
+ ['📳','Shake','shake','Sacude la interfaz en eventos.'],
+ ['👹','Mini Boss','boss','Activa una alerta especial de jefe.'],
+ ['🏆','Récord Hunter','record','Guarda tu mejor combo.'],
+ ['⚙️','Chaos Console','console','Muestra un panel rápido de estado.']
+ ];
+ const specialKeys=new Set(['record','console']);
+ const grid=$('mega30Grid');
+ if(grid){features.forEach(([icon,name,key,desc],i)=>{const c=document.createElement('div');c.className='mega30Card';c.dataset.key=key;c.innerHTML=`<b>${icon} ${i+1}. ${name}</b><small>${desc}</small><button>${m[key]?'DESACTIVAR':'ACTIVAR'}</button>`;c.querySelector('button').onclick=()=>toggle(key,c);grid.appendChild(c)})}
+ function toggle(key,c){
+   if(key==='record'){toast(`🏆 Récord guardado: ${m.best}`);return}
+   if(key==='console'){toast(`⚙️ Power ${m.power}% • Combo ${m.combo} • Monedas ${m.coins}`);return}
+   m[key]=!m[key];save();apply();render();toast(`${m[key]?'✅ Activado':'❌ Desactivado'}: ${features.find(x=>x[2]===key)?.[1]||key}`);
+   if(m[key]&&['coinRush','instant','party','flash','shake','boss'].includes(key))trigger(key);
+ }
+ function render(){
+   const stateWin=typeof state!=='undefined'?state:null;
+   m.best=Math.max(m.best,stateWin?.combo||0);m.combo=stateWin?.combo||m.combo;
+   $('m30Best').textContent=m.best;$('m30Coins').textContent=m.coins;$('m30Combo').textContent=m.combo;$('m30Power').textContent=m.power+'%';$('m30Bar').style.width=m.power+'%';
+   grid?.querySelectorAll('.mega30Card').forEach(c=>{const k=c.dataset.key;if(!specialKeys.has(k)){c.classList.toggle('mega30On',!!m[k]);c.querySelector('button').textContent=m[k]?'DESACTIVAR':'ACTIVAR'}});
+ }
+ function apply(){
+   document.body.classList.toggle('mega30Fx',m.shake);
+   document.body.style.filter=m.night?'brightness(.82) saturate(.9)':m.rainbow?'hue-rotate(35deg)':'';
+   const canvas=$('gameCanvas');if(canvas){canvas.style.opacity=m.ghost?'.78':'';canvas.style.transform=m.giant?'scale(1.01)':'';}
+ }
+ function trigger(key){
+   const root=document.body;
+   if(key==='coinRush'){for(let i=0;i<18;i++){const e=document.createElement('div');e.textContent='🪙';e.style.cssText=`position:fixed;left:${Math.random()*100}vw;top:-30px;font-size:${16+Math.random()*20}px;z-index:10000;pointer-events:none;transition:transform 1.4s linear,opacity 1.4s`;root.appendChild(e);requestAnimationFrame(()=>{e.style.transform=`translateY(${innerHeight+80}px) rotate(${Math.random()*900}deg)`;e.style.opacity='0'});setTimeout(()=>e.remove(),1600)}}
+   if(key==='flash'){root.animate([{filter:'brightness(2.2)'},{filter:'brightness(1)'}],{duration:350})}
+   if(key==='shake'){root.classList.remove('mega30Fx');void root.offsetWidth;root.classList.add('mega30Fx')}
+   if(key==='boss')toast('👹 MINI BOSS: ¡Atrapa la moneda especial!');
+   if(key==='party')toast('🎉 PARTY MODE: ¡CAOS ACTIVADO!');
+   if(key==='instant')m.power=100;
+   save();render();
+ }
+ window.mega30Add=()=>{m.power=Math.min(100,m.power+(m.lucky?7:4));m.coins+=(m.double?2:1);if(typeof state!=='undefined')m.combo=state.combo||m.combo;m.best=Math.max(m.best,m.combo);save();render()};
+ const open=()=>{$('mega30Modal').classList.add('open');$('mega30Modal').setAttribute('aria-hidden','false');render()};const close=()=>{$('mega30Modal').classList.remove('open');$('mega30Modal').setAttribute('aria-hidden','true')};
+ $('mega30Btn')?.addEventListener('click',open);$('mega30Close')?.addEventListener('click',close);$('mega30Modal')?.addEventListener('click',e=>{if(e.target.id==='mega30Modal')close()});
+ document.addEventListener('keydown',e=>{if(e.key==='Escape')close();if(e.key.toLowerCase()==='m'&&!e.ctrlKey&&!e.altKey)open();});
+ const oldCatch=window.catchCoin;if(typeof oldCatch==='function'){window.catchCoin=function(...args){const r=oldCatch.apply(this,args);window.mega30Add();return r}}
+ const oldReset=window.resetCoin;if(typeof oldReset==='function'){window.resetCoin=function(...args){const r=oldReset.apply(this,args);if(m.shake)trigger('shake');return r}}
+ setInterval(()=>{if(typeof state!=='undefined'){m.combo=state.combo||0;m.best=Math.max(m.best,m.combo);if(m.fever&&m.combo>=5)m.power=Math.min(100,m.power+1);render();save()}},1000);
+ apply();render();
+})();
 
 </script>
 
+
+<button id="mega30Btn">🔥 MEGA ×30</button>
+<div id="mega30Modal" aria-hidden="true">
+ <div class="mega30Box">
+  <div class="mega30Head"><h2>🔥 CHAOS MEGA UPDATE ×30</h2><button class="mega30Close" id="mega30Close">✕</button></div>
+  <div class="mega30Stats">
+   <div class="mega30Stat">🏆<strong id="m30Best">0</strong><small>Récord</small></div><div class="mega30Stat">💰<strong id="m30Coins">0</strong><small>Monedas</small></div><div class="mega30Stat">🔥<strong id="m30Combo">0</strong><small>Combo</small></div><div class="mega30Stat">⚡<strong id="m30Power">0%</strong><small>Chaos Power</small></div>
+  </div>
+  <div class="mega30Bar"><i id="m30Bar"></i></div>
+  <div class="mega30Grid" id="mega30Grid"></div>
+ </div>
+</div><div id="mega30Toast"></div>
+
+<script>
+/* ==========================================================
+   TRAILER 2.0 — FUNCIONES REALES
+   Se añade sin cambiar la interfaz original.
+========================================================== */
+(()=>{
+  const KEY='atmTrailer20Data';
+  const data=Object.assign({
+    dailyClaim:'',
+    dailyStreak:0,
+    catches:0,
+    missionDone:false,
+    missionTarget:25,
+    missionReward:500,
+    power:0,
+    achievements:[],
+    bestCombo:0
+  },JSON.parse(localStorage.getItem(KEY)||'{}'));
+  const save=()=>localStorage.setItem(KEY,JSON.stringify(data));
+  const $=id=>document.getElementById(id);
+  const today=()=>new Date().toISOString().slice(0,10);
+
+  function notice(t){
+    if(typeof showToast==='function') showToast(t);
+    else if(typeof addSystemMessage==='function') addSystemMessage(t);
+  }
+
+  function updateDaily(){
+    const text=$('dailyText'),btn=$('dailyBtn');
+    if(!text||!btn)return;
+    const claimed=data.dailyClaim===today();
+    text.innerHTML=claimed
+      ? `✅ Recompensa reclamada hoy.<br>🔥 Racha: ${data.dailyStreak} día(s)`
+      : `🎁 500 monedas + 5 gemas.<br>🔥 Racha actual: ${data.dailyStreak}`;
+    btn.disabled=claimed;
+    btn.textContent=claimed?'✅ RECLAMADA':'🎁 RECLAMAR';
+    btn.style.opacity=claimed?'.55':'1';
+  }
+
+  function claimDaily(){
+    if(data.dailyClaim===today()){
+      notice('🎁 Ya reclamaste la recompensa de hoy.');
+      return;
+    }
+    const yesterday=new Date();
+    yesterday.setDate(yesterday.getDate()-1);
+    const y=yesterday.toISOString().slice(0,10);
+    data.dailyStreak=data.dailyClaim===y?data.dailyStreak+1:1;
+    data.dailyClaim=today();
+    state.coins+=500;
+    /* El proyecto original usa monedas como economía principal. */
+    if(!Number.isFinite(state.gems))state.gems=0;
+    state.gems+=5;
+    if(typeof saveState==='function')saveState();
+    save();
+    updateDaily();
+    if(typeof updateShopHeader==='function')updateShopHeader();
+    notice('🎁 ¡RECOMPENSA DIARIA! +500 🪙 +5 💎');
+    if(typeof createParticles==='function')createParticles(canvas.width/2,canvas.height/2,20,'🎁');
+  }
+
+  function updateMission(){
+    const text=$('missionText'),bar=$('missionBar'),reward=$('missionReward');
+    if(!text||!bar||!reward)return;
+    const value=Math.min(data.catches,data.missionTarget);
+    text.textContent=`Atrapa ${data.missionTarget} monedas — ${value}/${data.missionTarget}`;
+    bar.style.width=(value/data.missionTarget*100)+'%';
+    reward.textContent=data.missionDone?'✅ RECOMPENSA RECLAMADA':'🎁 Recompensa: '+data.missionReward+' 🪙';
+  }
+
+  function completeMission(){
+    if(data.missionDone||data.catches<data.missionTarget)return;
+    data.missionDone=true;
+    state.coins+=data.missionReward;
+    if(typeof saveState==='function')saveState();
+    save();
+    notice('🏆 ¡MISIÓN COMPLETADA! +'+data.missionReward+' 🪙');
+    updateMission();
+  }
+
+  const achievementList=[
+    ['first','🪙 Primera captura',()=>data.catches>=1],
+    ['ten','🔥 10 capturas',()=>data.catches>=10],
+    ['mission','🎯 Misión completada',()=>data.missionDone],
+    ['combo','🔥 Combo x5',()=>data.bestCombo>=5],
+    ['daily','🎁 Recompensa diaria',()=>data.dailyStreak>=1]
+  ];
+
+  function updateAchievements(){
+    const box=$('achievementsList');
+    if(!box)return;
+    box.innerHTML='';
+    achievementList.forEach(a=>{
+      const done=a[2]();
+      if(done&&!data.achievements.includes(a[0]))data.achievements.push(a[0]);
+      const d=document.createElement('div');
+      d.className='achievement '+(done?'done':'');
+      d.innerHTML=`<div class="achievementIcon">${done?'🏆':'🔒'}</div><div><b>${a[1]}</b><div class="megaSmall">${done?'Desbloqueado':'Bloqueado'}</div></div>`;
+      box.appendChild(d);
+    });
+    save();
+  }
+
+  function updatePower(){
+    const t=$('powerText'),b=$('powerFill'),btn=$('powerBtn');
+    if(!t||!b||!btn)return;
+    t.textContent=data.power+'%';
+    b.style.width=data.power+'%';
+    btn.disabled=data.power<100;
+    btn.textContent=data.power>=100?'⚡ ACTIVAR':'⚡ CARGANDO...';
+    if(data.power>=100)t.classList.add('powerReady');
+    else t.classList.remove('powerReady');
+  }
+
+  function activatePower(){
+    if(data.power<100){notice('⚡ El Poder Chaos todavía no está cargado.');return;}
+    data.power=0;
+    save();
+    state.chaosDoubleUntil=Date.now()+10000;
+    notice('⚡ ¡PODER CHAOS ACTIVADO! x2 durante 10 segundos');
+    if(typeof createParticles==='function')createParticles(canvas.width/2,canvas.height/2,35,'⚡');
+    updatePower();
+  }
+
+  if($('dailyBtn'))$('dailyBtn').addEventListener('click',claimDaily);
+  if($('powerBtn'))$('powerBtn').addEventListener('click',activatePower);
+
+  /* Integra las recompensas con la captura real sin reemplazarla. */
+  const originalCatch=window.catchCoin;
+  if(typeof originalCatch==='function'&&!window.__trailer20Wrapped){
+    window.__trailer20Wrapped=true;
+    window.catchCoin=function(){
+      const before=state.score;
+      originalCatch.apply(this,arguments);
+      if(state.score>before){
+        data.catches++;
+        data.power=Math.min(100,data.power+4);
+        data.bestCombo=Math.max(data.bestCombo,state.combo||1);
+        if(data.catches>=data.missionTarget)completeMission();
+        updateMission();
+        updatePower();
+        updateAchievements();
+        save();
+      }
+    };
+  }
+
+  /* Estado visible en el panel existente. */
+  function updateAll(){
+    updateDaily();updateMission();updatePower();updateAchievements();
+    const stats=$('megaStats');
+    if(stats){
+      stats.innerHTML=`🪙 ${state.coins} &nbsp; | &nbsp; 🏆 ${state.highScore} &nbsp; | &nbsp; ⭐ Nivel ${state.level} &nbsp; | &nbsp; 🔥 Mejor combo x${data.bestCombo}`;
+    }
+  }
+
+  const megaBtn=$('megaBtn'),megaModal=$('megaModal'),megaClose=$('megaClose'),megaClose2=$('megaClose2');
+  function openMega(){if(!megaModal)return;megaModal.classList.add('open');megaModal.setAttribute('aria-hidden','false');updateAll();}
+  function closeMega(){if(!megaModal)return;megaModal.classList.remove('open');megaModal.setAttribute('aria-hidden','true');}
+  if(megaBtn)megaBtn.addEventListener('click',openMega);
+  if(megaClose)megaClose.addEventListener('click',closeMega);
+  if(megaClose2)megaClose2.addEventListener('click',closeMega);
+  if(megaModal)megaModal.addEventListener('click',e=>{if(e.target===megaModal)closeMega();});
+
+  /* Inicialización sin modificar el diseño. */
+  updateAll();
+
+  /* Hace que el Poder Chaos siga cargándose aunque el panel esté cerrado. */
+  setInterval(()=>{
+    if(data.power>100)data.power=100;
+    updatePower();
+    updateMission();
+    updateAchievements();
+    save();
+  },1000);
+})();
+</script>
 </body>
 </html>
