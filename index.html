@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Atrapa la Moneda</title>
+    <title>Atrapa la Moneda - 1° Aniversario</title>
     <style>
         * {
             margin: 0;
@@ -25,7 +25,7 @@
             position: relative;
             width: 100vw;
             height: 100vh;
-            background: linear-gradient(to bottom, #87CEEB, #E0F6FF);
+            background: linear-gradient(to bottom, #1a0933, #4a154b, #87ceeb);
             display: flex;
             justify-content: center;
             align-items: center;
@@ -42,6 +42,32 @@
 
         canvas:active {
             cursor: grabbing;
+        }
+
+        /* ===== DECORACIÓN DE ANIVERSARIO ===== */
+        .anniversary-banner {
+            position: fixed;
+            top: 15px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: linear-gradient(90deg, #ffd700, #ff69b4, #00ffff, #ffd700);
+            background-size: 300% 300%;
+            animation: rainbow 4s ease infinite;
+            color: #000;
+            padding: 6px 20px;
+            border-radius: 20px;
+            font-weight: bold;
+            font-size: 14px;
+            box-shadow: 0 0 15px rgba(255, 215, 0, 0.8);
+            z-index: 90;
+            pointer-events: none;
+            text-align: center;
+        }
+
+        @keyframes rainbow {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
         }
 
         .fullscreen-btn {
@@ -66,11 +92,6 @@
             box-shadow: 0 6px 20px rgba(102, 126, 234, 0.6);
         }
 
-        .fullscreen-btn:active {
-            transform: scale(0.95);
-        }
-
-        /* ===== ESTILOS DE LA TIENDA ===== */
         .shop-button {
             position: fixed;
             top: 20px;
@@ -91,10 +112,6 @@
         .shop-button:hover {
             transform: scale(1.1);
             box-shadow: 0 6px 20px rgba(255, 165, 0, 0.6);
-        }
-
-        .shop-button:active {
-            transform: scale(0.95);
         }
 
         .shop-badge {
@@ -119,7 +136,7 @@
             left: 0;
             width: 100%;
             height: 100%;
-            background: rgba(0, 0, 0, 0.7);
+            background: rgba(0, 0, 0, 0.8);
             display: none;
             justify-content: center;
             align-items: center;
@@ -138,26 +155,20 @@
 
         .modal-content {
             background: #1a1a1a;
-            border: 2px solid #ffa500;
+            border: 2px solid #ffd700;
             border-radius: 15px;
             padding: 30px;
             max-width: 900px;
             width: 90%;
             max-height: 90vh;
             overflow-y: auto;
-            box-shadow: 0 20px 60px rgba(0,0,0,0.8);
+            box-shadow: 0 0 30px rgba(255, 215, 0, 0.4);
             animation: slideInModal 0.3s ease;
         }
 
         @keyframes slideInModal {
-            from {
-                opacity: 0;
-                transform: translateY(-50px);
-            }
-            to {
-                opacity: 1;
-                transform: translateY(0);
-            }
+            from { opacity: 0; transform: translateY(-50px); }
+            to { opacity: 1; transform: translateY(0); }
         }
 
         .modal-header {
@@ -165,19 +176,19 @@
             justify-content: space-between;
             align-items: center;
             margin-bottom: 30px;
-            border-bottom: 2px solid #ffa500;
+            border-bottom: 2px solid #ffd700;
             padding-bottom: 15px;
         }
 
         .modal-header h2 {
-            color: #ffa500;
+            color: #ffd700;
             font-size: 28px;
         }
 
         .modal-close {
             background: none;
             border: none;
-            color: #ffa500;
+            color: #ffd700;
             font-size: 30px;
             cursor: pointer;
             transition: all 0.3s ease;
@@ -190,7 +201,7 @@
 
         .player-info {
             background: #252525;
-            border: 2px solid #667eea;
+            border: 2px solid #ffd700;
             border-radius: 10px;
             padding: 20px;
             margin-bottom: 30px;
@@ -204,7 +215,7 @@
         }
 
         .player-avatar {
-            font-size: 80px;
+            font-size: 60px;
             margin-bottom: 10px;
         }
 
@@ -267,7 +278,7 @@
         }
 
         .item-emoji {
-            font-size: 60px;
+            font-size: 50px;
             margin-bottom: 10px;
             display: block;
         }
@@ -322,10 +333,6 @@
             color: white;
         }
 
-        .btn-equip:hover {
-            background: #1976D2;
-        }
-
         .badge-new {
             position: absolute;
             top: 5px;
@@ -338,25 +345,25 @@
             font-weight: bold;
         }
 
-        .badge-popular {
+        .badge-anniversary {
             position: absolute;
             top: 5px;
-            right: 5px;
-            background: #ffa500;
+            left: 5px;
+            background: linear-gradient(45deg, #ffd700, #ff1493);
             color: #000;
-            padding: 3px 8px;
+            padding: 3px 6px;
             border-radius: 3px;
-            font-size: 10px;
+            font-size: 9px;
             font-weight: bold;
         }
 
-        /* ===== ESTILOS DEL CHAT GLOBAL ===== */
+        /* ===== CHAT GLOBAL ===== */
         .chat-container {
             position: fixed;
             bottom: 20px;
             left: 20px;
             width: 350px;
-            height: 500px;
+            height: 400px;
             background: #1a1a1a;
             border: 2px solid #667eea;
             border-radius: 10px;
@@ -364,24 +371,12 @@
             flex-direction: column;
             z-index: 98;
             box-shadow: 0 10px 40px rgba(0,0,0,0.5);
-            animation: slideInChat 0.3s ease;
-        }
-
-        @keyframes slideInChat {
-            from {
-                opacity: 0;
-                transform: translateX(-30px);
-            }
-            to {
-                opacity: 1;
-                transform: translateX(0);
-            }
         }
 
         .chat-header {
             background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
             color: white;
-            padding: 15px;
+            padding: 12px;
             border-radius: 8px 8px 0 0;
             display: flex;
             justify-content: space-between;
@@ -397,104 +392,41 @@
             width: 25px;
             height: 25px;
             border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            transition: all 0.3s ease;
-        }
-
-        .chat-close-btn:hover {
-            background: rgba(255,255,255,0.4);
-            transform: scale(1.1);
         }
 
         .chat-messages {
             flex: 1;
             overflow-y: auto;
-            padding: 15px;
+            padding: 12px;
             display: flex;
             flex-direction: column;
-            gap: 10px;
+            gap: 8px;
         }
 
         .chat-message {
             background: #252525;
-            padding: 10px 12px;
+            padding: 8px 10px;
             border-radius: 6px;
             border-left: 3px solid #667eea;
-            animation: slideIn 0.2s ease;
-        }
-
-        @keyframes slideIn {
-            from {
-                opacity: 0;
-                transform: translateY(10px);
-            }
-            to {
-                opacity: 1;
-                transform: translateY(0);
-            }
-        }
-
-        .chat-message-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 5px;
         }
 
         .chat-message-username {
             color: #87CEEB;
             font-size: 11px;
             font-weight: bold;
-            display: flex;
-            align-items: center;
-            gap: 5px;
-        }
-
-        .chat-message-badge {
-            background: #FFD700;
-            color: #000;
-            padding: 2px 6px;
-            border-radius: 3px;
-            font-size: 9px;
-            font-weight: bold;
-        }
-
-        .chat-message-time {
-            color: #666;
-            font-size: 10px;
         }
 
         .chat-message-text {
             color: #fff;
             font-size: 12px;
-            word-wrap: break-word;
-            word-break: break-word;
-        }
-
-        .chat-system {
-            background: #0d47a1;
-            border-left-color: #4caf50;
-        }
-
-        .chat-system .chat-message-username {
-            color: #4caf50;
-        }
-
-        .chat-system .chat-message-text {
-            color: #87CEEB;
-            font-size: 11px;
-            font-style: italic;
         }
 
         .chat-input-area {
             display: flex;
-            gap: 10px;
-            padding: 12px;
+            gap: 8px;
+            padding: 10px;
             background: #252525;
             border-top: 1px solid #667eea;
-            border-radius: 0 0 8px 8px;
         }
 
         .chat-input {
@@ -502,16 +434,9 @@
             background: #1a1a1a;
             border: 1px solid #667eea;
             color: #fff;
-            padding: 8px 10px;
+            padding: 8px;
             border-radius: 5px;
-            font-family: 'Courier New', Courier, monospace;
             font-size: 12px;
-        }
-
-        .chat-input:focus {
-            outline: none;
-            border-color: #764ba2;
-            box-shadow: 0 0 10px rgba(118, 75, 162, 0.5);
         }
 
         .chat-send-btn {
@@ -519,23 +444,8 @@
             border: none;
             color: white;
             cursor: pointer;
-            width: 40px;
-            height: 40px;
+            width: 35px;
             border-radius: 5px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            transition: all 0.3s ease;
-            font-size: 18px;
-        }
-
-        .chat-send-btn:hover {
-            transform: scale(1.05);
-            box-shadow: 0 4px 15px rgba(102, 126, 234, 0.6);
-        }
-
-        .chat-send-btn:active {
-            transform: scale(0.95);
         }
 
         .chat-toggle-btn {
@@ -550,68 +460,14 @@
             color: white;
             font-size: 20px;
             cursor: pointer;
-            box-shadow: 0 4px 15px rgba(0,0,0,0.3);
-            transition: all 0.3s ease;
             z-index: 98;
         }
 
-        .chat-toggle-btn:hover {
-            transform: scale(1.1);
-            box-shadow: 0 6px 20px rgba(102, 126, 234, 0.6);
-        }
-
-        .chat-toggle-btn:active {
-            transform: scale(0.95);
-        }
-
-        .chat-toggle-btn.hidden {
+        .chat-toggle-btn.hidden, .chat-container.hidden {
             display: none;
         }
 
-        .chat-container.hidden {
-            display: none;
-        }
-
-        .chat-notification {
-            position: absolute;
-            top: 5px;
-            right: 5px;
-            background: #d32f2f;
-            color: white;
-            width: 20px;
-            height: 20px;
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 12px;
-            font-weight: bold;
-        }
-
-        /* Scroll bar personalizado */
-        .chat-messages::-webkit-scrollbar,
-        .modal-content::-webkit-scrollbar {
-            width: 6px;
-        }
-
-        .chat-messages::-webkit-scrollbar-track,
-        .modal-content::-webkit-scrollbar-track {
-            background: #1a1a1a;
-            border-radius: 10px;
-        }
-
-        .chat-messages::-webkit-scrollbar-thumb,
-        .modal-content::-webkit-scrollbar-thumb {
-            background: #667eea;
-            border-radius: 10px;
-        }
-
-        .chat-messages::-webkit-scrollbar-thumb:hover,
-        .modal-content::-webkit-scrollbar-thumb:hover {
-            background: #764ba2;
-        }
-
-        /* ===== ESTILOS DEL MENÚ ADMIN ===== */
+        /* ===== ADMIN PANEL ===== */
         .admin-button {
             position: fixed;
             bottom: 20px;
@@ -624,281 +480,123 @@
             color: white;
             font-size: 24px;
             cursor: pointer;
-            box-shadow: 0 4px 15px rgba(0,0,0,0.3);
-            transition: all 0.3s ease;
             z-index: 100;
-        }
-
-        .admin-button:hover {
-            transform: scale(1.1);
-            box-shadow: 0 6px 20px rgba(102, 126, 234, 0.6);
-        }
-
-        .admin-button:active {
-            transform: scale(0.95);
         }
 
         .admin-panel {
             position: fixed;
             bottom: 80px;
             right: 20px;
-            width: 350px;
+            width: 320px;
             background: #1a1a1a;
             border: 2px solid #667eea;
             border-radius: 10px;
-            padding: 20px;
-            box-shadow: 0 10px 40px rgba(0,0,0,0.5);
+            padding: 15px;
             display: none;
             z-index: 101;
-            max-height: 500px;
+            max-height: 450px;
             overflow-y: auto;
         }
 
-        .admin-panel.active {
-            display: block;
-            animation: slideIn 0.3s ease;
-        }
+        .admin-panel.active { display: block; }
 
         .admin-panel h2 {
             color: #667eea;
-            margin-bottom: 15px;
-            font-size: 18px;
+            margin-bottom: 10px;
+            font-size: 16px;
             border-bottom: 2px solid #667eea;
-            padding-bottom: 10px;
+            padding-bottom: 5px;
         }
 
         .config-group {
-            margin-bottom: 15px;
-            padding: 12px;
+            margin-bottom: 10px;
+            padding: 8px;
             background: #252525;
-            border-radius: 8px;
-            border-left: 3px solid #667eea;
+            border-radius: 5px;
         }
 
         .config-group label {
             display: block;
             color: #87CEEB;
-            font-size: 12px;
-            margin-bottom: 8px;
-            font-weight: bold;
+            font-size: 11px;
+            margin-bottom: 5px;
         }
 
-        .config-group input[type="number"],
-        .config-group input[type="text"] {
+        .config-group input {
             width: 100%;
-            padding: 8px;
+            padding: 5px;
             background: #1a1a1a;
             border: 1px solid #667eea;
             color: #fff;
-            border-radius: 5px;
-            font-family: 'Courier New', Courier, monospace;
-            font-size: 12px;
-        }
-
-        .config-group input[type="number"]:focus,
-        .config-group input[type="text"]:focus {
-            outline: none;
-            border-color: #764ba2;
-            box-shadow: 0 0 10px rgba(118, 75, 162, 0.5);
-        }
-
-        .config-value {
-            color: #FFD700;
-            font-size: 12px;
-            margin-top: 5px;
-            font-weight: bold;
-        }
-
-        .button-group {
-            display: flex;
-            gap: 10px;
-            margin-top: 10px;
+            border-radius: 3px;
         }
 
         .admin-btn {
-            flex: 1;
-            padding: 10px;
+            width: 100%;
+            padding: 8px;
+            margin-top: 5px;
             border: none;
             border-radius: 5px;
             color: white;
             cursor: pointer;
-            font-size: 12px;
             font-weight: bold;
-            transition: all 0.3s ease;
         }
 
-        .admin-btn-primary {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-        }
+        .admin-btn-primary { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); }
 
-        .admin-btn-primary:hover {
-            box-shadow: 0 4px 15px rgba(102, 126, 234, 0.6);
-            transform: translateY(-2px);
-        }
-
-        .admin-btn-secondary {
-            background: #444;
-        }
-
-        .admin-btn-secondary:hover {
-            background: #555;
-        }
-
-        .admin-btn-danger {
-            background: #d32f2f;
-        }
-
-        .admin-btn-danger:hover {
-            background: #b71c1c;
-        }
-
-        .admin-btn:active {
-            transform: translateY(0);
-        }
-
-        .info-box {
-            background: #0d47a1;
-            color: #87CEEB;
-            padding: 10px;
-            border-radius: 5px;
-            font-size: 11px;
-            line-height: 1.4;
-            margin-bottom: 10px;
-        }
-
-        .divider {
-            height: 1px;
-            background: #667eea;
-            margin: 15px 0;
-            opacity: 0.3;
-        }
-
-        /* Scroll bar personalizado */
-        .admin-panel::-webkit-scrollbar {
-            width: 6px;
-        }
-
-        .admin-panel::-webkit-scrollbar-track {
-            background: #1a1a1a;
-            border-radius: 10px;
-        }
-
-        .admin-panel::-webkit-scrollbar-thumb {
-            background: #667eea;
-            border-radius: 10px;
-        }
-
-        .admin-panel::-webkit-scrollbar-thumb:hover {
-            background: #764ba2;
-        }
-
-        .admin-status {
-            display: inline-block;
-            width: 8px;
-            height: 8px;
-            border-radius: 50%;
-            margin-right: 5px;
-        }
-
-        .admin-status.online {
-            background: #4caf50;
-            animation: blink 1.5s infinite;
-        }
-
-        @keyframes blink {
-            0%, 100% { opacity: 1; }
-            50% { opacity: 0.5; }
-        }
-
-        /* Partículas de recolección */
-        .particle {
-            position: fixed;
-            pointer-events: none;
-            font-size: 30px;
-            font-weight: bold;
-            animation: floatUp 1s ease-out forwards;
-        }
-
-        @keyframes floatUp {
-            0% {
-                opacity: 1;
-                transform: translateY(0) scale(1);
-            }
-            100% {
-                opacity: 0;
-                transform: translateY(-80px) scale(0.5);
-            }
-        }
-
-        /* Pantalla de inicio mejorada */
+        /* ===== PANTALLA DE INICIO ANIVERSARIO ===== */
         .start-screen {
             position: absolute;
             width: 100%;
             height: 100%;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            background: linear-gradient(135deg, #2b1055 0%, #7597de 100%);
             display: flex;
             flex-direction: column;
             justify-content: center;
             align-items: center;
             z-index: 50;
-            animation: fadeIn 0.5s ease;
+            text-align: center;
         }
 
-        @keyframes fadeIn {
-            from { opacity: 0; }
-            to { opacity: 1; }
-        }
-
-        .start-screen.hidden {
-            display: none;
-        }
+        .start-screen.hidden { display: none; }
 
         .game-title {
-            font-size: clamp(40px, 8vw, 80px);
-            color: white;
-            margin-bottom: 20px;
-            text-shadow: 0 4px 10px rgba(0,0,0,0.3);
-            animation: bounceIn 0.8s ease;
+            font-size: clamp(30px, 6vw, 60px);
+            color: #ffd700;
+            text-shadow: 0 0 20px rgba(255, 215, 0, 0.8), 2px 2px #ff1493;
+            margin-bottom: 10px;
         }
 
-        @keyframes bounceIn {
-            0% {
-                opacity: 0;
-                transform: translateY(-50px) scale(0.5);
-            }
-            50% {
-                opacity: 1;
-            }
-            100% {
-                opacity: 1;
-                transform: translateY(0) scale(1);
-            }
+        .anniversary-tag {
+            font-size: clamp(18px, 4vw, 32px);
+            color: #ffffff;
+            background: #ff1493;
+            padding: 5px 15px;
+            border-radius: 20px;
+            margin-bottom: 20px;
+            box-shadow: 0 0 10px #ff1493;
         }
 
         .game-coin {
-            font-size: clamp(50px, 10vw, 100px);
-            margin: 20px 0;
+            font-size: clamp(50px, 8vw, 80px);
+            margin: 10px 0;
             animation: spin 2s linear infinite;
         }
 
         @keyframes spin {
-            0%, 100% {
-                transform: rotateY(0deg) scale(1);
-            }
-            50% {
-                transform: rotateY(180deg) scale(1.1);
-            }
+            0%, 100% { transform: rotateY(0deg); }
+            50% { transform: rotateY(180deg); }
         }
 
         .start-instruction {
-            font-size: clamp(16px, 4vw, 24px);
-            color: rgba(255,255,255,0.9);
-            margin-top: 30px;
-            animation: pulse 1.5s ease-in-out infinite;
+            font-size: clamp(14px, 3vw, 20px);
+            color: white;
+            margin-top: 20px;
+            animation: pulse 1.5s infinite;
         }
 
         @keyframes pulse {
-            0%, 100% { opacity: 0.7; }
+            0%, 100% { opacity: 0.6; }
             50% { opacity: 1; }
         }
     </style>
@@ -906,33 +604,33 @@
 <body>
 
 <div id="gameContainer">
+    <div class="anniversary-banner">✨ ¡EDICIÓN ESPECIAL 1º ANIVERSARIO! ✨</div>
+
     <div class="start-screen" id="startScreen">
         <div class="game-title">🎮 ATRAPA LA MONEDA</div>
+        <div class="anniversary-tag">🎂 ¡1ER ANIVERSARIO! 🎉</div>
         <div class="game-coin">🪙</div>
         <div class="start-instruction">Haz clic para comenzar</div>
     </div>
     <canvas id="gameCanvas"></canvas>
 </div>
 
-<!-- Botón Pantalla Completa -->
 <button class="fullscreen-btn" id="fullscreenBtn" title="Pantalla Completa">⛶</button>
 
-<!-- Botón Tienda -->
 <button class="shop-button" id="shopBtn" title="Tienda">🛍️
     <div class="shop-badge" id="shopBadge">0</div>
 </button>
 
-<!-- Modal Tienda -->
 <div class="modal" id="shopModal">
     <div class="modal-content">
         <div class="modal-header">
-            <h2>🛍️ Tienda</h2>
+            <h2>🛍️ Tienda de Aniversario</h2>
             <button class="modal-close" id="shopClose">✕</button>
         </div>
 
         <div class="player-info">
             <div class="player-stats">
-                <div class="player-avatar" id="playerAvatar">👤</div>
+                <div class="player-avatar" id="playerAvatar">🎂</div>
                 <div class="stat-label">Avatar</div>
             </div>
             <div class="player-stats">
@@ -940,18 +638,16 @@
                 <div class="stat-label">Monedas</div>
             </div>
             <div class="player-stats">
-                <div class="player-avatar" id="playerBasket">🧺</div>
+                <div class="player-avatar" id="playerBasket">🎂</div>
                 <div class="stat-label">Cesta</div>
             </div>
         </div>
 
-        <!-- Avatares -->
         <div class="shop-section">
-            <div class="section-title">👤 Avatares</div>
+            <div class="section-title">👤 Avatares Especiales</div>
             <div class="items-grid" id="avatarsGrid"></div>
         </div>
 
-        <!-- Skins de Cesta -->
         <div class="shop-section">
             <div class="section-title">🧺 Skins de Cesta</div>
             <div class="items-grid" id="skinsGrid"></div>
@@ -959,87 +655,36 @@
     </div>
 </div>
 
-<!-- Chat Global -->
-<button class="chat-toggle-btn" id="chatToggleBtn" title="Chat Global">💬</button>
-
-<div class="chat-container" id="chatContainer">
+<button class="chat-toggle-btn hidden" id="chatToggleBtn">💬</button>
+<div class="chat-container hidden" id="chatContainer">
     <div class="chat-header">
         <span>💬 Chat Global</span>
         <button class="chat-close-btn" id="chatCloseBtn">✕</button>
     </div>
     <div class="chat-messages" id="chatMessages"></div>
     <div class="chat-input-area">
-        <input type="text" id="chatInput" class="chat-input" placeholder="Tu mensaje...">
+        <input type="text" id="chatInput" class="chat-input" placeholder="Escribe un mensaje...">
         <button class="chat-send-btn" id="chatSendBtn">➤</button>
     </div>
 </div>
 
-<!-- Botón Admin -->
-<button class="admin-button" id="adminBtn" title="Panel de Admin (Solo para ti)">⚙️</button>
+<button class="admin-button" id="adminBtn" title="Panel Admin">⚙️</button>
 
-<!-- Panel Admin -->
 <div class="admin-panel" id="adminPanel">
-    <h2><span class="admin-status online"></span>Panel de Admin</h2>
-    
-    <div class="info-box">
-        ℹ️ Acceso exclusivo para administrador. Modifica los parámetros del juego en tiempo real.
-    </div>
-
+    <h2>⚙️ Panel de Control</h2>
     <div class="config-group">
-        <label>⏱️ Tiempo Inicial (segundos)</label>
-        <input type="number" id="initialTime" min="5" max="120" value="30">
-        <div class="config-value" id="initialTimeValue">Actual: 30s</div>
+        <label>⏱️ Tiempo Inicial (s)</label>
+        <input type="number" id="initialTime" value="30">
     </div>
-
     <div class="config-group">
-        <label>🎯 Velocidad Inicial de Moneda</label>
-        <input type="number" id="initialSpeed" min="1" max="20" step="0.5" value="4">
-        <div class="config-value" id="initialSpeedValue">Actual: 4 px/frame</div>
+        <label>🎯 Velocidad Inicial Moneda</label>
+        <input type="number" id="initialSpeed" value="4">
     </div>
-
-    <div class="config-group">
-        <label>⚡ Incremento de Velocidad</label>
-        <input type="number" id="speedIncrement" min="0.1" max="2" step="0.1" value="0.2">
-        <div class="config-value" id="speedIncrementValue">Actual: 0.2 px/frame</div>
-    </div>
-
     <div class="config-group">
         <label>💰 Puntos por Moneda</label>
-        <input type="number" id="scorePerCoin" min="1" max="100" value="10">
-        <div class="config-value" id="scorePerCoinValue">Actual: 10 pts</div>
+        <input type="number" id="scorePerCoin" value="10">
     </div>
-
-    <div class="config-group">
-        <label>🧺 Ancho de Cesta (píxeles)</label>
-        <input type="number" id="basketWidth" min="40" max="150" value="80">
-        <div class="config-value" id="basketWidthValue">Actual: 80 px</div>
-    </div>
-
-    <div class="config-group">
-        <label>🪙 Radio de Moneda (píxeles)</label>
-        <input type="number" id="coinRadius" min="5" max="30" value="15">
-        <div class="config-value" id="coinRadiusValue">Actual: 15 px</div>
-    </div>
-
-    <div class="divider"></div>
-
-    <div class="config-group">
-        <label>📊 Estado del Juego</label>
-        <div class="config-value" id="gameStatus">Estado: Inactivo</div>
-        <div class="config-value" id="gameScore">Puntos: 0</div>
-        <div class="config-value" id="gameTime">Tiempo: 0s</div>
-    </div>
-
-    <div class="divider"></div>
-
-    <div class="button-group">
-        <button class="admin-btn admin-btn-primary" id="applyBtn">✅ Aplicar</button>
-        <button class="admin-btn admin-btn-secondary" id="resetBtn">↺ Resetear</button>
-    </div>
-
-    <div class="button-group">
-        <button class="admin-btn admin-btn-danger" id="clearBtn">🗑️ Limpiar Todo</button>
-    </div>
+    <button class="admin-btn admin-btn-primary" id="applyBtn">✅ Aplicar</button>
 </div>
 
 <script>
@@ -1049,23 +694,40 @@
         INITIAL_COIN_SPEED: 4,
         SPEED_INCREMENT: 0.2,
         SCORE_PER_COIN: 10,
-        FPS: 60,
-        BASKET_WIDTH: 80,
+        BASKET_WIDTH: 90,
         BASKET_HEIGHT: 20,
         COIN_RADIUS: 15
     };
 
-    // ===== TIENDA - ITEMS =====
+    let coins = 100; // Regalo de Aniversario
+    let equippedAvatar = 'avatar_anniv';
+    let equippedSkin = 'skin_anniv';
+
     const SHOP_ITEMS = {
         avatars: [
+            { id: 'avatar_anniv', name: '🎂 Cumpleañero', emoji: '🎂', price: 0, purchased: true, anniversary: true },
             { id: 'avatar1', name: '👤 Clásico', emoji: '👤', price: 0, purchased: true },
             { id: 'avatar2', name: '😎 Frío', emoji: '😎', price: 150 },
             { id: 'avatar3', name: '🤖 Robot', emoji: '🤖', price: 200 },
-            { id: 'avatar4', name: '👑 Rey', emoji: '👑', price: 300, popular: true },
-            { id: 'avatar5', name: '🧙 Mago', emoji: '🧙', price: 250, new: true },
-            { id: 'avatar6', name: '🚀 Astronauta', emoji: '🚀', price: 350 }
+            { id: 'avatar4', name: '👑 Rey Aniversario', emoji: '👑', price: 1, popular: true },
+            { id: 'avatar5', name: '🚀 Astronauta', emoji: '🚀', price: 350 }
         ],
         skins: [
+            {
+                id: 'skin_anniv',
+                name: '🎉 Tarta 1º Año',
+                price: 0,
+                purchased: true,
+                anniversary: true,
+                draw: function(ctx, x, y, width, height) {
+                    ctx.fillStyle = "#ff69b4";
+                    ctx.fillRect(x, y, width, height);
+                    ctx.fillStyle = "#ffffff";
+                    ctx.fillRect(x, y - 5, width, 5);
+                    ctx.fillStyle = "#ffd700";
+                    ctx.fillRect(x + width/2 - 3, y - 12, 6, 7);
+                }
+            },
             { 
                 id: 'skin1', 
                 name: '🧺 Clásica', 
@@ -1075,17 +737,14 @@
                     ctx.fillStyle = "#8B4513";
                     ctx.fillRect(x, y, width, height);
                     ctx.strokeStyle = "#5c2d0c";
-                    ctx.lineWidth = 3;
+                    ctx.lineWidth = 2;
                     ctx.strokeRect(x, y, width, height);
-                    ctx.fillStyle = "rgba(255, 255, 255, 0.1)";
-                    ctx.fillRect(x, y, width, height / 2);
                 }
             },
             { 
                 id: 'skin2', 
                 name: '✨ Mágica', 
                 price: 120,
-                new: true,
                 draw: function(ctx, x, y, width, height) {
                     const gradient = ctx.createLinearGradient(x, y, x + width, y);
                     gradient.addColorStop(0, '#FF1493');
@@ -1093,11 +752,6 @@
                     gradient.addColorStop(1, '#00FF7F');
                     ctx.fillStyle = gradient;
                     ctx.fillRect(x, y, width, height);
-                    ctx.strokeStyle = "#FFD700";
-                    ctx.lineWidth = 3;
-                    ctx.strokeRect(x, y, width, height);
-                    ctx.fillStyle = "rgba(255, 215, 0, 0.3)";
-                    ctx.fillRect(x + 2, y + 2, width - 4, height - 4);
                 }
             },
             { 
@@ -1107,21 +761,9 @@
                 draw: function(ctx, x, y, width, height) {
                     const gradient = ctx.createLinearGradient(x, y, x, y + height);
                     gradient.addColorStop(0, '#FFD700');
-                    gradient.addColorStop(0.5, '#FF8C00');
                     gradient.addColorStop(1, '#FF4500');
                     ctx.fillStyle = gradient;
                     ctx.fillRect(x, y, width, height);
-                    ctx.strokeStyle = "#FF2400";
-                    ctx.lineWidth = 3;
-                    ctx.strokeRect(x, y, width, height);
-                    ctx.fillStyle = "rgba(255, 69, 0, 0.6)";
-                    for (let i = 0; i < 3; i++) {
-                        ctx.beginPath();
-                        ctx.moveTo(x + (i + 1) * (width / 4), y);
-                        ctx.lineTo(x + (i + 1) * (width / 4) - 5, y - 8);
-                        ctx.lineTo(x + (i + 1) * (width / 4) + 5, y);
-                        ctx.fill();
-                    }
                 }
             },
             { 
@@ -1129,702 +771,267 @@
                 name: '❄️ Hielo', 
                 price: 180,
                 draw: function(ctx, x, y, width, height) {
-                    const gradient = ctx.createLinearGradient(x, y, x + width, y + height);
-                    gradient.addColorStop(0, '#E0FFFF');
-                    gradient.addColorStop(0.5, '#ADD8E6');
-                    gradient.addColorStop(1, '#00CED1');
-                    ctx.fillStyle = gradient;
+                    ctx.fillStyle = "#00CED1";
                     ctx.fillRect(x, y, width, height);
-                    ctx.strokeStyle = "#00BFFF";
-                    ctx.lineWidth = 3;
-                    ctx.strokeRect(x, y, width, height);
                     ctx.strokeStyle = "#87CEEB";
-                    ctx.lineWidth = 2;
-                    for (let i = 0; i < 3; i++) {
-                        ctx.beginPath();
-                        ctx.moveTo(x + 10 + (i * 25), y + 3);
-                        ctx.lineTo(x + 10 + (i * 25), y + 17);
-                        ctx.stroke();
-                    }
-                }
-            },
-            { 
-                id: 'skin5', 
-                name: '💎 Diamante', 
-                price: 400,
-                popular: true,
-                draw: function(ctx, x, y, width, height) {
-                    ctx.fillStyle = "#E5E4E2";
-                    ctx.fillRect(x, y, width, height);
-                    ctx.strokeStyle = "#B8860B";
-                    ctx.lineWidth = 3;
                     ctx.strokeRect(x, y, width, height);
-                    ctx.fillStyle = "rgba(255, 255, 255, 0.8)";
-                    ctx.fillRect(x + 5, y + 3, 8, 8);
-                    ctx.fillRect(x + width - 13, y + 3, 8, 8);
-                    ctx.fillRect(x + width / 2 - 4, y + 5, 8, 6);
-                    ctx.strokeStyle = "rgba(255, 215, 0, 0.6)";
-                    ctx.lineWidth = 2;
-                    ctx.strokeRect(x + 2, y + 2, width - 4, height - 4);
-                }
-            },
-            { 
-                id: 'skin6', 
-                name: '🌈 Arcoíris', 
-                price: 250,
-                draw: function(ctx, x, y, width, height) {
-                    const segmentHeight = height / 6;
-                    const colors = ['#FF0000', '#FF7F00', '#FFFF00', '#00FF00', '#0000FF', '#8B00FF'];
-                    
-                    for (let i = 0; i < colors.length; i++) {
-                        ctx.fillStyle = colors[i];
-                        ctx.fillRect(x, y + (i * segmentHeight), width, segmentHeight);
-                    }
-                    
-                    ctx.strokeStyle = "#FFD700";
-                    ctx.lineWidth = 3;
-                    ctx.strokeRect(x, y, width, height);
-                    ctx.fillStyle = "rgba(255, 255, 255, 0.2)";
-                    ctx.fillRect(x, y, width, height / 3);
                 }
             }
         ]
     };
 
-    // ===== ESTADO DEL JUEGO =====
-    const gameState = {
-        score: 0,
-        timeLeft: CONFIG.INITIAL_TIME,
-        isPlaying: false,
-        gameInterval: null,
-        timerInterval: null,
-        coins: 1000,
-        selectedAvatar: 'avatar1',
-        selectedSkin: 'skin1',
-        purchasedItems: { avatar1: true, skin1: true }
-    };
-
-    // ===== ESTADO DEL CHAT =====
-    const chatState = {
-        username: `Jugador${Math.floor(Math.random() * 1000)}`,
-        isOwner: true,
-        isOpen: true,
-        unreadMessages: 0,
-        messages: []
-    };
-
-    // ===== ELEMENTOS DEL JUEGO =====
-    const canvas = document.getElementById("gameCanvas");
-    const ctx = canvas.getContext("2d");
-    const gameContainer = document.getElementById("gameContainer");
-    const startScreen = document.getElementById("startScreen");
-
+    // Canvas Setup
+    const canvas = document.getElementById('gameCanvas');
+    const ctx = canvas.getContext('2d');
+    
     function resizeCanvas() {
         canvas.width = window.innerWidth;
         canvas.height = window.innerHeight;
     }
-
+    window.addEventListener('resize', resizeCanvas);
     resizeCanvas();
-    window.addEventListener("resize", resizeCanvas);
 
-    const basket = {
-        x: canvas.width / 2 - CONFIG.BASKET_WIDTH / 2,
-        y: canvas.height - 60,
-        width: CONFIG.BASKET_WIDTH,
-        height: CONFIG.BASKET_HEIGHT,
-        targetX: canvas.width / 2 - CONFIG.BASKET_WIDTH / 2
+    // Game Variables
+    let gameActive = false;
+    let score = 0;
+    let timeLeft = CONFIG.INITIAL_TIME;
+    let coinSpeed = CONFIG.INITIAL_COIN_SPEED;
+    let basketX = canvas.width / 2 - CONFIG.BASKET_WIDTH / 2;
+    let coinX = Math.random() * (canvas.width - 40) + 20;
+    let coinY = -20;
+    let particles = [];
+    let confetti = [];
+    let gameInterval, timerInterval;
+
+    // Confetti para el 1º Aniversario
+    function initConfetti() {
+        confetti = [];
+        for (let i = 0; i < 50; i++) {
+            confetti.push({
+                x: Math.random() * canvas.width,
+                y: Math.random() * canvas.height,
+                r: Math.random() * 6 + 2,
+                d: Math.random() * 10,
+                color: `hsl(${Math.random() * 360}, 100%, 50%)`,
+                tilt: Math.random() * 10 - 10
+            });
+        }
+    }
+
+    function drawConfetti() {
+        confetti.forEach((p) => {
+            ctx.beginPath();
+            ctx.lineWidth = p.r;
+            ctx.strokeStyle = p.color;
+            ctx.moveTo(p.x + p.tilt + p.r / 2, p.y);
+            ctx.lineTo(p.x + p.tilt, p.y + p.tilt + p.r / 2);
+            ctx.stroke();
+            p.y += Math.cos(p.d) + 1 + p.r / 2;
+            p.tilt = Math.sin(p.d) * 15;
+
+            if (p.y > canvas.height) {
+                p.y = -10;
+                p.x = Math.random() * canvas.width;
+            }
+        });
+    }
+
+    // Input Control
+    window.addEventListener('mousemove', (e) => {
+        basketX = e.clientX - CONFIG.BASKET_WIDTH / 2;
+    });
+
+    window.addEventListener('touchmove', (e) => {
+        if (e.touches.length > 0) {
+            basketX = e.touches[0].clientX - CONFIG.BASKET_WIDTH / 2;
+        }
+    });
+
+    // Start Game
+    document.getElementById('startScreen').addEventListener('click', startGame);
+
+    function startGame() {
+        document.getElementById('startScreen').classList.add('hidden');
+        gameActive = true;
+        score = 0;
+        timeLeft = CONFIG.INITIAL_TIME;
+        coinSpeed = CONFIG.INITIAL_COIN_SPEED;
+        coinY = -20;
+        initConfetti();
+
+        clearInterval(timerInterval);
+        timerInterval = setInterval(() => {
+            if (gameActive) {
+                timeLeft--;
+                if (timeLeft <= 0) endGame();
+            }
+        }, 1000);
+
+        requestAnimationFrame(updateGame);
+    }
+
+    function endGame() {
+        gameActive = false;
+        clearInterval(timerInterval);
+        const startScreen = document.getElementById('startScreen');
+        startScreen.querySelector('.start-instruction').innerText = `¡Tiempo agotado! Puntos: ${score}. Haz clic para volver a jugar.`;
+        startScreen.classList.remove('hidden');
+    }
+
+    function updateGame() {
+        if (!gameActive) return;
+
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+        // Dibujar Confetti de Aniversario
+        drawConfetti();
+
+        // Mover Moneda
+        coinY += coinSpeed;
+
+        // Detectar Colisión
+        const basketY = canvas.height - 80;
+        if (
+            coinY + CONFIG.COIN_RADIUS >= basketY &&
+            coinY - CONFIG.COIN_RADIUS <= basketY + CONFIG.BASKET_HEIGHT &&
+            coinX >= basketX &&
+            coinX <= basketX + CONFIG.BASKET_WIDTH
+        ) {
+            score += CONFIG.SCORE_PER_COIN;
+            coins += Math.floor(CONFIG.SCORE_PER_COIN / 2);
+            coinSpeed += CONFIG.SPEED_INCREMENT;
+            coinY = -20;
+            coinX = Math.random() * (canvas.width - 40) + 20;
+            updateShopUI();
+        } else if (coinY > canvas.height) {
+            coinY = -20;
+            coinX = Math.random() * (canvas.width - 40) + 20;
+        }
+
+        // Dibujar Moneda
+        ctx.beginPath();
+        ctx.arc(coinX, coinY, CONFIG.COIN_RADIUS, 0, Math.PI * 2);
+        ctx.fillStyle = "#FFD700";
+        ctx.fill();
+        ctx.strokeStyle = "#DAA520";
+        ctx.lineWidth = 3;
+        ctx.stroke();
+        ctx.closePath();
+
+        // Dibujar Cesta
+        const currentSkin = SHOP_ITEMS.skins.find(s => s.id === equippedSkin) || SHOP_ITEMS.skins[0];
+        currentSkin.draw(ctx, basketX, basketY, CONFIG.BASKET_WIDTH, CONFIG.BASKET_HEIGHT);
+
+        // HUD / Texto
+        ctx.fillStyle = "#ffffff";
+        ctx.font = "20px 'Courier New'";
+        ctx.fillText(`Puntos: ${score}`, 20, 40);
+        ctx.fillText(`Tiempo: ${timeLeft}s`, 20, 70);
+
+        requestAnimationFrame(updateGame);
+    }
+
+    // UI Shop Logic
+    const shopModal = document.getElementById('shopModal');
+    document.getElementById('shopBtn').addEventListener('click', () => {
+        updateShopUI();
+        shopModal.classList.add('active');
+    });
+
+    document.getElementById('shopClose').addEventListener('click', () => {
+        shopModal.classList.remove('active');
+    });
+
+    function updateShopUI() {
+        document.getElementById('playerCoins').innerText = coins;
+        
+        // Avatares
+        const avatarsGrid = document.getElementById('avatarsGrid');
+        avatarsGrid.innerHTML = '';
+        SHOP_ITEMS.avatars.forEach(item => {
+            const div = document.createElement('div');
+            div.className = `shop-item ${item.purchased ? 'purchased' : ''} ${equippedAvatar === item.id ? 'equipped' : ''}`;
+            div.innerHTML = `
+                ${item.anniversary ? '<span class="badge-anniversary">1º AÑO</span>' : ''}
+                <span class="item-emoji">${item.emoji}</span>
+                <div class="item-name">${item.name}</div>
+                <div class="item-price">${item.purchased ? 'Obtenido' : item.price + ' 🪙'}</div>
+                <button class="item-btn ${equippedAvatar === item.id ? 'btn-equipped' : 'btn-buy'}" onclick="selectAvatar('${item.id}')">
+                    ${equippedAvatar === item.id ? 'Equipado' : item.purchased ? 'Equipar' : 'Comprar'}
+                </button>
+            `;
+            avatarsGrid.appendChild(div);
+        });
+
+        // Skins
+        const skinsGrid = document.getElementById('skinsGrid');
+        skinsGrid.innerHTML = '';
+        SHOP_ITEMS.skins.forEach(item => {
+            const div = document.createElement('div');
+            div.className = `shop-item ${item.purchased ? 'purchased' : ''} ${equippedSkin === item.id ? 'equipped' : ''}`;
+            div.innerHTML = `
+                ${item.anniversary ? '<span class="badge-anniversary">1º AÑO</span>' : ''}
+                <span class="item-emoji">🧺</span>
+                <div class="item-name">${item.name}</div>
+                <div class="item-price">${item.purchased ? 'Obtenida' : item.price + ' 🪙'}</div>
+                <button class="item-btn ${equippedSkin === item.id ? 'btn-equipped' : 'btn-buy'}" onclick="selectSkin('${item.id}')">
+                    ${equippedSkin === item.id ? 'Equipada' : item.purchased ? 'Equipar' : 'Comprar'}
+                </button>
+            `;
+            skinsGrid.appendChild(div);
+        });
+    }
+
+    window.selectAvatar = function(id) {
+        const item = SHOP_ITEMS.avatars.find(a => a.id === id);
+        if (!item.purchased) {
+            if (coins >= item.price) {
+                coins -= item.price;
+                item.purchased = true;
+                equippedAvatar = id;
+            }
+        } else {
+            equippedAvatar = id;
+        }
+        document.getElementById('playerAvatar').innerText = item.emoji;
+        updateShopUI();
     };
 
-    const coin = {
-        x: 0,
-        y: -CONFIG.COIN_RADIUS * 2,
-        radius: CONFIG.COIN_RADIUS,
-        speed: CONFIG.INITIAL_COIN_SPEED,
-        color: "#FFD700",
-        rotation: 0
+    window.selectSkin = function(id) {
+        const item = SHOP_ITEMS.skins.find(s => s.id === id);
+        if (!item.purchased) {
+            if (coins >= item.price) {
+                coins -= item.price;
+                item.purchased = true;
+                equippedSkin = id;
+            }
+        } else {
+            equippedSkin = id;
+        }
+        updateShopUI();
     };
 
-    // ===== BOTÓN PANTALLA COMPLETA =====
-    const fullscreenBtn = document.getElementById("fullscreenBtn");
-    fullscreenBtn.addEventListener("click", () => {
+    // Fullscreen Toggle
+    document.getElementById('fullscreenBtn').addEventListener('click', () => {
         if (!document.fullscreenElement) {
-            gameContainer.requestFullscreen().catch(() => {});
+            document.documentElement.requestFullscreen();
         } else {
             document.exitFullscreen();
         }
     });
 
-    // ===== SISTEMA DE TIENDA =====
-    const shopBtn = document.getElementById("shopBtn");
-    const shopModal = document.getElementById("shopModal");
-    const shopClose = document.getElementById("shopClose");
-    const shopBadge = document.getElementById("shopBadge");
-    const playerCoins = document.getElementById("playerCoins");
-    const playerAvatar = document.getElementById("playerAvatar");
-    const playerBasket = document.getElementById("playerBasket");
-
-    function renderShopItems() {
-        const avatarsGrid = document.getElementById("avatarsGrid");
-        const skinsGrid = document.getElementById("skinsGrid");
-        
-        avatarsGrid.innerHTML = '';
-        skinsGrid.innerHTML = '';
-
-        SHOP_ITEMS.avatars.forEach(item => {
-            const itemEl = createShopItemElement(item, 'avatar');
-            avatarsGrid.appendChild(itemEl);
-        });
-
-        SHOP_ITEMS.skins.forEach(item => {
-            const itemEl = createShopItemElement(item, 'skin');
-            skinsGrid.appendChild(itemEl);
-        });
-
-        updatePlayerInfo();
-    }
-
-    function createShopItemElement(item, type) {
-        const div = document.createElement('div');
-        div.className = 'shop-item';
-        
-        if (gameState.purchasedItems[item.id]) {
-            div.classList.add('purchased');
-        }
-        if (gameState[`selected${type.charAt(0).toUpperCase() + type.slice(1)}`] === item.id) {
-            div.classList.add('equipped');
-        }
-
-        let badgeHTML = '';
-        if (item.new) badgeHTML = '<div class="badge-new">NUEVO</div>';
-        if (item.popular) badgeHTML = '<div class="badge-popular">⭐ POPULAR</div>';
-
-        const isPurchased = gameState.purchasedItems[item.id];
-        const isEquipped = gameState[`selected${type.charAt(0).toUpperCase() + type.slice(1)}`] === item.id;
-
-        let btnHTML = '';
-        if (isPurchased) {
-            if (isEquipped) {
-                btnHTML = '<button class="item-btn btn-equipped">✓ EQUIPADO</button>';
-            } else {
-                btnHTML = `<button class="item-btn btn-equip" onclick="equipItem('${item.id}', '${type}')">Equipar</button>`;
-            }
-        } else {
-            const canBuy = gameState.coins >= item.price;
-            const priceText = item.price === 0 ? 'GRATIS' : item.price + '💰';
-            btnHTML = `<button class="item-btn btn-buy" onclick="buyItem('${item.id}', '${type}', ${item.price})" ${!canBuy ? 'disabled' : ''}>${item.price === 0 ? 'Equipado' : 'Comprar ' + priceText}</button>`;
-        }
-
-        const displayName = type === 'skin' ? item.name : item.emoji + ' ' + item.name.split(' ')[1];
-        const emoji = type === 'skin' ? '🧺' : item.emoji;
-
-        div.innerHTML = `
-            ${badgeHTML}
-            <span class="item-emoji">${emoji}</span>
-            <div class="item-name">${displayName}</div>
-            <div class="item-price">${item.price === 0 ? 'GRATIS' : item.price + '💰'}</div>
-            ${btnHTML}
-        `;
-
-        return div;
-    }
-
-    function buyItem(itemId, type, price) {
-        if (gameState.coins >= price && !gameState.purchasedItems[itemId]) {
-            gameState.coins -= price;
-            gameState.purchasedItems[itemId] = true;
-            gameState[`selected${type.charAt(0).toUpperCase() + type.slice(1)}`] = itemId;
-            localStorage.setItem('gameState', JSON.stringify(gameState));
-            renderShopItems();
-            addChatMessage("Sistema", `${chatState.username} compró un nuevo item! 🎉`, true);
-        }
-    }
-
-    function equipItem(itemId, type) {
-        gameState[`selected${type.charAt(0).toUpperCase() + type.slice(1)}`] = itemId;
-        localStorage.setItem('gameState', JSON.stringify(gameState));
-        renderShopItems();
-    }
-
-    function updatePlayerInfo() {
-        playerCoins.textContent = gameState.coins;
-        
-        const selectedAvatarItem = SHOP_ITEMS.avatars.find(a => a.id === gameState.selectedAvatar);
-        if (selectedAvatarItem) {
-            playerAvatar.textContent = selectedAvatarItem.emoji;
-        }
-    }
-
-    shopBtn.addEventListener("click", () => {
-        shopModal.classList.add("active");
+    // Admin Panel
+    const adminPanel = document.getElementById('adminPanel');
+    document.getElementById('adminBtn').addEventListener('click', () => {
+        adminPanel.classList.toggle('active');
     });
 
-    shopClose.addEventListener("click", () => {
-        shopModal.classList.remove("active");
+    document.getElementById('applyBtn').addEventListener('click', () => {
+        CONFIG.INITIAL_TIME = parseInt(document.getElementById('initialTime').value) || 30;
+        CONFIG.INITIAL_COIN_SPEED = parseFloat(document.getElementById('initialSpeed').value) || 4;
+        CONFIG.SCORE_PER_COIN = parseInt(document.getElementById('scorePerCoin').value) || 10;
+        adminPanel.classList.remove('active');
     });
-
-    shopModal.addEventListener("click", (e) => {
-        if (e.target === shopModal) {
-            shopModal.classList.remove("active");
-        }
-    });
-
-    // Cargar estado guardado
-    function loadGameState() {
-        const saved = localStorage.getItem('gameState');
-        if (saved) {
-            const loaded = JSON.parse(saved);
-            gameState.coins = loaded.coins || 1000;
-            gameState.selectedAvatar = loaded.selectedAvatar || 'avatar1';
-            gameState.selectedSkin = loaded.selectedSkin || 'skin1';
-            gameState.purchasedItems = loaded.purchasedItems || { avatar1: true, skin1: true };
-        }
-    }
-
-    loadGameState();
-    renderShopItems();
-
-    // ===== SISTEMA DE CHAT =====
-    const chatContainer = document.getElementById("chatContainer");
-    const chatToggleBtn = document.getElementById("chatToggleBtn");
-    const chatCloseBtn = document.getElementById("chatCloseBtn");
-    const chatMessages = document.getElementById("chatMessages");
-    const chatInput = document.getElementById("chatInput");
-    const chatSendBtn = document.getElementById("chatSendBtn");
-
-    function addChatMessage(username, text, isSystem = false, isOwner = false) {
-        const messageDiv = document.createElement("div");
-        messageDiv.className = isSystem ? "chat-message chat-system" : "chat-message";
-
-        const now = new Date();
-        const timeStr = `${now.getHours().toString().padStart(2, '0')}:${now.getMinutes().toString().padStart(2, '0')}`;
-
-        if (isSystem) {
-            messageDiv.innerHTML = `
-                <div class="chat-message-header">
-                    <div class="chat-message-username">🔔 SISTEMA</div>
-                    <div class="chat-message-time">${timeStr}</div>
-                </div>
-                <div class="chat-message-text">${text}</div>
-            `;
-        } else {
-            const badgeHTML = isOwner ? '<span class="chat-message-badge">👑 OWNER</span>' : '';
-            messageDiv.innerHTML = `
-                <div class="chat-message-header">
-                    <div class="chat-message-username">${username} ${badgeHTML}</div>
-                    <div class="chat-message-time">${timeStr}</div>
-                </div>
-                <div class="chat-message-text">${escapeHtml(text)}</div>
-            `;
-        }
-
-        chatMessages.appendChild(messageDiv);
-        chatMessages.scrollTop = chatMessages.scrollHeight;
-
-        if (chatMessages.children.length > 50) {
-            chatMessages.removeChild(chatMessages.firstChild);
-        }
-
-        if (!chatState.isOpen && !isSystem) {
-            chatState.unreadMessages++;
-            updateChatNotification();
-        }
-    }
-
-    function escapeHtml(text) {
-        const map = {
-            '&': '&amp;',
-            '<': '&lt;',
-            '>': '&gt;',
-            '"': '&quot;',
-            "'": '&#039;'
-        };
-        return text.replace(/[&<>"']/g, m => map[m]);
-    }
-
-    function updateChatNotification() {
-        let notification = chatToggleBtn.querySelector(".chat-notification");
-        
-        if (chatState.unreadMessages > 0) {
-            if (!notification) {
-                notification = document.createElement("div");
-                notification.className = "chat-notification";
-                chatToggleBtn.appendChild(notification);
-            }
-            notification.textContent = chatState.unreadMessages;
-        } else if (notification) {
-            notification.remove();
-        }
-    }
-
-    function sendChatMessage() {
-        const text = chatInput.value.trim();
-        
-        if (text.length === 0 || text.length > 100) return;
-
-        addChatMessage(chatState.username, text, false, chatState.isOwner);
-        chatInput.value = "";
-
-        if (Math.random() > 0.7) {
-            const responses = [
-                "¡Buen jugador!",
-                "¡Sigue así!",
-                "¡A por ello!",
-                "¡Vamos!",
-                "¡Increíble!",
-                "¡Wow!",
-                "¡Dale!",
-                "¡Que emoción!"
-            ];
-            const randomResponse = responses[Math.floor(Math.random() * responses.length)];
-            setTimeout(() => {
-                addChatMessage(`Jugador${Math.floor(Math.random() * 1000)}`, randomResponse);
-            }, 500 + Math.random() * 1000);
-        }
-    }
-
-    chatSendBtn.addEventListener("click", sendChatMessage);
-    chatInput.addEventListener("keypress", (e) => {
-        if (e.key === "Enter") {
-            sendChatMessage();
-        }
-    });
-
-    chatToggleBtn.addEventListener("click", () => {
-        chatState.isOpen = !chatState.isOpen;
-        chatContainer.classList.toggle("hidden");
-        chatToggleBtn.classList.toggle("hidden");
-
-        if (chatState.isOpen) {
-            chatState.unreadMessages = 0;
-            updateChatNotification();
-            chatInput.focus();
-        }
-    });
-
-    chatCloseBtn.addEventListener("click", () => {
-        chatState.isOpen = false;
-        chatContainer.classList.add("hidden");
-        chatToggleBtn.classList.remove("hidden");
-    });
-
-    addChatMessage("Sistema", `¡Bienvenido ${chatState.username}! 👑 ¡Eres el Owner! 🎮 Estás en el chat global del juego.`, true);
-
-    // ===== SISTEMA DE ADMIN =====
-    const adminButton = document.getElementById("adminBtn");
-    const adminPanel = document.getElementById("adminPanel");
-    const applyBtn = document.getElementById("applyBtn");
-    const resetBtn = document.getElementById("resetBtn");
-    const clearBtn = document.getElementById("clearBtn");
-
-    adminButton.addEventListener("click", () => {
-        adminPanel.classList.toggle("active");
-    });
-
-    document.getElementById("initialTime").addEventListener("input", (e) => {
-        document.getElementById("initialTimeValue").textContent = `Actual: ${e.target.value}s`;
-    });
-
-    document.getElementById("initialSpeed").addEventListener("input", (e) => {
-        document.getElementById("initialSpeedValue").textContent = `Actual: ${e.target.value} px/frame`;
-    });
-
-    document.getElementById("speedIncrement").addEventListener("input", (e) => {
-        document.getElementById("speedIncrementValue").textContent = `Actual: ${e.target.value} px/frame`;
-    });
-
-    document.getElementById("scorePerCoin").addEventListener("input", (e) => {
-        document.getElementById("scorePerCoinValue").textContent = `Actual: ${e.target.value} pts`;
-    });
-
-    document.getElementById("basketWidth").addEventListener("input", (e) => {
-        document.getElementById("basketWidthValue").textContent = `Actual: ${e.target.value} px`;
-    });
-
-    document.getElementById("coinRadius").addEventListener("input", (e) => {
-        document.getElementById("coinRadiusValue").textContent = `Actual: ${e.target.value} px`;
-    });
-
-    applyBtn.addEventListener("click", () => {
-        CONFIG.INITIAL_TIME = parseInt(document.getElementById("initialTime").value);
-        CONFIG.INITIAL_COIN_SPEED = parseFloat(document.getElementById("initialSpeed").value);
-        CONFIG.SPEED_INCREMENT = parseFloat(document.getElementById("speedIncrement").value);
-        CONFIG.SCORE_PER_COIN = parseInt(document.getElementById("scorePerCoin").value);
-        CONFIG.BASKET_WIDTH = parseInt(document.getElementById("basketWidth").value);
-        CONFIG.COIN_RADIUS = parseInt(document.getElementById("coinRadius").value);
-
-        basket.width = CONFIG.BASKET_WIDTH;
-        basket.x = canvas.width / 2 - CONFIG.BASKET_WIDTH / 2;
-        basket.targetX = basket.x;
-        coin.radius = CONFIG.COIN_RADIUS;
-
-        const originalText = applyBtn.textContent;
-        applyBtn.textContent = "✅ ¡Guardado!";
-        setTimeout(() => {
-            applyBtn.textContent = originalText;
-        }, 2000);
-    });
-
-    resetBtn.addEventListener("click", () => {
-        document.getElementById("initialTime").value = "30";
-        document.getElementById("initialSpeed").value = "4";
-        document.getElementById("speedIncrement").value = "0.2";
-        document.getElementById("scorePerCoin").value = "10";
-        document.getElementById("basketWidth").value = "80";
-        document.getElementById("coinRadius").value = "15";
-
-        document.getElementById("initialTimeValue").textContent = "Actual: 30s";
-        document.getElementById("initialSpeedValue").textContent = "Actual: 4 px/frame";
-        document.getElementById("speedIncrementValue").textContent = "Actual: 0.2 px/frame";
-        document.getElementById("scorePerCoinValue").textContent = "Actual: 10 pts";
-        document.getElementById("basketWidthValue").textContent = "Actual: 80 px";
-        document.getElementById("coinRadiusValue").textContent = "Actual: 15 px";
-    });
-
-    clearBtn.addEventListener("click", () => {
-        if (confirm("⚠️ ¿Deseas resetear TODO el juego? Se perderán los datos actuales.")) {
-            resetBtn.click();
-            resetGameState();
-            resetCoin();
-            gameState.isPlaying = false;
-            clearInterval(gameState.gameInterval);
-            clearInterval(gameState.timerInterval);
-
-            const originalText = clearBtn.textContent;
-            clearBtn.textContent = "✅ ¡Limpiado!";
-            setTimeout(() => {
-                clearBtn.textContent = originalText;
-            }, 2000);
-        }
-    });
-
-    setInterval(() => {
-        document.getElementById("gameStatus").textContent = `Estado: ${gameState.isPlaying ? "🔴 En juego" : "🟢 Parado"}`;
-        document.getElementById("gameScore").textContent = `Puntos: ${gameState.score}`;
-        document.getElementById("gameTime").textContent = `Tiempo: ${gameState.timeLeft}s`;
-        playerCoins.textContent = gameState.coins;
-    }, 100);
-
-    // ===== FUNCIONES AUXILIARES =====
-    function resetCoin() {
-        coin.y = -CONFIG.COIN_RADIUS * 2;
-        coin.x = Math.random() * (canvas.width - coin.radius * 2) + coin.radius;
-        coin.rotation = 0;
-    }
-
-    function resetGameState() {
-        gameState.score = 0;
-        gameState.timeLeft = CONFIG.INITIAL_TIME;
-        coin.speed = CONFIG.INITIAL_COIN_SPEED;
-    }
-
-    function createParticles(x, y) {
-        for (let i = 0; i < 5; i++) {
-            const particle = document.createElement("div");
-            particle.className = "particle";
-            particle.textContent = "💰";
-            particle.style.left = x + "px";
-            particle.style.top = y + "px";
-            particle.style.transform = `translate(${(Math.random() - 0.5) * 100}px, 0)`;
-            gameContainer.appendChild(particle);
-            
-            setTimeout(() => particle.remove(), 1000);
-        }
-    }
-
-    // ===== FUNCIONES DE DIBUJO =====
-    function drawBasket() {
-        basket.x += (basket.targetX - basket.x) * 0.2;
-
-        const selectedSkinItem = SHOP_ITEMS.skins.find(s => s.id === gameState.selectedSkin);
-        if (selectedSkinItem && selectedSkinItem.draw) {
-            selectedSkinItem.draw(ctx, basket.x, basket.y, basket.width, basket.height);
-        } else {
-            ctx.fillStyle = "#8B4513";
-            ctx.fillRect(basket.x, basket.y, basket.width, basket.height);
-            ctx.strokeStyle = "#5c2d0c";
-            ctx.lineWidth = 3;
-            ctx.strokeRect(basket.x, basket.y, basket.width, basket.height);
-        }
-    }
-
-    function drawCoin() {
-        ctx.save();
-        ctx.translate(coin.x, coin.y);
-        ctx.rotate(coin.rotation);
-
-        ctx.beginPath();
-        ctx.arc(0, 0, coin.radius, 0, Math.PI * 2);
-        ctx.fillStyle = coin.color;
-        ctx.fill();
-        ctx.closePath();
-
-        ctx.strokeStyle = "#DAA520";
-        ctx.lineWidth = 2;
-        ctx.stroke();
-
-        ctx.beginPath();
-        ctx.arc(-coin.radius / 3, -coin.radius / 3, coin.radius / 3, 0, Math.PI * 2);
-        ctx.fillStyle = "rgba(255, 255, 255, 0.6)";
-        ctx.fill();
-        ctx.closePath();
-
-        ctx.beginPath();
-        ctx.arc(coin.radius / 4, coin.radius / 4, coin.radius / 5, 0, Math.PI * 2);
-        ctx.fillStyle = "rgba(255, 255, 255, 0.3)";
-        ctx.fill();
-        ctx.closePath();
-
-        ctx.restore();
-    }
-
-    function drawHUD() {
-        const fontSize = Math.max(20, window.innerWidth * 0.03);
-        
-        ctx.fillStyle = "rgba(0, 0, 0, 0.3)";
-        ctx.fillRect(0, 0, canvas.width, 60);
-
-        ctx.fillStyle = "#FFD700";
-        ctx.font = `bold ${fontSize}px Arial`;
-        ctx.textAlign = "left";
-        ctx.fillText(`💰 Puntos: ${gameState.score}`, 20, 40);
-        
-        ctx.textAlign = "right";
-        const timeColor = gameState.timeLeft <= 5 ? "#FF6B6B" : "#FFD700";
-        ctx.fillStyle = timeColor;
-        ctx.fillText(`⏱️ Tiempo: ${gameState.timeLeft}s`, canvas.width - 20, 40);
-    }
-
-    function drawGameOver() {
-        ctx.clearRect(0, 0, canvas.width, canvas.height);
-        
-        ctx.fillStyle = "rgba(0, 0, 0, 0.7)";
-        ctx.fillRect(0, 0, canvas.width, canvas.height);
-
-        ctx.fillStyle = "#FFF";
-        ctx.font = `bold ${Math.max(40, window.innerWidth * 0.08)}px Arial`;
-        ctx.textAlign = "center";
-        ctx.fillText("¡TIEMPO!", canvas.width / 2, canvas.height / 4);
-
-        ctx.font = `bold ${Math.max(32, window.innerWidth * 0.06)}px Arial`;
-        ctx.fillStyle = "#FFD700";
-        ctx.fillText(`Puntuación: ${gameState.score}`, canvas.width / 2, canvas.height / 2);
-
-        ctx.font = `${Math.max(18, window.innerWidth * 0.04)}px Arial`;
-        ctx.fillStyle = "#87CEEB";
-        ctx.fillText("Haz clic para jugar de nuevo", canvas.width / 2, canvas.height - 100);
-    }
-
-    // ===== FUNCIONES DE FÍSICA =====
-    function checkCollision() {
-        const coinBottom = coin.y + coin.radius;
-        const coinTop = coin.y - coin.radius;
-        const basketTop = basket.y;
-        const basketBottom = basket.y + basket.height;
-
-        return (
-            coinBottom > basketTop &&
-            coinTop < basketBottom &&
-            coin.x > basket.x &&
-            coin.x < basket.x + basket.width
-        );
-    }
-
-    function update() {
-        if (!gameState.isPlaying) return;
-
-        coin.y += coin.speed;
-        coin.rotation += 0.1;
-
-        if (coin.y - coin.radius > canvas.height) {
-            resetCoin();
-        }
-
-        if (checkCollision()) {
-            gameState.score += CONFIG.SCORE_PER_COIN;
-            gameState.coins += CONFIG.SCORE_PER_COIN;
-            coin.speed += CONFIG.SPEED_INCREMENT;
-            createParticles(coin.x, coin.y);
-            resetCoin();
-        }
-    }
-
-    function gameLoop() {
-        ctx.clearRect(0, 0, canvas.width, canvas.height);
-        drawHUD();
-        drawBasket();
-        drawCoin();
-        update();
-    }
-
-    // ===== FUNCIONES DE ENTRADA =====
-    function handleMouseMove(e) {
-        if (!gameState.isPlaying) return;
-        
-        const rect = canvas.getBoundingClientRect();
-        const mouseX = e.clientX - rect.left;
-
-        basket.targetX = mouseX - basket.width / 2;
-        basket.targetX = Math.max(0, Math.min(basket.targetX, canvas.width - basket.width));
-    }
-
-    function handleTouchMove(e) {
-        if (!gameState.isPlaying) return;
-        
-        e.preventDefault();
-        const rect = canvas.getBoundingClientRect();
-        const touchX = e.touches[0].clientX - rect.left;
-
-        basket.targetX = touchX - basket.width / 2;
-        basket.targetX = Math.max(0, Math.min(basket.targetX, canvas.width - basket.width));
-    }
-
-    // ===== FUNCIONES DE CONTROL DE JUEGO =====
-    function startTimer() {
-        gameState.timerInterval = setInterval(() => {
-            if (gameState.timeLeft > 0) {
-                gameState.timeLeft--;
-            } else {
-                endGame();
-            }
-        }, 1000);
-    }
-
-    function endGame() {
-        gameState.isPlaying = false;
-        clearInterval(gameState.gameInterval);
-        clearInterval(gameState.timerInterval);
-        drawGameOver();
-        startScreen.classList.remove("hidden");
-        localStorage.setItem('gameState', JSON.stringify(gameState));
-        addChatMessage("Sistema", `${chatState.username} ha terminado con ${gameState.score} puntos 🎯`, true);
-    }
-
-    function startGame() {
-        startScreen.classList.add("hidden");
-        resetGameState();
-        resetCoin();
-        gameState.isPlaying = true;
-        gameLoop();
-        startTimer();
-        gameState.gameInterval = setInterval(gameLoop, 1000 / CONFIG.FPS);
-        
-        addChatMessage("Sistema", `${chatState.username} ha comenzado a jugar 🎮`, true);
-    }
-
-    // ===== EVENT LISTENERS =====
-    canvas.addEventListener("mousemove", handleMouseMove);
-    canvas.addEventListener("touchmove", handleTouchMove, { passive: false });
-    canvas.addEventListener("click", () => {
-        if (!gameState.isPlaying && gameState.timeLeft === 0) {
-            startGame();
-        }
-    });
-
-    startScreen.addEventListener("click", startGame);
-
-    // ===== INICIAR JUEGO =====
-    startScreen.classList.remove("hidden");
 </script>
-
 </body>
 </html>
