@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Atrapa la Moneda - 1° Aniversario</title>
+    <title>Atrapa la Moneda - Ultra FX Edition</title>
     <style>
         * {
             margin: 0;
@@ -12,20 +12,21 @@
         }
 
         body {
-            background: #202020;
+            background: #0a0a12;
             display: flex;
             justify-content: center;
             align-items: center;
             height: 100vh;
             overflow: hidden;
             font-family: 'Courier New', Courier, monospace;
+            user-select: none;
         }
 
         #gameContainer {
             position: relative;
             width: 100vw;
             height: 100vh;
-            background: linear-gradient(to bottom, #1a0933, #4a154b, #87ceeb);
+            background: radial-gradient(circle at center, #1f083a 0%, #0d0418 100%);
             display: flex;
             justify-content: center;
             align-items: center;
@@ -36,32 +37,25 @@
             height: 100%;
             display: block;
             cursor: none;
-            max-width: 100%;
-            max-height: 100%;
         }
 
-        canvas:active {
-            cursor: grabbing;
-        }
-
-        /* ===== DECORACIÓN DE ANIVERSARIO ===== */
+        /* ===== BANNER Y BOTONES ===== */
         .anniversary-banner {
             position: fixed;
             top: 15px;
             left: 50%;
             transform: translateX(-50%);
-            background: linear-gradient(90deg, #ffd700, #ff69b4, #00ffff, #ffd700);
+            background: linear-gradient(90deg, #ffd700, #ff00ff, #00ffff, #ffd700);
             background-size: 300% 300%;
-            animation: rainbow 4s ease infinite;
+            animation: rainbow 3s linear infinite;
             color: #000;
-            padding: 6px 20px;
+            padding: 8px 24px;
             border-radius: 20px;
-            font-weight: bold;
-            font-size: 14px;
-            box-shadow: 0 0 15px rgba(255, 215, 0, 0.8);
+            font-weight: 900;
+            font-size: 13px;
+            box-shadow: 0 0 20px rgba(255, 0, 255, 0.6);
             z-index: 90;
             pointer-events: none;
-            text-align: center;
         }
 
         @keyframes rainbow {
@@ -70,966 +64,759 @@
             100% { background-position: 0% 50%; }
         }
 
-        .fullscreen-btn {
+        .icon-btn {
             position: fixed;
-            top: 20px;
-            right: 20px;
             width: 50px;
             height: 50px;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            border: none;
+            border: 2px solid rgba(255,255,255,0.2);
             border-radius: 50%;
             color: white;
-            font-size: 20px;
+            font-size: 22px;
             cursor: pointer;
-            box-shadow: 0 4px 15px rgba(0,0,0,0.3);
-            transition: all 0.3s ease;
+            box-shadow: 0 0 15px rgba(0,0,0,0.5);
+            transition: all 0.2s ease;
             z-index: 99;
-        }
-
-        .fullscreen-btn:hover {
-            transform: scale(1.1);
-            box-shadow: 0 6px 20px rgba(102, 126, 234, 0.6);
-        }
-
-        .shop-button {
-            position: fixed;
-            top: 20px;
-            left: 20px;
-            width: 50px;
-            height: 50px;
-            background: linear-gradient(135deg, #ffa500 0%, #ff6b00 100%);
-            border: none;
-            border-radius: 50%;
-            color: white;
-            font-size: 20px;
-            cursor: pointer;
-            box-shadow: 0 4px 15px rgba(0,0,0,0.3);
-            transition: all 0.3s ease;
-            z-index: 99;
-        }
-
-        .shop-button:hover {
-            transform: scale(1.1);
-            box-shadow: 0 6px 20px rgba(255, 165, 0, 0.6);
-        }
-
-        .shop-badge {
-            position: absolute;
-            top: -5px;
-            right: -5px;
-            background: #d32f2f;
-            color: white;
-            width: 24px;
-            height: 24px;
-            border-radius: 50%;
             display: flex;
             align-items: center;
             justify-content: center;
-            font-size: 12px;
-            font-weight: bold;
         }
 
+        .icon-btn:hover {
+            transform: scale(1.15) rotate(5deg);
+            box-shadow: 0 0 25px rgba(255, 215, 0, 0.8);
+        }
+
+        #fullscreenBtn { top: 20px; right: 20px; background: linear-gradient(135deg, #667eea, #764ba2); }
+        #shopBtn { top: 20px; left: 20px; background: linear-gradient(135deg, #ffa500, #ff6b00); }
+        #chatToggleBtn { bottom: 20px; left: 20px; background: linear-gradient(135deg, #00c6ff, #0072ff); }
+        #adminBtn { bottom: 20px; right: 20px; background: linear-gradient(135deg, #f12711, #f5af19); }
+
+        /* ===== TIENDA ===== */
         .modal {
             position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: rgba(0, 0, 0, 0.8);
+            top: 0; left: 0;
+            width: 100%; height: 100%;
+            background: rgba(0, 0, 0, 0.88);
+            backdrop-filter: blur(8px);
             display: none;
             justify-content: center;
             align-items: center;
             z-index: 200;
-            animation: fadeInModal 0.3s ease;
         }
 
-        @keyframes fadeInModal {
-            from { opacity: 0; }
-            to { opacity: 1; }
-        }
-
-        .modal.active {
-            display: flex;
-        }
+        .modal.active { display: flex; }
 
         .modal-content {
-            background: #1a1a1a;
+            background: #12121a;
             border: 2px solid #ffd700;
-            border-radius: 15px;
-            padding: 30px;
-            max-width: 900px;
+            box-shadow: 0 0 30px rgba(255, 215, 0, 0.3);
+            border-radius: 20px;
+            padding: 25px;
+            max-width: 800px;
             width: 90%;
-            max-height: 90vh;
+            max-height: 85vh;
             overflow-y: auto;
-            box-shadow: 0 0 30px rgba(255, 215, 0, 0.4);
-            animation: slideInModal 0.3s ease;
-        }
-
-        @keyframes slideInModal {
-            from { opacity: 0; transform: translateY(-50px); }
-            to { opacity: 1; transform: translateY(0); }
+            color: white;
         }
 
         .modal-header {
             display: flex;
             justify-content: space-between;
             align-items: center;
-            margin-bottom: 30px;
+            margin-bottom: 20px;
             border-bottom: 2px solid #ffd700;
-            padding-bottom: 15px;
+            padding-bottom: 10px;
         }
 
-        .modal-header h2 {
-            color: #ffd700;
-            font-size: 28px;
-        }
-
-        .modal-close {
-            background: none;
-            border: none;
-            color: #ffd700;
-            font-size: 30px;
-            cursor: pointer;
-            transition: all 0.3s ease;
-        }
-
-        .modal-close:hover {
-            transform: scale(1.2);
-            color: #ff6b00;
-        }
+        .modal-close { background: none; border: none; color: #ffd700; font-size: 28px; cursor: pointer; }
 
         .player-info {
-            background: #252525;
-            border: 2px solid #ffd700;
-            border-radius: 10px;
-            padding: 20px;
-            margin-bottom: 30px;
+            background: #1c1c28;
+            border-radius: 12px;
+            padding: 15px;
+            margin-bottom: 20px;
             display: flex;
             justify-content: space-around;
-            align-items: center;
-        }
-
-        .player-stats {
             text-align: center;
-        }
-
-        .player-avatar {
-            font-size: 60px;
-            margin-bottom: 10px;
-        }
-
-        .stat-label {
-            color: #87CEEB;
-            font-size: 12px;
-            font-weight: bold;
-        }
-
-        .stat-value {
-            color: #FFD700;
-            font-size: 24px;
-            font-weight: bold;
-        }
-
-        .shop-section {
-            margin-bottom: 30px;
-        }
-
-        .section-title {
-            color: #ffa500;
-            font-size: 20px;
-            margin-bottom: 15px;
-            border-bottom: 2px solid #ffa500;
-            padding-bottom: 10px;
+            border: 1px solid #333;
         }
 
         .items-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
-            gap: 15px;
+            grid-template-columns: repeat(auto-fill, minmax(130px, 1fr));
+            gap: 12px;
+            margin-bottom: 20px;
         }
 
         .shop-item {
-            background: #252525;
-            border: 2px solid #444;
-            border-radius: 10px;
-            padding: 15px;
+            background: #1a1a24;
+            border: 2px solid #333;
+            border-radius: 12px;
+            padding: 12px;
             text-align: center;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            position: relative;
+            transition: 0.2s;
         }
 
-        .shop-item:hover {
-            border-color: #ffa500;
-            transform: translateY(-5px);
-            box-shadow: 0 10px 30px rgba(255, 165, 0, 0.3);
-        }
+        .shop-item.equipped { border-color: #FFD700; background: #2a250a; box-shadow: 0 0 15px rgba(255,215,0,0.3); }
 
-        .shop-item.purchased {
-            border-color: #4caf50;
-            background: #1a3a1a;
-        }
-
-        .shop-item.equipped {
-            border-color: #FFD700;
-            background: #2a2a0a;
-            box-shadow: 0 0 20px rgba(255, 215, 0, 0.5);
-        }
-
-        .item-emoji {
-            font-size: 50px;
-            margin-bottom: 10px;
-            display: block;
-        }
-
-        .item-name {
-            color: #87CEEB;
-            font-size: 12px;
-            font-weight: bold;
-            margin-bottom: 8px;
-        }
-
-        .item-price {
-            color: #FFD700;
-            font-size: 14px;
-            font-weight: bold;
-            margin-bottom: 10px;
-        }
-
+        .item-emoji { font-size: 38px; margin-bottom: 5px; display: block; }
+        .item-name { font-size: 11px; color: #87CEEB; margin-bottom: 8px; font-weight: bold; }
         .item-btn {
             width: 100%;
             padding: 8px;
             border: none;
-            border-radius: 5px;
+            border-radius: 6px;
             font-size: 11px;
             font-weight: bold;
             cursor: pointer;
-            transition: all 0.3s ease;
         }
+        .btn-buy { background: #ff6b00; color: white; }
+        .btn-equip { background: #2196F3; color: white; }
+        .btn-equipped { background: #4caf50; color: white; }
 
-        .btn-buy {
-            background: linear-gradient(135deg, #ffa500 0%, #ff6b00 100%);
-            color: white;
-        }
-
-        .btn-buy:hover:not(:disabled) {
-            transform: scale(1.05);
-            box-shadow: 0 4px 15px rgba(255, 165, 0, 0.6);
-        }
-
-        .btn-buy:disabled {
-            opacity: 0.5;
-            cursor: not-allowed;
-        }
-
-        .btn-equipped {
-            background: #4caf50;
-            color: white;
-        }
-
-        .btn-equip {
-            background: #2196F3;
-            color: white;
-        }
-
-        .badge-new {
-            position: absolute;
-            top: 5px;
-            right: 5px;
-            background: #d32f2f;
-            color: white;
-            padding: 3px 8px;
-            border-radius: 3px;
-            font-size: 10px;
-            font-weight: bold;
-        }
-
-        .badge-anniversary {
-            position: absolute;
-            top: 5px;
-            left: 5px;
-            background: linear-gradient(45deg, #ffd700, #ff1493);
-            color: #000;
-            padding: 3px 6px;
-            border-radius: 3px;
-            font-size: 9px;
-            font-weight: bold;
-        }
-
-        /* ===== CHAT GLOBAL ===== */
+        /* ===== CHAT ===== */
         .chat-container {
             position: fixed;
-            bottom: 20px;
-            left: 20px;
-            width: 350px;
-            height: 400px;
-            background: #1a1a1a;
-            border: 2px solid #667eea;
-            border-radius: 10px;
+            bottom: 80px; left: 20px;
+            width: 330px; height: 360px;
+            background: rgba(18, 18, 26, 0.95);
+            border: 2px solid #00c6ff;
+            box-shadow: 0 0 20px rgba(0, 198, 255, 0.3);
+            border-radius: 15px;
             display: flex;
             flex-direction: column;
             z-index: 98;
-            box-shadow: 0 10px 40px rgba(0,0,0,0.5);
         }
+
+        .chat-container.hidden { display: none; }
 
         .chat-header {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            background: linear-gradient(135deg, #00c6ff, #0072ff);
             color: white;
-            padding: 12px;
-            border-radius: 8px 8px 0 0;
+            padding: 10px;
             display: flex;
             justify-content: space-between;
-            align-items: center;
             font-weight: bold;
-        }
-
-        .chat-close-btn {
-            background: rgba(255,255,255,0.2);
-            border: none;
-            color: white;
-            cursor: pointer;
-            width: 25px;
-            height: 25px;
-            border-radius: 50%;
+            font-size: 11px;
+            border-radius: 12px 12px 0 0;
         }
 
         .chat-messages {
             flex: 1;
             overflow-y: auto;
-            padding: 12px;
+            padding: 10px;
             display: flex;
             flex-direction: column;
             gap: 8px;
         }
 
         .chat-message {
-            background: #252525;
-            padding: 8px 10px;
+            background: #222230;
+            padding: 6px 10px;
             border-radius: 6px;
-            border-left: 3px solid #667eea;
+            border-left: 3px solid #00c6ff;
         }
 
-        .chat-message-username {
-            color: #87CEEB;
-            font-size: 11px;
-            font-weight: bold;
+        .chat-message.system-msg {
+            background: #382c00;
+            border-left: 3px solid #ffd700;
         }
 
-        .chat-message-text {
-            color: #fff;
-            font-size: 12px;
-        }
+        .chat-message-username { color: #87CEEB; font-size: 10px; font-weight: bold; }
+        .chat-message-text { color: #fff; font-size: 11px; word-break: break-word; }
 
-        .chat-input-area {
-            display: flex;
-            gap: 8px;
-            padding: 10px;
-            background: #252525;
-            border-top: 1px solid #667eea;
-        }
-
+        .chat-input-area { display: flex; gap: 5px; padding: 8px; background: #161620; }
         .chat-input {
             flex: 1;
-            background: #1a1a1a;
-            border: 1px solid #667eea;
+            background: #0a0a10;
+            border: 1px solid #00c6ff;
             color: #fff;
             padding: 8px;
-            border-radius: 5px;
-            font-size: 12px;
+            border-radius: 6px;
+            font-size: 11px;
         }
-
-        .chat-send-btn {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            border: none;
-            color: white;
-            cursor: pointer;
-            width: 35px;
-            border-radius: 5px;
-        }
-
-        .chat-toggle-btn {
-            position: fixed;
-            bottom: 20px;
-            left: 20px;
-            width: 50px;
-            height: 50px;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            border: none;
-            border-radius: 50%;
-            color: white;
-            font-size: 20px;
-            cursor: pointer;
-            z-index: 98;
-        }
-
-        .chat-toggle-btn.hidden, .chat-container.hidden {
-            display: none;
-        }
+        .chat-send-btn { background: #00c6ff; border: none; color: white; cursor: pointer; padding: 0 12px; border-radius: 6px; }
 
         /* ===== ADMIN PANEL ===== */
-        .admin-button {
-            position: fixed;
-            bottom: 20px;
-            right: 20px;
-            width: 50px;
-            height: 50px;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            border: none;
-            border-radius: 50%;
-            color: white;
-            font-size: 24px;
-            cursor: pointer;
-            z-index: 100;
-        }
-
         .admin-panel {
             position: fixed;
-            bottom: 80px;
-            right: 20px;
-            width: 320px;
-            background: #1a1a1a;
-            border: 2px solid #667eea;
-            border-radius: 10px;
+            bottom: 80px; right: 20px;
+            width: 280px;
+            background: #12121a;
+            border: 2px solid #f12711;
+            box-shadow: 0 0 20px rgba(241, 39, 17, 0.4);
+            border-radius: 12px;
             padding: 15px;
             display: none;
             z-index: 101;
-            max-height: 450px;
-            overflow-y: auto;
+            color: white;
         }
 
         .admin-panel.active { display: block; }
+        .config-group { margin-bottom: 10px; }
+        .config-group label { display: block; font-size: 10px; color: #aaa; margin-bottom: 4px; }
+        .config-group input { width: 100%; padding: 6px; background: #1f1f2e; border: 1px solid #444; color: #fff; border-radius: 4px; }
 
-        .admin-panel h2 {
-            color: #667eea;
-            margin-bottom: 10px;
-            font-size: 16px;
-            border-bottom: 2px solid #667eea;
-            padding-bottom: 5px;
-        }
-
-        .config-group {
-            margin-bottom: 10px;
-            padding: 8px;
-            background: #252525;
-            border-radius: 5px;
-        }
-
-        .config-group label {
-            display: block;
-            color: #87CEEB;
-            font-size: 11px;
-            margin-bottom: 5px;
-        }
-
-        .config-group input {
-            width: 100%;
-            padding: 5px;
-            background: #1a1a1a;
-            border: 1px solid #667eea;
-            color: #fff;
-            border-radius: 3px;
-        }
-
-        .admin-btn {
-            width: 100%;
-            padding: 8px;
-            margin-top: 5px;
-            border: none;
-            border-radius: 5px;
-            color: white;
-            cursor: pointer;
-            font-weight: bold;
-        }
-
-        .admin-btn-primary { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); }
-
-        /* ===== PANTALLA DE INICIO ANIVERSARIO ===== */
+        /* ===== PANTALLA INICIAL ===== */
         .start-screen {
             position: absolute;
-            width: 100%;
-            height: 100%;
-            background: linear-gradient(135deg, #2b1055 0%, #7597de 100%);
+            width: 100%; height: 100%;
+            background: rgba(10, 10, 18, 0.95);
             display: flex;
             flex-direction: column;
             justify-content: center;
             align-items: center;
             z-index: 50;
             text-align: center;
+            color: white;
         }
 
         .start-screen.hidden { display: none; }
-
-        .game-title {
-            font-size: clamp(30px, 6vw, 60px);
-            color: #ffd700;
-            text-shadow: 0 0 20px rgba(255, 215, 0, 0.8), 2px 2px #ff1493;
-            margin-bottom: 10px;
+        .game-title { font-size: 42px; color: #ffd700; text-shadow: 0 0 20px #ffd700, 0 0 40px #ff00ff; }
+        .start-btn {
+            margin-top: 25px;
+            padding: 14px 40px;
+            background: linear-gradient(135deg, #ffd700, #ff00ff);
+            border: none;
+            border-radius: 30px;
+            font-size: 20px;
+            font-weight: 900;
+            color: #000;
+            cursor: pointer;
+            box-shadow: 0 0 25px rgba(255, 215, 0, 0.7);
+            transition: transform 0.2s;
         }
-
-        .anniversary-tag {
-            font-size: clamp(18px, 4vw, 32px);
-            color: #ffffff;
-            background: #ff1493;
-            padding: 5px 15px;
-            border-radius: 20px;
-            margin-bottom: 20px;
-            box-shadow: 0 0 10px #ff1493;
-        }
-
-        .game-coin {
-            font-size: clamp(50px, 8vw, 80px);
-            margin: 10px 0;
-            animation: spin 2s linear infinite;
-        }
-
-        @keyframes spin {
-            0%, 100% { transform: rotateY(0deg); }
-            50% { transform: rotateY(180deg); }
-        }
-
-        .start-instruction {
-            font-size: clamp(14px, 3vw, 20px);
-            color: white;
-            margin-top: 20px;
-            animation: pulse 1.5s infinite;
-        }
-
-        @keyframes pulse {
-            0%, 100% { opacity: 0.6; }
-            50% { opacity: 1; }
-        }
+        .start-btn:hover { transform: scale(1.1); }
     </style>
 </head>
 <body>
 
 <div id="gameContainer">
-    <div class="anniversary-banner">✨ ¡EDICIÓN ESPECIAL 1º ANIVERSARIO! ✨</div>
+    <div class="anniversary-banner">✨ 1° ANIVERSARIO DELUXE - ULTRA FX ✨</div>
 
     <div class="start-screen" id="startScreen">
-        <div class="game-title">🎮 ATRAPA LA MONEDA</div>
-        <div class="anniversary-tag">🎂 ¡1ER ANIVERSARIO! 🎉</div>
-        <div class="game-coin">🪙</div>
-        <div class="start-instruction">Haz clic para comenzar</div>
+        <h1 class="game-title">🎮 ATRAPA LA MONEDA</h1>
+        <p style="color: #ff00ff; margin-top: 8px; font-weight: bold;">🔥 Con efectos Neón y Multijugador 🔥</p>
+        <div style="font-size: 70px; margin: 20px; filter: drop-shadow(0 0 15px #ffd700);">🪙</div>
+        <button class="start-btn" id="startBtn">¡JUGAR AHORA!</button>
     </div>
+
     <canvas id="gameCanvas"></canvas>
 </div>
 
-<button class="fullscreen-btn" id="fullscreenBtn" title="Pantalla Completa">⛶</button>
+<!-- Botones -->
+<button class="icon-btn" id="fullscreenBtn" title="Pantalla Completa">⛶</button>
+<button class="icon-btn" id="shopBtn" title="Tienda">🛍️</button>
+<button class="icon-btn" id="chatToggleBtn" title="Chat Global">💬</button>
+<button class="icon-btn" id="adminBtn" title="Ajustes">⚙️</button>
 
-<button class="shop-button" id="shopBtn" title="Tienda">🛍️
-    <div class="shop-badge" id="shopBadge">0</div>
-</button>
-
+<!-- Modal Tienda -->
 <div class="modal" id="shopModal">
     <div class="modal-content">
         <div class="modal-header">
-            <h2>🛍️ Tienda de Aniversario</h2>
+            <h2>🛍️ Tienda Neón Deluxe</h2>
             <button class="modal-close" id="shopClose">✕</button>
         </div>
-
         <div class="player-info">
-            <div class="player-stats">
-                <div class="player-avatar" id="playerAvatar">🎂</div>
-                <div class="stat-label">Avatar</div>
+            <div>
+                <div style="font-size: 32px;" id="playerAvatar">🎂</div>
+                <div style="font-size: 10px; color: #87CEEB;">Avatar</div>
             </div>
-            <div class="player-stats">
-                <div class="stat-value" id="playerCoins">0</div>
-                <div class="stat-label">Monedas</div>
-            </div>
-            <div class="player-stats">
-                <div class="player-avatar" id="playerBasket">🎂</div>
-                <div class="stat-label">Cesta</div>
+            <div>
+                <div style="font-size: 24px; color: #FFD700; font-weight: bold;" id="playerCoins">0</div>
+                <div style="font-size: 10px; color: #87CEEB;">Monedas</div>
             </div>
         </div>
-
-        <div class="shop-section">
-            <div class="section-title">👤 Avatares Especiales</div>
-            <div class="items-grid" id="avatarsGrid"></div>
-        </div>
-
-        <div class="shop-section">
-            <div class="section-title">🧺 Skins de Cesta</div>
-            <div class="items-grid" id="skinsGrid"></div>
-        </div>
+        <h3 style="color: #ffa500; font-size: 14px; margin-bottom: 10px;">Avatares</h3>
+        <div class="items-grid" id="avatarsGrid"></div>
+        <h3 style="color: #ffa500; font-size: 14px; margin-bottom: 10px;">Cestas</h3>
+        <div class="items-grid" id="skinsGrid"></div>
+        <h3 style="color: #ffa500; font-size: 14px; margin-bottom: 10px;">Skins de Moneda</h3>
+        <div class="items-grid" id="coinSkinsGrid"></div>
     </div>
 </div>
 
-<button class="chat-toggle-btn hidden" id="chatToggleBtn">💬</button>
+<!-- Chat Global -->
 <div class="chat-container hidden" id="chatContainer">
     <div class="chat-header">
-        <span>💬 Chat Global</span>
-        <button class="chat-close-btn" id="chatCloseBtn">✕</button>
+        <span>💬 Chat Global (Escribe /dueno)</span>
+        <button style="background:none; border:none; color:white; cursor:pointer;" id="chatCloseBtn">✕</button>
     </div>
     <div class="chat-messages" id="chatMessages"></div>
     <div class="chat-input-area">
-        <input type="text" id="chatInput" class="chat-input" placeholder="Escribe un mensaje...">
+        <input type="text" id="chatInput" class="chat-input" placeholder="Mensaje o /dueno...">
         <button class="chat-send-btn" id="chatSendBtn">➤</button>
     </div>
 </div>
 
-<button class="admin-button" id="adminBtn" title="Panel Admin">⚙️</button>
-
+<!-- Panel Admin -->
 <div class="admin-panel" id="adminPanel">
-    <h2>⚙️ Panel de Control</h2>
+    <h3 style="color: #f12711; margin-bottom: 10px;">⚙️ Configuración</h3>
     <div class="config-group">
-        <label>⏱️ Tiempo Inicial (s)</label>
+        <label>Tiempo (s):</label>
         <input type="number" id="initialTime" value="30">
     </div>
     <div class="config-group">
-        <label>🎯 Velocidad Inicial Moneda</label>
+        <label>Velocidad Inicial:</label>
         <input type="number" id="initialSpeed" value="4">
     </div>
-    <div class="config-group">
-        <label>💰 Puntos por Moneda</label>
-        <input type="number" id="scorePerCoin" value="10">
-    </div>
-    <button class="admin-btn admin-btn-primary" id="applyBtn">✅ Aplicar</button>
+    <button style="width: 100%; padding: 8px; background: #f12711; border: none; color: white; font-weight: bold; border-radius: 6px; cursor: pointer;" id="applyBtn">Guardar Ajustes</button>
 </div>
 
 <script>
-    // ===== CONFIGURACIÓN DEL JUEGO =====
+    // ===== CONFIGURACIÓN =====
     const CONFIG = {
         INITIAL_TIME: 30,
         INITIAL_COIN_SPEED: 4,
-        SPEED_INCREMENT: 0.2,
+        SPEED_INCREMENT: 0.25,
         SCORE_PER_COIN: 10,
-        BASKET_WIDTH: 90,
-        BASKET_HEIGHT: 20,
-        COIN_RADIUS: 15
+        BASKET_WIDTH: 100,
+        BASKET_HEIGHT: 22,
+        COIN_RADIUS: 16
     };
 
-    let coins = 100; // Regalo de Aniversario
-    let equippedAvatar = 'avatar_anniv';
-    let equippedSkin = 'skin_anniv';
+    // Guardado
+    let coins = parseInt(localStorage.getItem('coin_game_coins')) || 100;
+    let highScore = parseInt(localStorage.getItem('coin_game_highscore')) || 0;
+    let equippedAvatar = localStorage.getItem('coin_game_avatar') || 'avatar_anniv';
+    let equippedSkin = localStorage.getItem('coin_game_skin') || 'skin_anniv';
+    let equippedCoinSkin = localStorage.getItem('coin_game_coinskin') || 'coin_gold';
+    let isOwnerMode = localStorage.getItem('coin_game_is_owner') === 'true';
 
     const SHOP_ITEMS = {
         avatars: [
-            { id: 'avatar_anniv', name: '🎂 Cumpleañero', emoji: '🎂', price: 0, purchased: true, anniversary: true },
+            { id: 'avatar_owner', name: '👑 Dueño / Creador', emoji: '👑', price: 9999, purchased: isOwnerMode },
+            { id: 'avatar_anniv', name: '🎂 Cumpleañero', emoji: '🎂', price: 0, purchased: true },
             { id: 'avatar1', name: '👤 Clásico', emoji: '👤', price: 0, purchased: true },
             { id: 'avatar2', name: '😎 Frío', emoji: '😎', price: 150 },
-            { id: 'avatar3', name: '🤖 Robot', emoji: '🤖', price: 200 },
-            { id: 'avatar4', name: '👑 Rey Aniversario', emoji: '👑', price: 1, popular: true },
-            { id: 'avatar5', name: '🚀 Astronauta', emoji: '🚀', price: 350 }
+            { id: 'avatar3', name: '🤖 Robot', emoji: '🤖', price: 200 }
         ],
         skins: [
             {
-                id: 'skin_anniv',
-                name: '🎉 Tarta 1º Año',
-                price: 0,
-                purchased: true,
-                anniversary: true,
-                draw: function(ctx, x, y, width, height) {
-                    ctx.fillStyle = "#ff69b4";
-                    ctx.fillRect(x, y, width, height);
-                    ctx.fillStyle = "#ffffff";
-                    ctx.fillRect(x, y - 5, width, 5);
-                    ctx.fillStyle = "#ffd700";
-                    ctx.fillRect(x + width/2 - 3, y - 12, 6, 7);
+                id: 'skin_owner', name: '👑 Cesta Dueño', price: 9999, purchased: isOwnerMode,
+                draw: (ctx, x, y, w, h) => {
+                    ctx.shadowBlur = 20; ctx.shadowColor = "#00ffff";
+                    const grad = ctx.createLinearGradient(x, y, x + w, y);
+                    grad.addColorStop(0, '#ffd700'); grad.addColorStop(0.5, '#ff00ff'); grad.addColorStop(1, '#00ffff');
+                    ctx.fillStyle = grad; ctx.fillRect(x, y, w, h);
+                    ctx.fillStyle = "#ffffff"; ctx.font = "bold 11px Courier"; ctx.fillText("👑 CREADOR", x + 10, y + 15);
+                    ctx.shadowBlur = 0;
                 }
             },
-            { 
-                id: 'skin1', 
-                name: '🧺 Clásica', 
-                price: 0, 
-                purchased: true,
-                draw: function(ctx, x, y, width, height) {
-                    ctx.fillStyle = "#8B4513";
-                    ctx.fillRect(x, y, width, height);
-                    ctx.strokeStyle = "#5c2d0c";
-                    ctx.lineWidth = 2;
-                    ctx.strokeRect(x, y, width, height);
+            {
+                id: 'skin_anniv', name: '🎉 Tarta 1º Año', price: 0, purchased: true,
+                draw: (ctx, x, y, w, h) => {
+                    ctx.shadowBlur = 10; ctx.shadowColor = "#ff69b4";
+                    ctx.fillStyle = "#ff69b4"; ctx.fillRect(x, y, w, h);
+                    ctx.fillStyle = "#ffffff"; ctx.fillRect(x, y - 4, w, 4);
+                    ctx.fillStyle = "#ffd700"; ctx.fillRect(x + w/2 - 3, y - 10, 6, 6);
+                    ctx.shadowBlur = 0;
                 }
             },
-            { 
-                id: 'skin2', 
-                name: '✨ Mágica', 
-                price: 120,
-                draw: function(ctx, x, y, width, height) {
-                    const gradient = ctx.createLinearGradient(x, y, x + width, y);
-                    gradient.addColorStop(0, '#FF1493');
-                    gradient.addColorStop(0.5, '#00BFFF');
-                    gradient.addColorStop(1, '#00FF7F');
-                    ctx.fillStyle = gradient;
-                    ctx.fillRect(x, y, width, height);
+            {
+                id: 'skin1', name: '🧺 Clásica', price: 0, purchased: true,
+                draw: (ctx, x, y, w, h) => {
+                    ctx.fillStyle = "#8B4513"; ctx.fillRect(x, y, w, h);
                 }
             },
-            { 
-                id: 'skin3', 
-                name: '🔥 Fuego', 
-                price: 200,
-                draw: function(ctx, x, y, width, height) {
-                    const gradient = ctx.createLinearGradient(x, y, x, y + height);
-                    gradient.addColorStop(0, '#FFD700');
-                    gradient.addColorStop(1, '#FF4500');
-                    ctx.fillStyle = gradient;
-                    ctx.fillRect(x, y, width, height);
+            {
+                id: 'skin2', name: '🔥 Cesta Fuego', price: 200,
+                draw: (ctx, x, y, w, h) => {
+                    ctx.shadowBlur = 15; ctx.shadowColor = "#FF4500";
+                    const grad = ctx.createLinearGradient(x, y, x, y + h);
+                    grad.addColorStop(0, '#FFD700'); grad.addColorStop(1, '#FF4500');
+                    ctx.fillStyle = grad; ctx.fillRect(x, y, w, h);
+                    ctx.shadowBlur = 0;
+                }
+            }
+        ],
+        coinSkins: [
+            {
+                id: 'coin_gold', name: '🪙 Dorada', price: 0, purchased: true, emoji: '🪙', color: '#FFD700',
+                draw: (ctx, x, y, r) => {
+                    ctx.shadowBlur = 15; ctx.shadowColor = "#FFD700";
+                    ctx.beginPath(); ctx.arc(x, y, r, 0, Math.PI * 2);
+                    ctx.fillStyle = "#FFD700"; ctx.fill();
+                    ctx.strokeStyle = "#FFFFFF"; ctx.lineWidth = 2; ctx.stroke();
+                    ctx.shadowBlur = 0;
                 }
             },
-            { 
-                id: 'skin4', 
-                name: '❄️ Hielo', 
-                price: 180,
-                draw: function(ctx, x, y, width, height) {
-                    ctx.fillStyle = "#00CED1";
-                    ctx.fillRect(x, y, width, height);
-                    ctx.strokeStyle = "#87CEEB";
-                    ctx.strokeRect(x, y, width, height);
+            {
+                id: 'coin_diamond', name: '💎 Diamante', price: 150, emoji: '💎', color: '#00FFFF',
+                draw: (ctx, x, y, r) => {
+                    ctx.shadowBlur = 18; ctx.shadowColor = "#00FFFF";
+                    ctx.beginPath(); ctx.arc(x, y, r, 0, Math.PI * 2);
+                    ctx.fillStyle = "#00FFFF"; ctx.fill();
+                    ctx.strokeStyle = "#FFFFFF"; ctx.lineWidth = 2; ctx.stroke();
+                    ctx.shadowBlur = 0;
+                }
+            },
+            {
+                id: 'coin_fire', name: '🔥 Fuego', price: 250, emoji: '🔥', color: '#FF4500',
+                draw: (ctx, x, y, r) => {
+                    ctx.shadowBlur = 20; ctx.shadowColor = "#FF4500";
+                    ctx.beginPath(); ctx.arc(x, y, r, 0, Math.PI * 2);
+                    ctx.fillStyle = "#FF4500"; ctx.fill();
+                    ctx.strokeStyle = "#FFD700"; ctx.lineWidth = 2; ctx.stroke();
+                    ctx.shadowBlur = 0;
+                }
+            },
+            {
+                id: 'coin_owner', name: '👑 Moneda Creador', price: 9999, purchased: isOwnerMode, emoji: '👑', color: '#ff00ff',
+                draw: (ctx, x, y, r) => {
+                    ctx.shadowBlur = 25; ctx.shadowColor = "#ff00ff";
+                    ctx.beginPath(); ctx.arc(x, y, r, 0, Math.PI * 2);
+                    ctx.fillStyle = "#ff00ff"; ctx.fill();
+                    ctx.strokeStyle = "#00ffff"; ctx.lineWidth = 3; ctx.stroke();
+                    ctx.shadowBlur = 0;
                 }
             }
         ]
     };
 
-    // Canvas Setup
+    // Cargar compras
+    const savedPurchases = JSON.parse(localStorage.getItem('coin_game_purchases') || '[]');
+    savedPurchases.forEach(id => {
+        const item = SHOP_ITEMS.avatars.find(a => a.id === id) || 
+                     SHOP_ITEMS.skins.find(s => s.id === id) || 
+                     SHOP_ITEMS.coinSkins.find(c => c.id === id);
+        if(item) item.purchased = true;
+    });
+
+    // ===== AUDIO EFECTOS DINÁMICOS =====
+    const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+    function playCoinSound(pitchBoost = 0) {
+        if (audioCtx.state === 'suspended') audioCtx.resume();
+        const osc = audioCtx.createOscillator();
+        const gain = audioCtx.createGain();
+        osc.type = 'triangle';
+        osc.frequency.setValueAtTime(800 + pitchBoost, audioCtx.currentTime);
+        osc.frequency.exponentialRampToValueAtTime(1600 + pitchBoost, audioCtx.currentTime + 0.12);
+        gain.gain.setValueAtTime(0.15, audioCtx.currentTime);
+        gain.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + 0.12);
+        osc.connect(gain); gain.connect(audioCtx.destination);
+        osc.start(); osc.stop(audioCtx.currentTime + 0.12);
+    }
+
+    // Canvas
     const canvas = document.getElementById('gameCanvas');
     const ctx = canvas.getContext('2d');
-    
-    function resizeCanvas() {
-        canvas.width = window.innerWidth;
-        canvas.height = window.innerHeight;
-    }
+    function resizeCanvas() { canvas.width = window.innerWidth; canvas.height = window.innerHeight; }
     window.addEventListener('resize', resizeCanvas);
     resizeCanvas();
 
-    // Game Variables
     let gameActive = false;
     let score = 0;
     let timeLeft = CONFIG.INITIAL_TIME;
     let coinSpeed = CONFIG.INITIAL_COIN_SPEED;
     let basketX = canvas.width / 2 - CONFIG.BASKET_WIDTH / 2;
-    let coinX = Math.random() * (canvas.width - 40) + 20;
+    let coinX = Math.random() * (canvas.width - 60) + 30;
     let coinY = -20;
-    let particles = [];
-    let confetti = [];
-    let gameInterval, timerInterval;
 
-    // Confetti para el 1º Aniversario
-    function initConfetti() {
-        confetti = [];
-        for (let i = 0; i < 50; i++) {
-            confetti.push({
-                x: Math.random() * canvas.width,
-                y: Math.random() * canvas.height,
-                r: Math.random() * 6 + 2,
-                d: Math.random() * 10,
-                color: `hsl(${Math.random() * 360}, 100%, 50%)`,
-                tilt: Math.random() * 10 - 10
+    // SISTEMAS DE EFECTOS
+    let particles = [];
+    let trail = [];
+    let floatingTexts = [];
+    let confetti = [];
+    let flashAlpha = 0;
+    let timerInterval;
+
+    function createParticles(x, y, color) {
+        for(let i = 0; i < 18; i++) {
+            const angle = Math.random() * Math.PI * 2;
+            const speed = Math.random() * 7 + 2;
+            particles.push({
+                x, y,
+                vx: Math.cos(angle) * speed,
+                vy: Math.sin(angle) * speed,
+                life: 1,
+                color: color || '#FFD700',
+                size: Math.random() * 4 + 2
             });
         }
     }
 
-    function drawConfetti() {
-        confetti.forEach((p) => {
-            ctx.beginPath();
-            ctx.lineWidth = p.r;
-            ctx.strokeStyle = p.color;
-            ctx.moveTo(p.x + p.tilt + p.r / 2, p.y);
-            ctx.lineTo(p.x + p.tilt, p.y + p.tilt + p.r / 2);
-            ctx.stroke();
-            p.y += Math.cos(p.d) + 1 + p.r / 2;
-            p.tilt = Math.sin(p.d) * 15;
-
-            if (p.y > canvas.height) {
-                p.y = -10;
-                p.x = Math.random() * canvas.width;
-            }
-        });
+    function addFloatingText(x, y, text, color) {
+        floatingTexts.push({ x, y, text, color, alpha: 1, vy: -2 });
     }
 
-    // Input Control
-    window.addEventListener('mousemove', (e) => {
-        basketX = e.clientX - CONFIG.BASKET_WIDTH / 2;
+    function initConfetti() {
+        confetti = Array.from({length: 45}, () => ({
+            x: Math.random() * canvas.width,
+            y: Math.random() * canvas.height,
+            r: Math.random() * 6 + 2,
+            color: `hsl(${Math.random() * 360}, 100%, 60%)`
+        }));
+    }
+
+    window.addEventListener('mousemove', e => basketX = e.clientX - CONFIG.BASKET_WIDTH / 2);
+    window.addEventListener('touchmove', e => {
+        if(e.touches.length > 0) basketX = e.touches[0].clientX - CONFIG.BASKET_WIDTH / 2;
     });
 
-    window.addEventListener('touchmove', (e) => {
-        if (e.touches.length > 0) {
-            basketX = e.touches[0].clientX - CONFIG.BASKET_WIDTH / 2;
-        }
-    });
-
-    // Start Game
-    document.getElementById('startScreen').addEventListener('click', startGame);
-
-    function startGame() {
+    document.getElementById('startBtn').addEventListener('click', () => {
         document.getElementById('startScreen').classList.add('hidden');
         gameActive = true;
         score = 0;
         timeLeft = CONFIG.INITIAL_TIME;
         coinSpeed = CONFIG.INITIAL_COIN_SPEED;
         coinY = -20;
+        trail = []; particles = []; floatingTexts = [];
         initConfetti();
 
         clearInterval(timerInterval);
         timerInterval = setInterval(() => {
-            if (gameActive) {
+            if(gameActive) {
                 timeLeft--;
-                if (timeLeft <= 0) endGame();
+                if(timeLeft <= 0) endGame();
             }
         }, 1000);
 
         requestAnimationFrame(updateGame);
-    }
+    });
 
     function endGame() {
         gameActive = false;
         clearInterval(timerInterval);
-        const startScreen = document.getElementById('startScreen');
-        startScreen.querySelector('.start-instruction').innerText = `¡Tiempo agotado! Puntos: ${score}. Haz clic para volver a jugar.`;
-        startScreen.classList.remove('hidden');
+        if(score > highScore) {
+            highScore = score;
+            localStorage.setItem('coin_game_highscore', highScore);
+        }
+        localStorage.setItem('coin_game_coins', coins);
+
+        const screen = document.getElementById('startScreen');
+        screen.querySelector('h1').innerText = "¡TIEMPO AGOTADO!";
+        screen.querySelector('p').innerText = `Puntos: ${score} | Máximo: ${highScore}`;
+        screen.classList.remove('hidden');
     }
 
     function updateGame() {
-        if (!gameActive) return;
+        if(!gameActive) return;
 
         ctx.clearRect(0, 0, canvas.width, canvas.height);
 
-        // Dibujar Confetti de Aniversario
-        drawConfetti();
-
-        // Mover Moneda
-        coinY += coinSpeed;
-
-        // Detectar Colisión
-        const basketY = canvas.height - 80;
-        if (
-            coinY + CONFIG.COIN_RADIUS >= basketY &&
-            coinY - CONFIG.COIN_RADIUS <= basketY + CONFIG.BASKET_HEIGHT &&
-            coinX >= basketX &&
-            coinX <= basketX + CONFIG.BASKET_WIDTH
-        ) {
-            score += CONFIG.SCORE_PER_COIN;
-            coins += Math.floor(CONFIG.SCORE_PER_COIN / 2);
-            coinSpeed += CONFIG.SPEED_INCREMENT;
-            coinY = -20;
-            coinX = Math.random() * (canvas.width - 40) + 20;
-            updateShopUI();
-        } else if (coinY > canvas.height) {
-            coinY = -20;
-            coinX = Math.random() * (canvas.width - 40) + 20;
+        // Flash de pantalla al atrapar
+        if(flashAlpha > 0) {
+            ctx.fillStyle = `rgba(255, 255, 255, ${flashAlpha})`;
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+            flashAlpha -= 0.05;
         }
 
+        // Confeti de fondo
+        confetti.forEach(p => {
+            ctx.beginPath(); ctx.arc(p.x, p.y, p.r, 0, Math.PI * 2);
+            ctx.fillStyle = p.color; ctx.fill(); p.y += 1;
+            if(p.y > canvas.height) p.y = 0;
+        });
+
+        // Estela de la moneda
+        trail.push({ x: coinX, y: coinY, alpha: 0.6 });
+        if(trail.length > 10) trail.shift();
+        const activeCoinSkin = SHOP_ITEMS.coinSkins.find(c => c.id === equippedCoinSkin) || SHOP_ITEMS.coinSkins[0];
+
+        trail.forEach(t => {
+            ctx.beginPath(); ctx.arc(t.x, t.y, CONFIG.COIN_RADIUS * (t.alpha), 0, Math.PI * 2);
+            ctx.fillStyle = activeCoinSkin.color || '#ffd700';
+            ctx.globalAlpha = t.alpha * 0.4;
+            ctx.fill();
+            ctx.globalAlpha = 1.0;
+            t.alpha -= 0.05;
+        });
+
+        // Caída de la moneda
+        coinY += coinSpeed;
+        const basketY = canvas.height - 80;
+
+        // Detección de colisión
+        if(coinY + CONFIG.COIN_RADIUS >= basketY && coinY - CONFIG.COIN_RADIUS <= basketY + CONFIG.BASKET_HEIGHT &&
+           coinX >= basketX && coinX <= basketX + CONFIG.BASKET_WIDTH) {
+            score += CONFIG.SCORE_PER_COIN;
+            coins += 5;
+            coinSpeed += CONFIG.SPEED_INCREMENT;
+            flashAlpha = 0.2;
+
+            createParticles(coinX, coinY, activeCoinSkin.color);
+            addFloatingText(coinX, basketY - 10, `+${CONFIG.SCORE_PER_COIN}`, activeCoinSkin.color);
+            playCoinSound(score * 2);
+
+            coinY = -20;
+            coinX = Math.random() * (canvas.width - 60) + 30;
+            localStorage.setItem('coin_game_coins', coins);
+        } else if(coinY > canvas.height) {
+            coinY = -20;
+            coinX = Math.random() * (canvas.width - 60) + 30;
+        }
+
+        // Dibujar Partículas
+        particles.forEach((p, index) => {
+            p.x += p.vx; p.y += p.vy; p.life -= 0.04;
+            ctx.beginPath(); ctx.arc(p.x, p.y, p.size, 0, Math.PI * 2);
+            ctx.fillStyle = p.color; ctx.globalAlpha = Math.max(0, p.life); ctx.fill();
+            ctx.globalAlpha = 1.0;
+            if(p.life <= 0) particles.splice(index, 1);
+        });
+
+        // Dibujar Texto Flotante (+10)
+        floatingTexts.forEach((ft, index) => {
+            ft.y += ft.vy; ft.alpha -= 0.03;
+            ctx.font = "bold 20px 'Courier New'";
+            ctx.fillStyle = ft.color;
+            ctx.globalAlpha = Math.max(0, ft.alpha);
+            ctx.fillText(ft.text, ft.x - 15, ft.y);
+            ctx.globalAlpha = 1.0;
+            if(ft.alpha <= 0) floatingTexts.splice(index, 1);
+        });
+
         // Dibujar Moneda
-        ctx.beginPath();
-        ctx.arc(coinX, coinY, CONFIG.COIN_RADIUS, 0, Math.PI * 2);
-        ctx.fillStyle = "#FFD700";
-        ctx.fill();
-        ctx.strokeStyle = "#DAA520";
-        ctx.lineWidth = 3;
-        ctx.stroke();
-        ctx.closePath();
+        activeCoinSkin.draw(ctx, coinX, coinY, CONFIG.COIN_RADIUS);
 
         // Dibujar Cesta
-        const currentSkin = SHOP_ITEMS.skins.find(s => s.id === equippedSkin) || SHOP_ITEMS.skins[0];
-        currentSkin.draw(ctx, basketX, basketY, CONFIG.BASKET_WIDTH, CONFIG.BASKET_HEIGHT);
+        const skin = SHOP_ITEMS.skins.find(s => s.id === equippedSkin) || SHOP_ITEMS.skins[0];
+        skin.draw(ctx, basketX, basketY, CONFIG.BASKET_WIDTH, CONFIG.BASKET_HEIGHT);
 
-        // HUD / Texto
+        // HUD Texto
         ctx.fillStyle = "#ffffff";
-        ctx.font = "20px 'Courier New'";
+        ctx.font = "bold 18px 'Courier New'";
         ctx.fillText(`Puntos: ${score}`, 20, 40);
-        ctx.fillText(`Tiempo: ${timeLeft}s`, 20, 70);
+        ctx.fillText(`Tiempo: ${timeLeft}s`, 20, 65);
+        ctx.fillText(`Récord: ${highScore}`, 20, 90);
 
         requestAnimationFrame(updateGame);
     }
 
-    // UI Shop Logic
+    // ===== TIENDA =====
     const shopModal = document.getElementById('shopModal');
-    document.getElementById('shopBtn').addEventListener('click', () => {
-        updateShopUI();
-        shopModal.classList.add('active');
-    });
-
-    document.getElementById('shopClose').addEventListener('click', () => {
-        shopModal.classList.remove('active');
-    });
+    document.getElementById('shopBtn').addEventListener('click', () => { updateShopUI(); shopModal.classList.add('active'); });
+    document.getElementById('shopClose').addEventListener('click', () => shopModal.classList.remove('active'));
 
     function updateShopUI() {
         document.getElementById('playerCoins').innerText = coins;
-        
-        // Avatares
-        const avatarsGrid = document.getElementById('avatarsGrid');
-        avatarsGrid.innerHTML = '';
-        SHOP_ITEMS.avatars.forEach(item => {
-            const div = document.createElement('div');
-            div.className = `shop-item ${item.purchased ? 'purchased' : ''} ${equippedAvatar === item.id ? 'equipped' : ''}`;
-            div.innerHTML = `
-                ${item.anniversary ? '<span class="badge-anniversary">1º AÑO</span>' : ''}
-                <span class="item-emoji">${item.emoji}</span>
-                <div class="item-name">${item.name}</div>
-                <div class="item-price">${item.purchased ? 'Obtenido' : item.price + ' 🪙'}</div>
-                <button class="item-btn ${equippedAvatar === item.id ? 'btn-equipped' : 'btn-buy'}" onclick="selectAvatar('${item.id}')">
-                    ${equippedAvatar === item.id ? 'Equipado' : item.purchased ? 'Equipar' : 'Comprar'}
-                </button>
-            `;
-            avatarsGrid.appendChild(div);
-        });
+        const currentAvatar = SHOP_ITEMS.avatars.find(a => a.id === equippedAvatar);
+        document.getElementById('playerAvatar').innerText = currentAvatar ? currentAvatar.emoji : '🎂';
 
-        // Skins
-        const skinsGrid = document.getElementById('skinsGrid');
-        skinsGrid.innerHTML = '';
-        SHOP_ITEMS.skins.forEach(item => {
+        renderCategory('avatarsGrid', SHOP_ITEMS.avatars, 'selectAvatar');
+        renderCategory('skinsGrid', SHOP_ITEMS.skins, 'selectSkin');
+        renderCategory('coinSkinsGrid', SHOP_ITEMS.coinSkins, 'selectCoinSkin');
+    }
+
+    function renderCategory(containerId, items, selectFn) {
+        const grid = document.getElementById(containerId);
+        grid.innerHTML = '';
+        items.forEach(item => {
             const div = document.createElement('div');
-            div.className = `shop-item ${item.purchased ? 'purchased' : ''} ${equippedSkin === item.id ? 'equipped' : ''}`;
+            const isEquipped = (equippedAvatar === item.id || equippedSkin === item.id || equippedCoinSkin === item.id);
+            div.className = `shop-item ${isEquipped ? 'equipped' : ''}`;
             div.innerHTML = `
-                ${item.anniversary ? '<span class="badge-anniversary">1º AÑO</span>' : ''}
-                <span class="item-emoji">🧺</span>
+                <span class="item-emoji">${item.emoji || '🧺'}</span>
                 <div class="item-name">${item.name}</div>
-                <div class="item-price">${item.purchased ? 'Obtenida' : item.price + ' 🪙'}</div>
-                <button class="item-btn ${equippedSkin === item.id ? 'btn-equipped' : 'btn-buy'}" onclick="selectSkin('${item.id}')">
-                    ${equippedSkin === item.id ? 'Equipada' : item.purchased ? 'Equipar' : 'Comprar'}
+                <button class="item-btn ${isEquipped ? 'btn-equipped' : item.purchased ? 'btn-equip' : 'btn-buy'}" onclick="${selectFn}('${item.id}')">
+                    ${isEquipped ? 'Equipado' : item.purchased ? 'Usar' : item.price + ' 🪙'}
                 </button>
             `;
-            skinsGrid.appendChild(div);
+            grid.appendChild(div);
         });
     }
 
-    window.selectAvatar = function(id) {
+    window.selectAvatar = id => {
         const item = SHOP_ITEMS.avatars.find(a => a.id === id);
-        if (!item.purchased) {
-            if (coins >= item.price) {
-                coins -= item.price;
-                item.purchased = true;
-                equippedAvatar = id;
-            }
-        } else {
-            equippedAvatar = id;
-        }
-        document.getElementById('playerAvatar').innerText = item.emoji;
+        if(!item.purchased && coins >= item.price) { coins -= item.price; item.purchased = true; savePurchase(id); }
+        if(item.purchased) { equippedAvatar = id; localStorage.setItem('coin_game_avatar', id); }
         updateShopUI();
     };
 
-    window.selectSkin = function(id) {
+    window.selectSkin = id => {
         const item = SHOP_ITEMS.skins.find(s => s.id === id);
-        if (!item.purchased) {
-            if (coins >= item.price) {
-                coins -= item.price;
-                item.purchased = true;
-                equippedSkin = id;
-            }
-        } else {
-            equippedSkin = id;
-        }
+        if(!item.purchased && coins >= item.price) { coins -= item.price; item.purchased = true; savePurchase(id); }
+        if(item.purchased) { equippedSkin = id; localStorage.setItem('coin_game_skin', id); }
         updateShopUI();
     };
 
-    // Fullscreen Toggle
-    document.getElementById('fullscreenBtn').addEventListener('click', () => {
-        if (!document.fullscreenElement) {
-            document.documentElement.requestFullscreen();
-        } else {
-            document.exitFullscreen();
+    window.selectCoinSkin = id => {
+        const item = SHOP_ITEMS.coinSkins.find(c => c.id === id);
+        if(!item.purchased && coins >= item.price) { coins -= item.price; item.purchased = true; savePurchase(id); }
+        if(item.purchased) { equippedCoinSkin = id; localStorage.setItem('coin_game_coinskin', id); }
+        updateShopUI();
+    };
+
+    function savePurchase(id) {
+        const purchases = JSON.parse(localStorage.getItem('coin_game_purchases') || '[]');
+        purchases.push(id);
+        localStorage.setItem('coin_game_purchases', JSON.stringify(purchases));
+        localStorage.setItem('coin_game_coins', coins);
+    }
+
+    // ===== CHAT MULTIJUGADOR Y COMANDO DE DUEÑO =====
+    const chatToggleBtn = document.getElementById('chatToggleBtn');
+    const chatContainer = document.getElementById('chatContainer');
+    const chatCloseBtn = document.getElementById('chatCloseBtn');
+    const chatMessages = document.getElementById('chatMessages');
+    const chatInput = document.getElementById('chatInput');
+    const chatSendBtn = document.getElementById('chatSendBtn');
+
+    const chatChannel = new BroadcastChannel('game_global_chat');
+
+    chatToggleBtn.addEventListener('click', () => { chatContainer.classList.remove('hidden'); chatToggleBtn.classList.add('hidden'); });
+    chatCloseBtn.addEventListener('click', () => { chatContainer.classList.add('hidden'); chatToggleBtn.classList.remove('hidden'); });
+
+    function appendMessage(username, text, isSystem = false) {
+        const msgDiv = document.createElement('div');
+        msgDiv.className = `chat-message ${isSystem ? 'system-msg' : ''}`;
+        msgDiv.innerHTML = `<div class="chat-message-username">${username}</div><div class="chat-message-text">${text}</div>`;
+        chatMessages.appendChild(msgDiv);
+        chatMessages.scrollTop = chatMessages.scrollHeight;
+    }
+
+    function sendMessage() {
+        const text = chatInput.value.trim();
+        if(!text) return;
+
+        if(text === '/dueno' || text === '/admin') {
+            coins += 5000;
+            isOwnerMode = true;
+            localStorage.setItem('coin_game_is_owner', 'true');
+            localStorage.setItem('coin_game_coins', coins);
+
+            SHOP_ITEMS.avatars.find(a => a.id === 'avatar_owner').purchased = true;
+            SHOP_ITEMS.skins.find(s => s.id === 'skin_owner').purchased = true;
+            SHOP_ITEMS.coinSkins.find(c => c.id === 'coin_owner').purchased = true;
+
+            equippedAvatar = 'avatar_owner';
+            equippedSkin = 'skin_owner';
+            equippedCoinSkin = 'coin_owner';
+            localStorage.setItem('coin_game_avatar', 'avatar_owner');
+            localStorage.setItem('coin_game_skin', 'skin_owner');
+            localStorage.setItem('coin_game_coinskin', 'coin_owner');
+
+            appendMessage('👑 SISTEMA', '¡Comando activado! Tienes +5,000 monedas y todos los ítems de Creador.', true);
+            chatInput.value = '';
+            updateShopUI();
+            return;
         }
+
+        const currentAvatar = SHOP_ITEMS.avatars.find(a => a.id === equippedAvatar);
+        const username = `${currentAvatar ? currentAvatar.emoji : '👤'} ${isOwnerMode ? '[CREADOR]' : 'Jugador_' + Math.floor(Math.random() * 899 + 100)}`;
+        const messageData = { username, text };
+
+        appendMessage(username, text);
+        chatChannel.postMessage(messageData);
+        chatInput.value = '';
+    }
+
+    chatChannel.onmessage = e => appendMessage(e.data.username, e.data.text);
+    chatSendBtn.addEventListener('click', sendMessage);
+    chatInput.addEventListener('keypress', e => { if(e.key === 'Enter') sendMessage(); });
+
+    // ===== CONTROLES =====
+    document.getElementById('fullscreenBtn').addEventListener('click', () => {
+        if(!document.fullscreenElement) document.documentElement.requestFullscreen();
+        else document.exitFullscreen();
     });
 
-    // Admin Panel
     const adminPanel = document.getElementById('adminPanel');
-    document.getElementById('adminBtn').addEventListener('click', () => {
-        adminPanel.classList.toggle('active');
-    });
-
+    document.getElementById('adminBtn').addEventListener('click', () => adminPanel.classList.toggle('active'));
     document.getElementById('applyBtn').addEventListener('click', () => {
         CONFIG.INITIAL_TIME = parseInt(document.getElementById('initialTime').value) || 30;
         CONFIG.INITIAL_COIN_SPEED = parseFloat(document.getElementById('initialSpeed').value) || 4;
-        CONFIG.SCORE_PER_COIN = parseInt(document.getElementById('scorePerCoin').value) || 10;
         adminPanel.classList.remove('active');
     });
 </script>
