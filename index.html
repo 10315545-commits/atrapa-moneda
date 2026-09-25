@@ -1,1087 +1,3130 @@
+```html
 <!DOCTYPE html>
 <html lang="es">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Atrapa la Moneda - Ultra FX Edition</title>
-    <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Atrapa la Moneda - Ultra FX Anniversary Edition</title>
 
-        body {
-            background: #0a0a12;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            height: 100vh;
-            overflow: hidden;
-            font-family: 'Courier New', Courier, monospace;
-            user-select: none;
-        }
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
 
-        #gameContainer {
-            position: relative;
-            width: 100vw;
-            height: 100vh;
-            background: radial-gradient(circle at center, #1f083a 0%, #0d0418 100%);
-            display: flex;
-            justify-content: center;
-            align-items: center;
-        }
+body{
+    background:#0a0a12;
+    display:flex;
+    justify-content:center;
+    align-items:center;
+    height:100vh;
+    overflow:hidden;
+    font-family:'Courier New',Courier,monospace;
+    user-select:none
+}
 
-        canvas {
-            width: 100%;
-            height: 100%;
-            display: block;
-            cursor: none;
-        }
+#gameContainer{
+    position:relative;
+    width:100vw;
+    height:100vh;
+    background:radial-gradient(circle at center,#1f083a 0%,#0d0418 100%);
+    display:flex;
+    justify-content:center;
+    align-items:center
+}
 
-        /* ===== BANNER Y BOTONES ===== */
-        .anniversary-banner {
-            position: fixed;
-            top: 15px;
-            left: 50%;
-            transform: translateX(-50%);
-            background: linear-gradient(90deg, #ffd700, #ff00ff, #00ffff, #ffd700);
-            background-size: 300% 300%;
-            animation: rainbow 3s linear infinite;
-            color: #000;
-            padding: 8px 24px;
-            border-radius: 20px;
-            font-weight: 900;
-            font-size: 13px;
-            box-shadow: 0 0 20px rgba(255, 0, 255, 0.6);
-            z-index: 90;
-            pointer-events: none;
-        }
+canvas{
+    width:100%;
+    height:100%;
+    display:block;
+    cursor:none
+}
 
-        @keyframes rainbow {
-            0% { background-position: 0% 50%; }
-            50% { background-position: 100% 50%; }
-            100% { background-position: 0% 50%; }
-        }
+.anniversary-banner{
+    position:fixed;
+    top:15px;
+    left:50%;
+    transform:translateX(-50%);
+    background:linear-gradient(90deg,#ffd700,#ff00ff,#00ffff,#ffd700);
+    background-size:300% 300%;
+    animation:rainbow 3s linear infinite;
+    color:#000;
+    padding:8px 24px;
+    border-radius:20px;
+    font-weight:900;
+    font-size:13px;
+    box-shadow:0 0 20px rgba(255,0,255,.6);
+    z-index:90;
+    pointer-events:none
+}
 
-        .icon-btn {
-            position: fixed;
-            width: 50px;
-            height: 50px;
-            border: 2px solid rgba(255,255,255,0.2);
-            border-radius: 50%;
-            color: white;
-            font-size: 22px;
-            cursor: pointer;
-            box-shadow: 0 0 15px rgba(0,0,0,0.5);
-            transition: all 0.2s ease;
-            z-index: 99;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-        }
+@keyframes rainbow{
+    0%{background-position:0% 50%}
+    50%{background-position:100% 50%}
+    100%{background-position:0% 50%}
+}
 
-        .icon-btn:hover {
-            transform: scale(1.15) rotate(5deg);
-            box-shadow: 0 0 25px rgba(255, 215, 0, 0.8);
-        }
+.icon-btn{
+    position:fixed;
+    width:50px;
+    height:50px;
+    border:2px solid rgba(255,255,255,.2);
+    border-radius:50%;
+    color:white;
+    font-size:22px;
+    cursor:pointer;
+    box-shadow:0 0 15px rgba(0,0,0,.5);
+    transition:.2s;
+    z-index:99;
+    display:flex;
+    align-items:center;
+    justify-content:center
+}
 
-        #fullscreenBtn { top: 20px; right: 20px; background: linear-gradient(135deg, #667eea, #764ba2); }
-        #shopBtn { top: 20px; left: 20px; background: linear-gradient(135deg, #ffa500, #ff6b00); }
-        #chatToggleBtn { bottom: 20px; left: 20px; background: linear-gradient(135deg, #00c6ff, #0072ff); }
-        #adminBtn { bottom: 20px; right: 20px; background: linear-gradient(135deg, #f12711, #f5af19); }
+.icon-btn:hover{
+    transform:scale(1.15) rotate(5deg);
+    box-shadow:0 0 25px rgba(255,215,0,.8)
+}
 
-        /* ===== TIENDA ===== */
-        .modal {
-            position: fixed;
-            top: 0; left: 0;
-            width: 100%; height: 100%;
-            background: rgba(0, 0, 0, 0.88);
-            backdrop-filter: blur(8px);
-            display: none;
-            justify-content: center;
-            align-items: center;
-            z-index: 200;
-        }
+#fullscreenBtn{top:20px;right:20px;background:linear-gradient(135deg,#667eea,#764ba2)}
+#shopBtn{top:20px;left:20px;background:linear-gradient(135deg,#ffa500,#ff6b00)}
+#chatToggleBtn{bottom:20px;left:20px;background:linear-gradient(135deg,#00c6ff,#0072ff)}
+#adminBtn{bottom:20px;right:20px;background:linear-gradient(135deg,#f12711,#f5af19)}
 
-        .modal.active { display: flex; }
+.modal{
+    position:fixed;
+    top:0;left:0;
+    width:100%;height:100%;
+    background:rgba(0,0,0,.88);
+    backdrop-filter:blur(8px);
+    display:none;
+    justify-content:center;
+    align-items:center;
+    z-index:200
+}
 
-        .modal-content {
-            background: #12121a;
-            border: 2px solid #ffd700;
-            box-shadow: 0 0 30px rgba(255, 215, 0, 0.3);
-            border-radius: 20px;
-            padding: 25px;
-            max-width: 800px;
-            width: 90%;
-            max-height: 85vh;
-            overflow-y: auto;
-            color: white;
-        }
+.modal.active{display:flex}
 
-        .modal-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 20px;
-            border-bottom: 2px solid #ffd700;
-            padding-bottom: 10px;
-        }
+.modal-content{
+    background:#12121a;
+    border:2px solid #ffd700;
+    box-shadow:0 0 30px rgba(255,215,0,.3);
+    border-radius:20px;
+    padding:25px;
+    max-width:800px;
+    width:90%;
+    max-height:85vh;
+    overflow-y:auto;
+    color:white
+}
 
-        .modal-close { background: none; border: none; color: #ffd700; font-size: 28px; cursor: pointer; }
+.modal-header{
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    margin-bottom:20px;
+    border-bottom:2px solid #ffd700;
+    padding-bottom:10px
+}
 
-        .player-info {
-            background: #1c1c28;
-            border-radius: 12px;
-            padding: 15px;
-            margin-bottom: 20px;
-            display: flex;
-            justify-content: space-around;
-            text-align: center;
-            border: 1px solid #333;
-        }
+.modal-close{
+    background:none;
+    border:none;
+    color:#ffd700;
+    font-size:28px;
+    cursor:pointer
+}
 
-        .items-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(130px, 1fr));
-            gap: 12px;
-            margin-bottom: 20px;
-        }
+.player-info{
+    background:#1c1c28;
+    border-radius:12px;
+    padding:15px;
+    margin-bottom:20px;
+    display:flex;
+    justify-content:space-around;
+    text-align:center;
+    border:1px solid #333
+}
 
-        .shop-item {
-            background: #1a1a24;
-            border: 2px solid #333;
-            border-radius: 12px;
-            padding: 12px;
-            text-align: center;
-            transition: 0.2s;
-        }
+.items-grid{
+    display:grid;
+    grid-template-columns:repeat(auto-fill,minmax(130px,1fr));
+    gap:12px;
+    margin-bottom:20px
+}
 
-        .shop-item.equipped { border-color: #FFD700; background: #2a250a; box-shadow: 0 0 15px rgba(255,215,0,0.3); }
+.shop-item{
+    background:#1a1a24;
+    border:2px solid #333;
+    border-radius:12px;
+    padding:12px;
+    text-align:center;
+    transition:.2s
+}
 
-        .item-emoji { font-size: 38px; margin-bottom: 5px; display: block; }
-        .item-name { font-size: 11px; color: #87CEEB; margin-bottom: 8px; font-weight: bold; }
-        .item-btn {
-            width: 100%;
-            padding: 8px;
-            border: none;
-            border-radius: 6px;
-            font-size: 11px;
-            font-weight: bold;
-            cursor: pointer;
-        }
-        .btn-buy { background: #ff6b00; color: white; }
-        .btn-equip { background: #2196F3; color: white; }
-        .btn-equipped { background: #4caf50; color: white; }
+.shop-item.equipped{
+    border-color:#FFD700;
+    background:#2a250a;
+    box-shadow:0 0 15px rgba(255,215,0,.3)
+}
 
-        /* ===== CHAT ===== */
-        .chat-container {
-            position: fixed;
-            bottom: 80px; left: 20px;
-            width: 330px; height: 360px;
-            background: rgba(18, 18, 26, 0.95);
-            border: 2px solid #00c6ff;
-            box-shadow: 0 0 20px rgba(0, 198, 255, 0.3);
-            border-radius: 15px;
-            display: flex;
-            flex-direction: column;
-            z-index: 98;
-        }
+.shop-item.legacy{
+    border-color:#777;
+}
 
-        .chat-container.hidden { display: none; }
+.item-emoji{
+    font-size:38px;
+    margin-bottom:5px;
+    display:block
+}
 
-        .chat-header {
-            background: linear-gradient(135deg, #00c6ff, #0072ff);
-            color: white;
-            padding: 10px;
-            display: flex;
-            justify-content: space-between;
-            font-weight: bold;
-            font-size: 11px;
-            border-radius: 12px 12px 0 0;
-        }
+.item-name{
+    font-size:11px;
+    color:#87CEEB;
+    margin-bottom:8px;
+    font-weight:bold
+}
 
-        .chat-messages {
-            flex: 1;
-            overflow-y: auto;
-            padding: 10px;
-            display: flex;
-            flex-direction: column;
-            gap: 8px;
-        }
+.legacy-label{
+    display:block;
+    color:#aaa;
+    font-size:9px;
+    margin-bottom:5px
+}
 
-        .chat-message {
-            background: #222230;
-            padding: 6px 10px;
-            border-radius: 6px;
-            border-left: 3px solid #00c6ff;
-        }
+.owner-label{
+    display:block;
+    color:#ffd700;
+    font-size:9px;
+    font-weight:bold;
+    margin-bottom:5px
+}
 
-        .chat-message.system-msg {
-            background: #382c00;
-            border-left: 3px solid #ffd700;
-        }
+.item-btn{
+    width:100%;
+    padding:8px;
+    border:none;
+    border-radius:6px;
+    font-size:11px;
+    font-weight:bold;
+    cursor:pointer
+}
 
-        .chat-message-username { color: #87CEEB; font-size: 10px; font-weight: bold; }
-        .chat-message-text { color: #fff; font-size: 11px; word-break: break-word; }
+.btn-buy{background:#ff6b00;color:white}
+.btn-equip{background:#2196F3;color:white}
+.btn-equipped{background:#4caf50;color:white}
 
-        .chat-input-area { display: flex; gap: 5px; padding: 8px; background: #161620; }
-        .chat-input {
-            flex: 1;
-            background: #0a0a10;
-            border: 1px solid #00c6ff;
-            color: #fff;
-            padding: 8px;
-            border-radius: 6px;
-            font-size: 11px;
-        }
-        .chat-send-btn { background: #00c6ff; border: none; color: white; cursor: pointer; padding: 0 12px; border-radius: 6px; }
+.chat-container{
+    position:fixed;
+    bottom:80px;
+    left:20px;
+    width:330px;
+    height:360px;
+    background:rgba(18,18,26,.95);
+    border:2px solid #00c6ff;
+    box-shadow:0 0 20px rgba(0,198,255,.3);
+    border-radius:15px;
+    display:flex;
+    flex-direction:column;
+    z-index:98
+}
 
-        /* ===== ADMIN PANEL ===== */
-        .admin-panel {
-            position: fixed;
-            bottom: 80px; right: 20px;
-            width: 280px;
-            background: #12121a;
-            border: 2px solid #f12711;
-            box-shadow: 0 0 20px rgba(241, 39, 17, 0.4);
-            border-radius: 12px;
-            padding: 15px;
-            display: none;
-            z-index: 101;
-            color: white;
-        }
+.chat-container.hidden{display:none}
 
-        .admin-panel.active { display: block; }
-        .config-group { margin-bottom: 10px; }
-        .config-group label { display: block; font-size: 10px; color: #aaa; margin-bottom: 4px; }
-        .config-group input { width: 100%; padding: 6px; background: #1f1f2e; border: 1px solid #444; color: #fff; border-radius: 4px; }
+.chat-header{
+    background:linear-gradient(135deg,#00c6ff,#0072ff);
+    color:white;
+    padding:10px;
+    display:flex;
+    justify-content:space-between;
+    font-weight:bold;
+    font-size:11px;
+    border-radius:12px 12px 0 0
+}
 
-        /* ===== PANTALLA INICIAL ===== */
-        .start-screen {
-            position: absolute;
-            width: 100%; height: 100%;
-            background: rgba(10, 10, 18, 0.95);
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-            align-items: center;
-            z-index: 50;
-            text-align: center;
-            color: white;
-        }
+.chat-messages{
+    flex:1;
+    overflow-y:auto;
+    padding:10px;
+    display:flex;
+    flex-direction:column;
+    gap:8px
+}
 
-        .start-screen.hidden { display: none; }
-        .game-title { font-size: 42px; color: #ffd700; text-shadow: 0 0 20px #ffd700, 0 0 40px #ff00ff; }
-        .start-btn {
-            margin-top: 25px;
-            padding: 14px 40px;
-            background: linear-gradient(135deg, #ffd700, #ff00ff);
-            border: none;
-            border-radius: 30px;
-            font-size: 20px;
-            font-weight: 900;
-            color: #000;
-            cursor: pointer;
-            box-shadow: 0 0 25px rgba(255, 215, 0, 0.7);
-            transition: transform 0.2s;
-        }
-        .start-btn:hover { transform: scale(1.1); }
-    </style>
+.chat-message{
+    background:#222230;
+    padding:6px 10px;
+    border-radius:6px;
+    border-left:3px solid #00c6ff
+}
+
+.chat-message.system-msg{
+    background:#382c00;
+    border-left:3px solid #ffd700
+}
+
+.chat-message-username{
+    color:#87CEEB;
+    font-size:10px;
+    font-weight:bold
+}
+
+.chat-message-text{
+    color:#fff;
+    font-size:11px;
+    word-break:break-word
+}
+
+.chat-input-area{
+    display:flex;
+    gap:5px;
+    padding:8px;
+    background:#161620
+}
+
+.chat-input{
+    flex:1;
+    background:#0a0a10;
+    border:1px solid #00c6ff;
+    color:#fff;
+    padding:8px;
+    border-radius:6px;
+    font-size:11px
+}
+
+.chat-send-btn{
+    background:#00c6ff;
+    border:none;
+    color:white;
+    cursor:pointer;
+    padding:0 12px;
+    border-radius:6px
+}
+
+.admin-panel{
+    position:fixed;
+    bottom:80px;
+    right:20px;
+    width:280px;
+    background:#12121a;
+    border:2px solid #f12711;
+    box-shadow:0 0 20px rgba(241,39,17,.4);
+    border-radius:12px;
+    padding:15px;
+    display:none;
+    z-index:101;
+    color:white
+}
+
+.admin-panel.active{display:block}
+
+.config-group{margin-bottom:10px}
+.config-group label{
+    display:block;
+    font-size:10px;
+    color:#aaa;
+    margin-bottom:4px
+}
+
+.config-group input{
+    width:100%;
+    padding:6px;
+    background:#1f1f2e;
+    border:1px solid #444;
+    color:#fff;
+    border-radius:4px
+}
+
+.start-screen{
+    position:absolute;
+    width:100%;
+    height:100%;
+    background:rgba(10,10,18,.95);
+    display:flex;
+    flex-direction:column;
+    justify-content:center;
+    align-items:center;
+    z-index:50;
+    text-align:center;
+    color:white
+}
+
+.start-screen.hidden{display:none}
+
+.game-title{
+    font-size:42px;
+    color:#ffd700;
+    text-shadow:0 0 20px #ffd700,0 0 40px #ff00ff
+}
+
+.start-btn{
+    margin-top:25px;
+    padding:14px 40px;
+    background:linear-gradient(135deg,#ffd700,#ff00ff);
+    border:none;
+    border-radius:30px;
+    font-size:20px;
+    font-weight:900;
+    color:#000;
+    cursor:pointer;
+    box-shadow:0 0 25px rgba(255,215,0,.7);
+    transition:transform .2s
+}
+
+.start-btn:hover{transform:scale(1.1)}
+
+#ownerShopNotice{
+    display:none;
+    background:linear-gradient(90deg,#ffd700,#ff00ff,#00ffff);
+    color:#000;
+    font-weight:900;
+    padding:8px;
+    border-radius:10px;
+    text-align:center;
+    margin-bottom:15px
+}
+
+@media(max-width:600px){
+    .game-title{font-size:28px}
+    .anniversary-banner{
+        font-size:10px;
+        padding:7px 12px
+    }
+    .chat-container{
+        width:calc(100% - 30px);
+        left:15px
+    }
+    .icon-btn{
+        width:45px;
+        height:45px
+    }
+}
+</style>
 </head>
+
 <body>
 
 <div id="gameContainer">
-    <div class="anniversary-banner">✨ 1° ANIVERSARIO DELUXE - ULTRA FX ✨</div>
+
+    <div class="anniversary-banner">
+        ✨ 1° ANIVERSARIO DELUXE - ULTRA FX ✨
+    </div>
 
     <div class="start-screen" id="startScreen">
         <h1 class="game-title">🎮 ATRAPA LA MONEDA</h1>
-        <p style="color: #ff00ff; margin-top: 8px; font-weight: bold;">🔥 Con efectos Neón y Multijugador 🔥</p>
-        <div style="font-size: 70px; margin: 20px; filter: drop-shadow(0 0 15px #ffd700);">🪙</div>
+        <p style="color:#ff00ff;margin-top:8px;font-weight:bold;">
+            🔥 Con efectos Neón y Multijugador 🔥
+        </p>
+        <div style="font-size:70px;margin:20px;filter:drop-shadow(0 0 15px #ffd700);">
+            🪙
+        </div>
         <button class="start-btn" id="startBtn">¡JUGAR AHORA!</button>
     </div>
 
     <canvas id="gameCanvas"></canvas>
 </div>
 
-<!-- Botones -->
 <button class="icon-btn" id="fullscreenBtn" title="Pantalla Completa">⛶</button>
 <button class="icon-btn" id="shopBtn" title="Tienda">🛍️</button>
 <button class="icon-btn" id="chatToggleBtn" title="Chat Global">💬</button>
 <button class="icon-btn" id="adminBtn" title="Ajustes">⚙️</button>
 
-<!-- Modal Tienda -->
 <div class="modal" id="shopModal">
     <div class="modal-content">
+
         <div class="modal-header">
             <h2>🛍️ Tienda Neón Deluxe</h2>
             <button class="modal-close" id="shopClose">✕</button>
         </div>
+
+        <div id="ownerShopNotice">
+            👑 OWNER MODE — ¡TODA LA TIENDA ES GRATIS!
+        </div>
+
         <div class="player-info">
             <div>
-                <div style="font-size: 32px;" id="playerAvatar">🎂</div>
-                <div style="font-size: 10px; color: #87CEEB;">Avatar</div>
+                <div style="font-size:32px;" id="playerAvatar">🎂</div>
+                <div style="font-size:10px;color:#87CEEB;">Avatar</div>
             </div>
+
             <div>
-                <div style="font-size: 24px; color: #FFD700; font-weight: bold;" id="playerCoins">0</div>
-                <div style="font-size: 10px; color: #87CEEB;">Monedas</div>
+                <div style="font-size:24px;color:#FFD700;font-weight:bold;" id="playerCoins">0</div>
+                <div style="font-size:10px;color:#87CEEB;">Monedas</div>
             </div>
         </div>
-        <h3 style="color: #ffa500; font-size: 14px; margin-bottom: 10px;">Avatares</h3>
+
+        <h3 style="color:#ffa500;font-size:14px;margin-bottom:10px;">
+            Avatares
+        </h3>
         <div class="items-grid" id="avatarsGrid"></div>
-        <h3 style="color: #ffa500; font-size: 14px; margin-bottom: 10px;">Cestas</h3>
+
+        <h3 style="color:#ffa500;font-size:14px;margin-bottom:10px;">
+            Cestas
+        </h3>
         <div class="items-grid" id="skinsGrid"></div>
-        <h3 style="color: #ffa500; font-size: 14px; margin-bottom: 10px;">Skins de Moneda</h3>
+
+        <h3 style="color:#ffa500;font-size:14px;margin-bottom:10px;">
+            Skins de Moneda
+        </h3>
         <div class="items-grid" id="coinSkinsGrid"></div>
+
+        <h3 style="color:#ffa500;font-size:14px;margin-bottom:10px;">
+            Trails
+        </h3>
+        <div class="items-grid" id="trailsGrid"></div>
+
     </div>
 </div>
 
-<!-- Chat Global -->
 <div class="chat-container hidden" id="chatContainer">
+
     <div class="chat-header">
-        <span>💬 Chat Global (Escribe /dueno)</span>
-        <button style="background:none; border:none; color:white; cursor:pointer;" id="chatCloseBtn">✕</button>
+        <span>💬 Chat Global</span>
+        <button style="background:none;border:none;color:white;cursor:pointer;" id="chatCloseBtn">
+            ✕
+        </button>
     </div>
+
     <div class="chat-messages" id="chatMessages"></div>
+
     <div class="chat-input-area">
-        <input type="text" id="chatInput" class="chat-input" placeholder="Mensaje o /dueno...">
+        <input type="text" id="chatInput" class="chat-input" placeholder="Mensaje o /anniversary...">
         <button class="chat-send-btn" id="chatSendBtn">➤</button>
     </div>
+
 </div>
 
-<!-- Panel Admin -->
 <div class="admin-panel" id="adminPanel">
-    <h3 style="color: #f12711; margin-bottom: 10px;">⚙️ Configuración</h3>
+
+    <h3 style="color:#f12711;margin-bottom:10px;">
+        ⚙️ Configuración
+    </h3>
+
     <div class="config-group">
         <label>Tiempo (s):</label>
         <input type="number" id="initialTime" value="30">
     </div>
+
     <div class="config-group">
         <label>Velocidad Inicial:</label>
         <input type="number" id="initialSpeed" value="4">
     </div>
-    <button style="width: 100%; padding: 8px; background: #f12711; border: none; color: white; font-weight: bold; border-radius: 6px; cursor: pointer;" id="applyBtn">Guardar Ajustes</button>
+
+    <button
+        style="width:100%;padding:8px;background:#f12711;border:none;color:white;font-weight:bold;border-radius:6px;cursor:pointer;"
+        id="applyBtn">
+        Guardar Ajustes
+    </button>
+
 </div>
 
 <script>
-    // ===== CONFIGURACIÓN =====
-    const CONFIG = {
-        INITIAL_TIME: 30,
-        INITIAL_COIN_SPEED: 4,
-        SPEED_INCREMENT: 0.25,
-        SCORE_PER_COIN: 10,
-        BASKET_WIDTH: 100,
-        BASKET_HEIGHT: 22,
-        COIN_RADIUS: 16
-    };
 
-    // Guardado
-    let coins = parseInt(localStorage.getItem('coin_game_coins')) || 100;
-    let highScore = parseInt(localStorage.getItem('coin_game_highscore')) || 0;
-    let equippedAvatar = localStorage.getItem('coin_game_avatar') || 'avatar_anniv';
-    let equippedSkin = localStorage.getItem('coin_game_skin') || 'skin_anniv';
-    let equippedCoinSkin = localStorage.getItem('coin_game_coinskin') || 'coin_gold';
-    let isOwnerMode = localStorage.getItem('coin_game_is_owner') === 'true';
+/* =========================================================
+   CONFIGURACIÓN
+========================================================= */
 
-    const SHOP_ITEMS = {
-        avatars: [
-            { id: 'avatar_owner', name: '👑 Dueño / Creador', emoji: '👑', price: 9999, purchased: isOwnerMode },
-            { id: 'avatar_anniv', name: '🎂 Cumpleañero', emoji: '🎂', price: 0, purchased: true },
-            { id: 'avatar1', name: '👤 Clásico', emoji: '👤', price: 0, purchased: true },
-            { id: 'avatar2', name: '😎 Frío', emoji: '😎', price: 150 },
-            { id: 'avatar3', name: '🤖 Robot', emoji: '🤖', price: 200 }
-        ],
-        skins: [
-            {
-                id: 'skin_owner', name: '👑 Cesta Dueño', price: 9999, purchased: isOwnerMode,
-                draw: (ctx, x, y, w, h) => {
-                    ctx.shadowBlur = 20; ctx.shadowColor = "#00ffff";
-                    const grad = ctx.createLinearGradient(x, y, x + w, y);
-                    grad.addColorStop(0, '#ffd700'); grad.addColorStop(0.5, '#ff00ff'); grad.addColorStop(1, '#00ffff');
-                    ctx.fillStyle = grad; ctx.fillRect(x, y, w, h);
-                    ctx.fillStyle = "#ffffff"; ctx.font = "bold 11px Courier"; ctx.fillText("👑 CREADOR", x + 10, y + 15);
-                    ctx.shadowBlur = 0;
-                }
-            },
-            {
-                id: 'skin_anniv', name: '🎉 Tarta 1º Año', price: 0, purchased: true,
-                draw: (ctx, x, y, w, h) => {
-                    ctx.save();
-                    ctx.shadowBlur = 16;
-                    ctx.shadowColor = "#ff69b4";
-                    const grad = ctx.createLinearGradient(x, y, x + w, y);
-                    grad.addColorStop(0, '#ff4fa3');
-                    grad.addColorStop(0.5, '#ff8ccf');
-                    grad.addColorStop(1, '#ff3d81');
-                    ctx.fillStyle = grad;
-                    ctx.fillRect(x, y, w, h);
-                    ctx.fillStyle = "#fff4ff";
-                    ctx.fillRect(x, y - 4, w, 4);
-                    ctx.fillStyle = "#ffd700";
-                    ctx.fillRect(x + w/2 - 3, y - 10, 6, 6);
-                    ctx.fillStyle = "#ffffff";
-                    ctx.fillRect(x + 12, y + 6, 5, 5);
-                    ctx.fillRect(x + w - 17, y + 5, 5, 5);
-                    ctx.fillStyle = "#ffd700";
-                    ctx.fillRect(x + 24, y + 12, 4, 4);
-                    ctx.fillRect(x + w - 30, y + 11, 4, 4);
-                    ctx.restore();
-                }
-            },
-            {
-                id: 'skin1', name: '🧺 Clásica', price: 0, purchased: true,
-                draw: (ctx, x, y, w, h) => {
-                    ctx.fillStyle = "#8B4513"; ctx.fillRect(x, y, w, h);
-                }
-            },
-            {
-                id: 'skin2', name: '🔥 Cesta Fuego', price: 200,
-                draw: (ctx, x, y, w, h) => {
-                    ctx.save();
-                    ctx.shadowBlur = 15; ctx.shadowColor = "#FF4500";
-                    const grad = ctx.createLinearGradient(x, y, x, y + h);
-                    grad.addColorStop(0, '#FFD700'); grad.addColorStop(1, '#FF4500');
-                    ctx.fillStyle = grad; ctx.fillRect(x, y, w, h);
-                    ctx.fillStyle = "rgba(255,255,255,.35)";
-                    ctx.fillRect(x + 5, y + 4, w - 10, 3);
-                    ctx.restore();
-                }
-            },
-            {
-                id: 'skin3', name: '✨ Cesta Mágica', price: 180,
-                draw: (ctx, x, y, w, h) => {
-                    ctx.save();
-                    ctx.shadowBlur = 18; ctx.shadowColor = '#b000ff';
-                    const grad = ctx.createLinearGradient(x, y, x + w, y);
-                    grad.addColorStop(0, '#7a00ff'); grad.addColorStop(.5, '#ff00c8'); grad.addColorStop(1, '#00d9ff');
-                    ctx.fillStyle = grad; ctx.fillRect(x, y, w, h);
-                    ctx.fillStyle = '#ffffff';
-                    ctx.fillRect(x + 10, y + 5, 3, 3);
-                    ctx.fillRect(x + w - 15, y + 11, 3, 3);
-                    ctx.restore();
-                }
-            },
-            {
-                id: 'skin4', name: '❄️ Cesta Hielo', price: 180,
-                draw: (ctx, x, y, w, h) => {
-                    ctx.save();
-                    ctx.shadowBlur = 18; ctx.shadowColor = '#00d9ff';
-                    const grad = ctx.createLinearGradient(x, y, x + w, y + h);
-                    grad.addColorStop(0, '#e8ffff'); grad.addColorStop(.5, '#72dfff'); grad.addColorStop(1, '#009fe8');
-                    ctx.fillStyle = grad; ctx.fillRect(x, y, w, h);
-                    ctx.strokeStyle = '#ffffff'; ctx.lineWidth = 1.5;
-                    ctx.strokeRect(x + 2, y + 2, w - 4, h - 4);
-                    ctx.restore();
-                }
-            },
-            {
-                id: 'skin5', name: '💎 Cesta Diamante', price: 350,
-                draw: (ctx, x, y, w, h) => {
-                    ctx.save();
-                    ctx.shadowBlur = 20; ctx.shadowColor = '#00ffff';
-                    const grad = ctx.createLinearGradient(x, y, x, y + h);
-                    grad.addColorStop(0, '#ffffff'); grad.addColorStop(.4, '#8ffcff'); grad.addColorStop(1, '#4db5ff');
-                    ctx.fillStyle = grad; ctx.fillRect(x, y, w, h);
-                    ctx.strokeStyle = '#ffffff'; ctx.lineWidth = 2; ctx.strokeRect(x + 2, y + 2, w - 4, h - 4);
-                    ctx.restore();
-                }
-            },
-            {
-                id: 'skin6', name: '🌈 Cesta Arcoíris', price: 250,
-                draw: (ctx, x, y, w, h) => {
-                    ctx.save();
-                    const grad = ctx.createLinearGradient(x, y, x + w, y);
-                    grad.addColorStop(0, '#ff003c'); grad.addColorStop(.2, '#ff8a00'); grad.addColorStop(.4, '#fff000'); grad.addColorStop(.6, '#00ff7b'); grad.addColorStop(.8, '#00c8ff'); grad.addColorStop(1, '#9b00ff');
-                    ctx.fillStyle = grad; ctx.fillRect(x, y, w, h);
-                    ctx.shadowBlur = 10; ctx.shadowColor = '#ffffff';
-                    ctx.strokeStyle = '#ffffff'; ctx.lineWidth = 2; ctx.strokeRect(x, y, w, h);
-                    ctx.restore();
-                }
-            },
-            {
-                id: 'skin7', name: '⚡ Cesta Neón', price: 300,
-                draw: (ctx, x, y, w, h) => {
-                    ctx.save();
-                    ctx.shadowBlur = 22; ctx.shadowColor = '#00ffff';
-                    ctx.fillStyle = '#00d9ff'; ctx.fillRect(x, y, w, h);
-                    ctx.fillStyle = '#ffffff';
-                    ctx.fillRect(x + 8, y + 4, w - 16, 3);
-                    ctx.restore();
-                }
-            },
-            {
-                id: 'skin8', name: '👹 Cesta Trollace', price: 450,
-                draw: (ctx, x, y, w, h) => {
-                    ctx.save();
-                    ctx.shadowBlur = 20; ctx.shadowColor = '#8b00ff';
-                    ctx.fillStyle = '#20102a'; ctx.fillRect(x, y, w, h);
-                    ctx.strokeStyle = '#b84cff'; ctx.lineWidth = 3; ctx.strokeRect(x, y, w, h);
-                    ctx.fillStyle = '#ff2b8a';
-                    ctx.fillRect(x + 7, y + 5, 5, 5);
-                    ctx.fillRect(x + w - 12, y + 5, 5, 5);
-                    ctx.restore();
-                }
-            },
-            {
-                id: 'skin_peak', name: '🏆 Trollace Dorada', price: 0, purchased: false, peak: true, emoji: '🏆',
-                draw: (ctx, x, y, w, h) => {
-                    ctx.save();
-                    ctx.shadowBlur = 28; ctx.shadowColor = '#FFD700';
-                    const grad = ctx.createLinearGradient(x, y, x + w, y + h);
-                    grad.addColorStop(0, '#fff6a0'); grad.addColorStop(.5, '#FFD700'); grad.addColorStop(1, '#a96f00');
-                    ctx.fillStyle = grad; ctx.fillRect(x, y, w, h);
-                    ctx.strokeStyle = '#fff8cf'; ctx.lineWidth = 2; ctx.strokeRect(x, y, w, h);
-                    ctx.fillStyle = '#fff4a3';
-                    ctx.fillRect(x + 6, y + 4, w - 12, 3);
-                    ctx.restore();
-                }
-            }
-        ],
-        coinSkins: [
-            {
-                id: 'coin_gold', name: '🪙 Dorada', price: 0, purchased: true, emoji: '🪙', color: '#FFD700',
-                draw: (ctx, x, y, r) => {
-                    ctx.save();
-                    ctx.shadowBlur = 16; ctx.shadowColor = "#FFD700";
-                    ctx.beginPath(); ctx.arc(x, y, r, 0, Math.PI * 2);
-                    const grad = ctx.createRadialGradient(x - r*.35, y - r*.35, r*.1, x, y, r);
-                    grad.addColorStop(0, '#fff7a8'); grad.addColorStop(.35, '#ffd700'); grad.addColorStop(1, '#c98900');
-                    ctx.fillStyle = grad; ctx.fill();
-                    ctx.strokeStyle = "#fff4b0"; ctx.lineWidth = 2; ctx.stroke();
-                    ctx.fillStyle = 'rgba(255,255,255,.65)';
-                    ctx.beginPath(); ctx.arc(x-r*.32,y-r*.32,r*.2,0,Math.PI*2); ctx.fill();
-                    ctx.restore();
-                }
-            },
-            {
-                id: 'coin_diamond', name: '💎 Diamante', price: 150, emoji: '💎', color: '#00FFFF',
-                draw: (ctx, x, y, r) => {
-                    ctx.save();
-                    ctx.shadowBlur = 20; ctx.shadowColor = "#00FFFF";
-                    ctx.beginPath(); ctx.arc(x, y, r, 0, Math.PI * 2);
-                    const grad = ctx.createLinearGradient(x-r, y-r, x+r, y+r);
-                    grad.addColorStop(0, '#ffffff'); grad.addColorStop(.35, '#a9ffff'); grad.addColorStop(.7, '#00d8ff'); grad.addColorStop(1, '#0077ff');
-                    ctx.fillStyle = grad; ctx.fill();
-                    ctx.strokeStyle = "#FFFFFF"; ctx.lineWidth = 2; ctx.stroke();
-                    ctx.strokeStyle = 'rgba(255,255,255,.75)'; ctx.lineWidth = 1;
-                    ctx.beginPath(); ctx.moveTo(x-r*.65,y); ctx.lineTo(x,y+r*.6); ctx.lineTo(x+r*.65,y); ctx.lineTo(x,y-r*.6); ctx.closePath(); ctx.stroke();
-                    ctx.restore();
-                }
-            },
-            {
-                id: 'coin_fire', name: '🔥 Fuego', price: 250, emoji: '🔥', color: '#FF4500',
-                draw: (ctx, x, y, r) => {
-                    ctx.save();
-                    ctx.shadowBlur = 22; ctx.shadowColor = "#FF4500";
-                    ctx.beginPath(); ctx.arc(x, y, r, 0, Math.PI * 2);
-                    const grad = ctx.createRadialGradient(x, y-r*.35, r*.1, x, y, r);
-                    grad.addColorStop(0, '#fff36a'); grad.addColorStop(.35, '#ffb000'); grad.addColorStop(1, '#ff2b00');
-                    ctx.fillStyle = grad; ctx.fill();
-                    ctx.strokeStyle = "#FFD700"; ctx.lineWidth = 2; ctx.stroke();
-                    ctx.fillStyle = 'rgba(255,255,255,.6)';
-                    ctx.beginPath(); ctx.arc(x-r*.3,y-r*.3,r*.18,0,Math.PI*2); ctx.fill();
-                    ctx.restore();
-                }
-            },
-            {
-                id: 'coin_owner', name: '👑 Moneda Creador', price: 9999, purchased: isOwnerMode, emoji: '👑', color: '#ff00ff',
-                draw: (ctx, x, y, r) => {
-                    ctx.save();
-                    ctx.shadowBlur = 25; ctx.shadowColor = "#ff00ff";
-                    ctx.beginPath(); ctx.arc(x, y, r, 0, Math.PI * 2);
-                    const grad = ctx.createRadialGradient(x-r*.35, y-r*.35, r*.15, x, y, r);
-                    grad.addColorStop(0, '#ffffff'); grad.addColorStop(.25, '#ff8cff'); grad.addColorStop(1, '#ff00aa');
-                    ctx.fillStyle = grad; ctx.fill();
-                    ctx.strokeStyle = "#00ffff"; ctx.lineWidth = 3; ctx.stroke();
-                    ctx.fillStyle = '#fff'; ctx.font = `bold ${r*.75}px Arial`; ctx.textAlign = 'center'; ctx.textBaseline = 'middle'; ctx.fillText('★', x, y);
-                    ctx.restore();
-                }
-            },
-            {
-                id: 'coin_rainbow', name: '🌈 Arcoíris', price: 300, emoji: '🌈', color: '#ff00ff',
-                draw: (ctx, x, y, r) => {
-                    ctx.save();
-                    const grad = ctx.createLinearGradient(x-r, y-r, x+r, y+r);
-                    grad.addColorStop(0,'#ff003c'); grad.addColorStop(.2,'#ff8a00'); grad.addColorStop(.4,'#fff000'); grad.addColorStop(.6,'#00ff7b'); grad.addColorStop(.8,'#00c8ff'); grad.addColorStop(1,'#9b00ff');
-                    ctx.shadowBlur = 18; ctx.shadowColor = '#ffffff';
-                    ctx.beginPath(); ctx.arc(x, y, r, 0, Math.PI*2); ctx.fillStyle = grad; ctx.fill();
-                    ctx.strokeStyle = '#ffffff'; ctx.lineWidth = 2; ctx.stroke();
-                    ctx.restore();
-                }
-            },
-            {
-                id: 'coin_ice', name: '❄️ Hielo', price: 200, emoji: '❄️', color: '#6ee7ff',
-                draw: (ctx, x, y, r) => {
-                    ctx.save(); ctx.shadowBlur = 18; ctx.shadowColor = '#00eaff';
-                    ctx.beginPath(); ctx.arc(x, y, r, 0, Math.PI*2);
-                    ctx.fillStyle = '#8feaff'; ctx.fill();
-                    ctx.strokeStyle = '#ffffff'; ctx.lineWidth = 2; ctx.stroke();
-                    ctx.fillStyle = 'rgba(255,255,255,.55)'; ctx.beginPath(); ctx.arc(x-r*.3,y-r*.3,r*.3,0,Math.PI*2); ctx.fill();
-                    ctx.restore();
-                }
-            },
-            {
-                id: 'coin_neon', name: '⚡ Neón', price: 350, emoji: '⚡', color: '#00ffff',
-                draw: (ctx, x, y, r) => {
-                    ctx.save(); ctx.shadowBlur = 25; ctx.shadowColor = '#00ffff';
-                    ctx.beginPath(); ctx.arc(x, y, r, 0, Math.PI*2);
-                    ctx.fillStyle = '#00ffff'; ctx.fill();
-                    ctx.strokeStyle = '#ffffff'; ctx.lineWidth = 2; ctx.stroke();
-                    ctx.fillStyle = '#005f73'; ctx.font = `bold ${r*.8}px Arial`; ctx.textAlign='center'; ctx.textBaseline='middle'; ctx.fillText('⚡',x,y);
-                    ctx.restore();
-                }
-            }
-        ]
-    };
+const CONFIG = {
+    INITIAL_TIME:30,
+    INITIAL_COIN_SPEED:4,
+    SPEED_INCREMENT:.25,
+    SCORE_PER_COIN:10,
+    BASKET_WIDTH:100,
+    BASKET_HEIGHT:22,
+    COIN_RADIUS:16
+};
 
-    // Cargar compras
-    const savedPurchases = JSON.parse(localStorage.getItem('coin_game_purchases') || '[]');
-    savedPurchases.forEach(id => {
-        const item = SHOP_ITEMS.avatars.find(a => a.id === id) || 
-                     SHOP_ITEMS.skins.find(s => s.id === id) || 
-                     SHOP_ITEMS.coinSkins.find(c => c.id === id);
-        if(item) item.purchased = true;
-    });
 
-    // ===== AUDIO EFECTOS DINÁMICOS =====
-    const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
-    function playCoinSound(pitchBoost = 0) {
-        if (audioCtx.state === 'suspended') audioCtx.resume();
-        const osc = audioCtx.createOscillator();
-        const gain = audioCtx.createGain();
-        osc.type = 'triangle';
-        osc.frequency.setValueAtTime(800 + pitchBoost, audioCtx.currentTime);
-        osc.frequency.exponentialRampToValueAtTime(1600 + pitchBoost, audioCtx.currentTime + 0.12);
-        gain.gain.setValueAtTime(0.15, audioCtx.currentTime);
-        gain.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + 0.12);
-        osc.connect(gain); gain.connect(audioCtx.destination);
-        osc.start(); osc.stop(audioCtx.currentTime + 0.12);
+/* =========================================================
+   DATOS GUARDADOS
+========================================================= */
+
+let coins = parseInt(localStorage.getItem('coin_game_coins')) || 100;
+
+let highScore =
+    parseInt(localStorage.getItem('coin_game_highscore')) || 0;
+
+let equippedAvatar =
+    localStorage.getItem('coin_game_avatar') || 'avatar_anniv';
+
+let equippedSkin =
+    localStorage.getItem('coin_game_skin') || 'skin_anniversary';
+
+let equippedCoinSkin =
+    localStorage.getItem('coin_game_coinskin') || 'coin_gold';
+
+let equippedTrail =
+    localStorage.getItem('coin_game_trail') || 'trail_none';
+
+let isOwnerMode =
+    localStorage.getItem('coin_game_is_owner') === 'true';
+
+
+/* =========================================================
+   TIENDA
+========================================================= */
+
+const SHOP_ITEMS = {
+
+avatars:[
+    {
+        id:'avatar_owner',
+        name:'👑 Dueño / Creador',
+        emoji:'👑',
+        price:9999,
+        purchased:isOwnerMode
+    },
+
+    {
+        id:'avatar_anniv',
+        name:'🎂 Cumpleañero',
+        emoji:'🎂',
+        price:0,
+        purchased:true
+    },
+
+    {
+        id:'avatar1',
+        name:'👤 Clásico',
+        emoji:'👤',
+        price:0,
+        purchased:true
+    },
+
+    {
+        id:'avatar2',
+        name:'😎 Frío',
+        emoji:'😎',
+        price:150
+    },
+
+    {
+        id:'avatar3',
+        name:'🤖 Robot',
+        emoji:'🤖',
+        price:200
     }
+],
 
-    // Canvas
-    const canvas = document.getElementById('gameCanvas');
-    const ctx = canvas.getContext('2d');
-    function resizeCanvas() { canvas.width = window.innerWidth; canvas.height = window.innerHeight; }
-    window.addEventListener('resize', resizeCanvas);
-    resizeCanvas();
 
-    let gameActive = false;
-    let score = 0;
-    let timeLeft = CONFIG.INITIAL_TIME;
-    let coinSpeed = CONFIG.INITIAL_COIN_SPEED;
-    let basketX = canvas.width / 2 - CONFIG.BASKET_WIDTH / 2;
-    let coinX = Math.random() * (canvas.width - 60) + 30;
-    let coinY = -20;
+skins:[
 
-    // SISTEMAS DE EFECTOS
-    let particles = [];
-    let trail = [];
-    let floatingTexts = [];
-    let confetti = [];
-    let flashAlpha = 0;
-    let timerInterval;
+    /* NUEVA ANNIVERSARY */
 
-    function createParticles(x, y, color) {
-        for(let i = 0; i < 18; i++) {
-            const angle = Math.random() * Math.PI * 2;
-            const speed = Math.random() * 7 + 2;
-            particles.push({
-                x, y,
-                vx: Math.cos(angle) * speed,
-                vy: Math.sin(angle) * speed,
-                life: 1,
-                color: color || '#FFD700',
-                size: Math.random() * 4 + 2
-            });
+    {
+        id:'skin_anniversary',
+        name:'🎉 Anniversary Basket',
+        emoji:'🎂',
+        price:500,
+        purchased:true,
+        legacy:true,
+        anniversary:true,
+
+        draw:(ctx,x,y,w,h)=>{
+
+            ctx.save();
+
+            ctx.shadowBlur=25;
+            ctx.shadowColor='#ff00ff';
+
+            const grad =
+                ctx.createLinearGradient(x,y,x+w,y);
+
+            grad.addColorStop(0,'#ffd700');
+            grad.addColorStop(.25,'#ff69b4');
+            grad.addColorStop(.5,'#ff00ff');
+            grad.addColorStop(.75,'#00ffff');
+            grad.addColorStop(1,'#ffd700');
+
+            ctx.fillStyle=grad;
+            ctx.fillRect(x,y,w,h);
+
+            ctx.fillStyle='#ffffff';
+            ctx.fillRect(x,y-4,w,4);
+
+            ctx.fillStyle='#ffd700';
+            ctx.fillRect(x+w/2-3,y-11,6,7);
+
+            ctx.fillStyle='#fff';
+
+            ctx.fillRect(x+10,y+5,5,5);
+            ctx.fillRect(x+w-15,y+5,5,5);
+
+            ctx.fillStyle='#ffd700';
+
+            ctx.fillRect(x+25,y+12,4,4);
+            ctx.fillRect(x+w-29,y+12,4,4);
+
+            ctx.restore();
+        }
+    },
+
+
+    /* TROLLFACE GOLDEN LEGACY */
+
+    {
+        id:'skin_trollface_golden',
+        name:'👑 Trollface Golden — LEGACY',
+        emoji:'👑',
+        price:0,
+        purchased:false,
+        legacy:true,
+        golden:true,
+
+        draw:(ctx,x,y,w,h)=>{
+
+            ctx.save();
+
+            ctx.shadowBlur=30;
+            ctx.shadowColor='#ffd700';
+
+            const grad =
+                ctx.createLinearGradient(x,y,x+w,y+h);
+
+            grad.addColorStop(0,'#fff8a8');
+            grad.addColorStop(.5,'#ffd700');
+            grad.addColorStop(1,'#a96f00');
+
+            ctx.fillStyle=grad;
+            ctx.fillRect(x,y,w,h);
+
+            ctx.strokeStyle='#fff8cf';
+            ctx.lineWidth=2;
+            ctx.strokeRect(x,y,w,h);
+
+            ctx.fillStyle='#000';
+            ctx.font='bold 10px Courier New';
+            ctx.fillText('TROLLFACE',x+8,y+15);
+
+            ctx.restore();
+        }
+    },
+
+
+    {
+        id:'skin_owner',
+        name:'👑 Cesta Dueño',
+        emoji:'👑',
+        price:9999,
+        purchased:isOwnerMode,
+
+        draw:(ctx,x,y,w,h)=>{
+
+            ctx.save();
+
+            ctx.shadowBlur=20;
+            ctx.shadowColor='#00ffff';
+
+            const grad =
+                ctx.createLinearGradient(x,y,x+w,y);
+
+            grad.addColorStop(0,'#ffd700');
+            grad.addColorStop(.5,'#ff00ff');
+            grad.addColorStop(1,'#00ffff');
+
+            ctx.fillStyle=grad;
+            ctx.fillRect(x,y,w,h);
+
+            ctx.fillStyle='#ffffff';
+            ctx.font='bold 11px Courier';
+            ctx.fillText('👑 CREADOR',x+10,y+15);
+
+            ctx.restore();
+        }
+    },
+
+
+    {
+        id:'skin1',
+        name:'🧺 Clásica',
+        emoji:'🧺',
+        price:0,
+        purchased:true,
+
+        draw:(ctx,x,y,w,h)=>{
+            ctx.fillStyle='#8B4513';
+            ctx.fillRect(x,y,w,h);
+        }
+    },
+
+
+    {
+        id:'skin2',
+        name:'🔥 Cesta Fuego',
+        emoji:'🔥',
+        price:200,
+
+        draw:(ctx,x,y,w,h)=>{
+
+            ctx.save();
+
+            ctx.shadowBlur=15;
+            ctx.shadowColor='#FF4500';
+
+            const grad =
+                ctx.createLinearGradient(x,y,x,y+h);
+
+            grad.addColorStop(0,'#FFD700');
+            grad.addColorStop(1,'#FF4500');
+
+            ctx.fillStyle=grad;
+            ctx.fillRect(x,y,w,h);
+
+            ctx.restore();
+        }
+    },
+
+
+    {
+        id:'skin3',
+        name:'✨ Cesta Mágica',
+        emoji:'✨',
+        price:180,
+
+        draw:(ctx,x,y,w,h)=>{
+
+            ctx.save();
+
+            ctx.shadowBlur=18;
+            ctx.shadowColor='#b000ff';
+
+            const grad =
+                ctx.createLinearGradient(x,y,x+w,y);
+
+            grad.addColorStop(0,'#7a00ff');
+            grad.addColorStop(.5,'#ff00c8');
+            grad.addColorStop(1,'#00d9ff');
+
+            ctx.fillStyle=grad;
+            ctx.fillRect(x,y,w,h);
+
+            ctx.restore();
+        }
+    },
+
+
+    {
+        id:'skin4',
+        name:'❄️ Cesta Hielo',
+        emoji:'❄️',
+        price:180,
+
+        draw:(ctx,x,y,w,h)=>{
+
+            ctx.save();
+
+            ctx.shadowBlur=18;
+            ctx.shadowColor='#00d9ff';
+
+            const grad =
+                ctx.createLinearGradient(x,y,x+w,y+h);
+
+            grad.addColorStop(0,'#e8ffff');
+            grad.addColorStop(.5,'#72dfff');
+            grad.addColorStop(1,'#009fe8');
+
+            ctx.fillStyle=grad;
+            ctx.fillRect(x,y,w,h);
+
+            ctx.restore();
+        }
+    },
+
+
+    {
+        id:'skin5',
+        name:'💎 Cesta Diamante',
+        emoji:'💎',
+        price:350,
+
+        draw:(ctx,x,y,w,h)=>{
+
+            ctx.save();
+
+            ctx.shadowBlur=20;
+            ctx.shadowColor='#00ffff';
+
+            const grad =
+                ctx.createLinearGradient(x,y,x,y+h);
+
+            grad.addColorStop(0,'#ffffff');
+            grad.addColorStop(.4,'#8ffcff');
+            grad.addColorStop(1,'#4db5ff');
+
+            ctx.fillStyle=grad;
+            ctx.fillRect(x,y,w,h);
+
+            ctx.strokeStyle='#fff';
+            ctx.strokeRect(x+2,y+2,w-4,h-4);
+
+            ctx.restore();
+        }
+    },
+
+
+    {
+        id:'skin6',
+        name:'🌈 Cesta Arcoíris',
+        emoji:'🌈',
+        price:250,
+
+        draw:(ctx,x,y,w,h)=>{
+
+            ctx.save();
+
+            const grad =
+                ctx.createLinearGradient(x,y,x+w,y);
+
+            grad.addColorStop(0,'#ff003c');
+            grad.addColorStop(.2,'#ff8a00');
+            grad.addColorStop(.4,'#fff000');
+            grad.addColorStop(.6,'#00ff7b');
+            grad.addColorStop(.8,'#00c8ff');
+            grad.addColorStop(1,'#9b00ff');
+
+            ctx.fillStyle=grad;
+            ctx.fillRect(x,y,w,h);
+
+            ctx.restore();
+        }
+    },
+
+
+    {
+        id:'skin7',
+        name:'⚡ Cesta Neón',
+        emoji:'⚡',
+        price:300,
+
+        draw:(ctx,x,y,w,h)=>{
+
+            ctx.save();
+
+            ctx.shadowBlur=22;
+            ctx.shadowColor='#00ffff';
+
+            ctx.fillStyle='#00d9ff';
+            ctx.fillRect(x,y,w,h);
+
+            ctx.restore();
+        }
+    },
+
+
+    {
+        id:'skin8',
+        name:'👹 Cesta Trollace',
+        emoji:'👹',
+        price:450,
+
+        draw:(ctx,x,y,w,h)=>{
+
+            ctx.save();
+
+            ctx.shadowBlur=20;
+            ctx.shadowColor='#8b00ff';
+
+            ctx.fillStyle='#20102a';
+            ctx.fillRect(x,y,w,h);
+
+            ctx.strokeStyle='#b84cff';
+            ctx.lineWidth=3;
+            ctx.strokeRect(x,y,w,h);
+
+            ctx.restore();
+        }
+    },
+
+
+    {
+        id:'skin_peak',
+        name:'🏆 Trollace Dorada',
+        emoji:'🏆',
+        price:0,
+        purchased:false,
+        peak:true,
+
+        draw:(ctx,x,y,w,h)=>{
+
+            ctx.save();
+
+            ctx.shadowBlur=28;
+            ctx.shadowColor='#FFD700';
+
+            const grad =
+                ctx.createLinearGradient(x,y,x+w,y+h);
+
+            grad.addColorStop(0,'#fff6a0');
+            grad.addColorStop(.5,'#FFD700');
+            grad.addColorStop(1,'#a96f00');
+
+            ctx.fillStyle=grad;
+            ctx.fillRect(x,y,w,h);
+
+            ctx.strokeStyle='#fff8cf';
+            ctx.lineWidth=2;
+            ctx.strokeRect(x,y,w,h);
+
+            ctx.restore();
         }
     }
+],
 
-    function addFloatingText(x, y, text, color) {
-        floatingTexts.push({ x, y, text, color, alpha: 1, vy: -2 });
-    }
 
-    function initConfetti() {
-        confetti = Array.from({length: 45}, () => ({
-            x: Math.random() * canvas.width,
-            y: Math.random() * canvas.height,
-            r: Math.random() * 6 + 2,
-            color: `hsl(${Math.random() * 360}, 100%, 60%)`
-        }));
-    }
+coinSkins:[
 
-    window.addEventListener('mousemove', e => basketX = e.clientX - CONFIG.BASKET_WIDTH / 2);
-    window.addEventListener('touchmove', e => {
-        if(e.touches.length > 0) basketX = e.touches[0].clientX - CONFIG.BASKET_WIDTH / 2;
-    });
+    {
+        id:'coin_gold',
+        name:'🪙 Dorada',
+        emoji:'🪙',
+        price:0,
+        purchased:true,
+        color:'#FFD700',
 
-    document.getElementById('startBtn').addEventListener('click', () => {
-        document.getElementById('startScreen').classList.add('hidden');
-        gameActive = true;
-        score = 0;
-        timeLeft = CONFIG.INITIAL_TIME;
-        coinSpeed = CONFIG.INITIAL_COIN_SPEED;
-        coinY = -20;
-        trail = []; particles = []; floatingTexts = [];
-        initConfetti();
+        draw:(ctx,x,y,r)=>{
 
-        clearInterval(timerInterval);
-        timerInterval = setInterval(() => {
-            if(gameActive) {
-                timeLeft--;
-                if(timeLeft <= 0) endGame();
-            }
-        }, 1000);
+            ctx.save();
 
-        requestAnimationFrame(updateGame);
-    });
+            ctx.shadowBlur=16;
+            ctx.shadowColor='#FFD700';
 
-    function endGame() {
-        gameActive = false;
-        clearInterval(timerInterval);
-        if(score > highScore) {
-            highScore = score;
-            localStorage.setItem('coin_game_highscore', highScore);
-        }
-        localStorage.setItem('coin_game_coins', coins);
+            ctx.beginPath();
+            ctx.arc(x,y,r,0,Math.PI*2);
 
-        const screen = document.getElementById('startScreen');
-        screen.querySelector('h1').innerText = "¡TIEMPO AGOTADO!";
-        screen.querySelector('p').innerText = `Puntos: ${score} | Máximo: ${highScore}`;
-        screen.classList.remove('hidden');
-    }
+            const grad =
+                ctx.createRadialGradient(
+                    x-r*.35,y-r*.35,r*.1,
+                    x,y,r
+                );
 
-    function updateGame() {
-        if(!gameActive) return;
+            grad.addColorStop(0,'#fff7a8');
+            grad.addColorStop(.35,'#ffd700');
+            grad.addColorStop(1,'#c98900');
 
-        ctx.clearRect(0, 0, canvas.width, canvas.height);
-
-        // Flash de pantalla al atrapar
-        if(flashAlpha > 0) {
-            ctx.fillStyle = `rgba(255, 255, 255, ${flashAlpha})`;
-            ctx.fillRect(0, 0, canvas.width, canvas.height);
-            flashAlpha -= 0.05;
-        }
-
-        // Confeti de fondo
-        confetti.forEach(p => {
-            ctx.beginPath(); ctx.arc(p.x, p.y, p.r, 0, Math.PI * 2);
-            ctx.fillStyle = p.color; ctx.fill(); p.y += 1;
-            if(p.y > canvas.height) p.y = 0;
-        });
-
-        // Estela de la moneda
-        trail.push({ x: coinX, y: coinY, alpha: 0.6 });
-        if(trail.length > 10) trail.shift();
-        const activeCoinSkin = SHOP_ITEMS.coinSkins.find(c => c.id === equippedCoinSkin) || SHOP_ITEMS.coinSkins[0];
-
-        trail.forEach(t => {
-            ctx.beginPath(); ctx.arc(t.x, t.y, CONFIG.COIN_RADIUS * (t.alpha), 0, Math.PI * 2);
-            ctx.fillStyle = activeCoinSkin.color || '#ffd700';
-            ctx.globalAlpha = t.alpha * 0.4;
+            ctx.fillStyle=grad;
             ctx.fill();
-            ctx.globalAlpha = 1.0;
-            t.alpha -= 0.05;
+
+            ctx.strokeStyle='#fff4b0';
+            ctx.lineWidth=2;
+            ctx.stroke();
+
+            ctx.restore();
+        }
+    },
+
+
+    {
+        id:'coin_diamond',
+        name:'💎 Diamante',
+        emoji:'💎',
+        price:150,
+        color:'#00FFFF',
+
+        draw:(ctx,x,y,r)=>{
+
+            ctx.save();
+
+            ctx.shadowBlur=20;
+            ctx.shadowColor='#00FFFF';
+
+            ctx.beginPath();
+            ctx.arc(x,y,r,0,Math.PI*2);
+
+            const grad =
+                ctx.createLinearGradient(x-r,y-r,x+r,y+r);
+
+            grad.addColorStop(0,'#fff');
+            grad.addColorStop(.35,'#a9ffff');
+            grad.addColorStop(.7,'#00d8ff');
+            grad.addColorStop(1,'#0077ff');
+
+            ctx.fillStyle=grad;
+            ctx.fill();
+
+            ctx.strokeStyle='#fff';
+            ctx.lineWidth=2;
+            ctx.stroke();
+
+            ctx.restore();
+        }
+    },
+
+
+    {
+        id:'coin_fire',
+        name:'🔥 Fuego',
+        emoji:'🔥',
+        price:250,
+        color:'#FF4500',
+
+        draw:(ctx,x,y,r)=>{
+
+            ctx.save();
+
+            ctx.shadowBlur=22;
+            ctx.shadowColor='#FF4500';
+
+            ctx.beginPath();
+            ctx.arc(x,y,r,0,Math.PI*2);
+
+            const grad =
+                ctx.createRadialGradient(
+                    x,y-r*.35,r*.1,
+                    x,y,r
+                );
+
+            grad.addColorStop(0,'#fff36a');
+            grad.addColorStop(.35,'#ffb000');
+            grad.addColorStop(1,'#ff2b00');
+
+            ctx.fillStyle=grad;
+            ctx.fill();
+
+            ctx.strokeStyle='#FFD700';
+            ctx.lineWidth=2;
+            ctx.stroke();
+
+            ctx.restore();
+        }
+    },
+
+
+    {
+        id:'coin_owner',
+        name:'👑 Moneda Creador',
+        emoji:'👑',
+        price:9999,
+        purchased:isOwnerMode,
+        color:'#ff00ff',
+
+        draw:(ctx,x,y,r)=>{
+
+            ctx.save();
+
+            ctx.shadowBlur=25;
+            ctx.shadowColor='#ff00ff';
+
+            ctx.beginPath();
+            ctx.arc(x,y,r,0,Math.PI*2);
+
+            const grad =
+                ctx.createRadialGradient(
+                    x-r*.35,y-r*.35,r*.15,
+                    x,y,r
+                );
+
+            grad.addColorStop(0,'#fff');
+            grad.addColorStop(.25,'#ff8cff');
+            grad.addColorStop(1,'#ff00aa');
+
+            ctx.fillStyle=grad;
+            ctx.fill();
+
+            ctx.strokeStyle='#00ffff';
+            ctx.lineWidth=3;
+            ctx.stroke();
+
+            ctx.restore();
+        }
+    },
+
+
+    {
+        id:'coin_rainbow',
+        name:'🌈 Arcoíris',
+        emoji:'🌈',
+        price:300,
+        color:'#ff00ff',
+
+        draw:(ctx,x,y,r)=>{
+
+            ctx.save();
+
+            const grad =
+                ctx.createLinearGradient(x-r,y-r,x+r,y+r);
+
+            grad.addColorStop(0,'#ff003c');
+            grad.addColorStop(.2,'#ff8a00');
+            grad.addColorStop(.4,'#fff000');
+            grad.addColorStop(.6,'#00ff7b');
+            grad.addColorStop(.8,'#00c8ff');
+            grad.addColorStop(1,'#9b00ff');
+
+            ctx.beginPath();
+            ctx.arc(x,y,r,0,Math.PI*2);
+            ctx.fillStyle=grad;
+            ctx.fill();
+
+            ctx.strokeStyle='#fff';
+            ctx.lineWidth=2;
+            ctx.stroke();
+
+            ctx.restore();
+        }
+    },
+
+
+    {
+        id:'coin_ice',
+        name:'❄️ Hielo',
+        emoji:'❄️',
+        price:200,
+        color:'#6ee7ff',
+
+        draw:(ctx,x,y,r)=>{
+
+            ctx.save();
+
+            ctx.shadowBlur=18;
+            ctx.shadowColor='#00eaff';
+
+            ctx.beginPath();
+            ctx.arc(x,y,r,0,Math.PI*2);
+
+            ctx.fillStyle='#8feaff';
+            ctx.fill();
+
+            ctx.strokeStyle='#fff';
+            ctx.stroke();
+
+            ctx.restore();
+        }
+    },
+
+
+    {
+        id:'coin_neon',
+        name:'⚡ Neón',
+        emoji:'⚡',
+        price:350,
+        color:'#00ffff',
+
+        draw:(ctx,x,y,r)=>{
+
+            ctx.save();
+
+            ctx.shadowBlur=25;
+            ctx.shadowColor='#00ffff';
+
+            ctx.beginPath();
+            ctx.arc(x,y,r,0,Math.PI*2);
+
+            ctx.fillStyle='#00ffff';
+            ctx.fill();
+
+            ctx.strokeStyle='#fff';
+            ctx.lineWidth=2;
+            ctx.stroke();
+
+            ctx.restore();
+        }
+    }
+],
+
+
+trails:[
+
+    {
+        id:'trail_none',
+        name:'🚫 Sin Trail',
+        emoji:'🚫',
+        price:0,
+        purchased:true
+    },
+
+    {
+        id:'trail_rgb',
+        name:'🌈 RGB Cursor Trail',
+        emoji:'🌈',
+        price:400,
+        purchased:false,
+        rgb:true
+    }
+]
+
+};
+
+
+/* =========================================================
+   COMPRAS GUARDADAS
+========================================================= */
+
+const savedPurchases =
+    JSON.parse(localStorage.getItem('coin_game_purchases') || '[]');
+
+savedPurchases.forEach(id=>{
+
+    const item =
+        SHOP_ITEMS.avatars.find(a=>a.id===id) ||
+        SHOP_ITEMS.skins.find(s=>s.id===id) ||
+        SHOP_ITEMS.coinSkins.find(c=>c.id===id) ||
+        SHOP_ITEMS.trails.find(t=>t.id===id);
+
+    if(item) item.purchased=true;
+});
+
+
+/* =========================================================
+   OWNER = TODO GRATIS
+========================================================= */
+
+function getItemPrice(item){
+
+    if(isOwnerMode) return 0;
+
+    return Number(item.price) || 0;
+}
+
+
+/* =========================================================
+   AUDIO
+========================================================= */
+
+const audioCtx =
+    new(window.AudioContext || window.webkitAudioContext)();
+
+function playCoinSound(pitchBoost=0){
+
+    if(audioCtx.state==='suspended')
+        audioCtx.resume();
+
+    const osc=audioCtx.createOscillator();
+    const gain=audioCtx.createGain();
+
+    osc.type='triangle';
+
+    osc.frequency.setValueAtTime(
+        800+pitchBoost,
+        audioCtx.currentTime
+    );
+
+    osc.frequency.exponentialRampToValueAtTime(
+        1600+pitchBoost,
+        audioCtx.currentTime+.12
+    );
+
+    gain.gain.setValueAtTime(
+        .15,
+        audioCtx.currentTime
+    );
+
+    gain.gain.exponentialRampToValueAtTime(
+        .001,
+        audioCtx.currentTime+.12
+    );
+
+    osc.connect(gain);
+    gain.connect(audioCtx.destination);
+
+    osc.start();
+    osc.stop(audioCtx.currentTime+.12);
+}
+
+
+/* =========================================================
+   CANVAS
+========================================================= */
+
+const canvas=document.getElementById('gameCanvas');
+const ctx=canvas.getContext('2d');
+
+function resizeCanvas(){
+
+    canvas.width=window.innerWidth;
+    canvas.height=window.innerHeight;
+
+}
+
+window.addEventListener('resize',resizeCanvas);
+
+resizeCanvas();
+
+
+/* =========================================================
+   VARIABLES DEL JUEGO
+========================================================= */
+
+let gameActive=false;
+let score=0;
+
+let timeLeft=CONFIG.INITIAL_TIME;
+let coinSpeed=CONFIG.INITIAL_COIN_SPEED;
+
+let basketX=
+    canvas.width/2-CONFIG.BASKET_WIDTH/2;
+
+let coinX=
+    Math.random()*(canvas.width-60)+30;
+
+let coinY=-20;
+
+let particles=[];
+let coinTrail=[];
+let floatingTexts=[];
+let confetti=[];
+
+let cursorTrail=[];
+
+let flashAlpha=0;
+let timerInterval;
+
+
+/* =========================================================
+   PARTICULAS
+========================================================= */
+
+function createParticles(x,y,color){
+
+    for(let i=0;i<18;i++){
+
+        const angle=Math.random()*Math.PI*2;
+        const speed=Math.random()*7+2;
+
+        particles.push({
+            x,
+            y,
+            vx:Math.cos(angle)*speed,
+            vy:Math.sin(angle)*speed,
+            life:1,
+            color:color||'#FFD700',
+            size:Math.random()*4+2
+        });
+    }
+}
+
+
+function addFloatingText(x,y,text,color){
+
+    floatingTexts.push({
+        x,
+        y,
+        text,
+        color,
+        alpha:1,
+        vy:-2
+    });
+
+}
+
+
+/* =========================================================
+   CONFETI
+========================================================= */
+
+function initConfetti(){
+
+    confetti=Array.from({length:45},()=>({
+
+        x:Math.random()*canvas.width,
+        y:Math.random()*canvas.height,
+        r:Math.random()*6+2,
+        color:`hsl(${Math.random()*360},100%,60%)`
+
+    }));
+
+}
+
+
+/* =========================================================
+   MOVIMIENTO DEL JUGADOR
+========================================================= */
+
+window.addEventListener('mousemove',e=>{
+
+    basketX=
+        e.clientX-CONFIG.BASKET_WIDTH/2;
+
+    if(e.clientX<0) basketX=0;
+
+    if(e.clientX>canvas.width)
+        basketX=canvas.width-CONFIG.BASKET_WIDTH;
+
+
+    /* RGB TRAIL SOLO VISUAL */
+
+    if(e.clientX!==undefined){
+
+        cursorTrail.push({
+            x:e.clientX,
+            y:e.clientY,
+            hue:(Date.now()/3)%360,
+            life:1
         });
 
-        // Caída de la moneda
-        coinY += coinSpeed;
-        const basketY = canvas.height - 80;
+        if(cursorTrail.length>35)
+            cursorTrail.shift();
 
-        // Detección de colisión
-        if(coinY + CONFIG.COIN_RADIUS >= basketY && coinY - CONFIG.COIN_RADIUS <= basketY + CONFIG.BASKET_HEIGHT &&
-           coinX >= basketX && coinX <= basketX + CONFIG.BASKET_WIDTH) {
-            const goldenMultiplier = equippedSkin === 'skin_peak' ? 10 : 1;
-            score += CONFIG.SCORE_PER_COIN * goldenMultiplier;
-            coins += 5;
-            coinSpeed += CONFIG.SPEED_INCREMENT;
-            flashAlpha = 0.2;
+    }
 
-            createParticles(coinX, coinY, activeCoinSkin.color);
-            addFloatingText(coinX, basketY - 10, `+${CONFIG.SCORE_PER_COIN * goldenMultiplier}`, activeCoinSkin.color);
-            playCoinSound(score * 2);
+});
 
-            coinY = -20;
-            coinX = Math.random() * (canvas.width - 60) + 30;
-            localStorage.setItem('coin_game_coins', coins);
-        } else if(coinY > canvas.height) {
-            coinY = -20;
-            coinX = Math.random() * (canvas.width - 60) + 30;
+
+window.addEventListener('touchmove',e=>{
+
+    if(e.touches.length>0){
+
+        basketX=
+            e.touches[0].clientX-CONFIG.BASKET_WIDTH/2;
+
+    }
+
+});
+
+
+/* =========================================================
+   DIBUJAR RGB CURSOR TRAIL
+   NO TIENE COLISIONES
+========================================================= */
+
+function drawRGBTrail(){
+
+    if(equippedTrail!=='trail_rgb')
+        return;
+
+    for(let i=0;i<cursorTrail.length;i++){
+
+        const p=cursorTrail[i];
+
+        p.life-=.035;
+
+        if(p.life<=0) continue;
+
+        const size=
+            12*(i/cursorTrail.length)+3;
+
+        ctx.save();
+
+        ctx.globalAlpha=
+            Math.max(0,p.life*.7);
+
+        ctx.shadowBlur=15;
+
+        ctx.shadowColor=
+            `hsl(${p.hue},100%,60%)`;
+
+        ctx.fillStyle=
+            `hsl(${p.hue},100%,60%)`;
+
+        ctx.beginPath();
+
+        ctx.arc(
+            p.x,
+            p.y,
+            size,
+            0,
+            Math.PI*2
+        );
+
+        ctx.fill();
+
+        ctx.restore();
+    }
+
+    cursorTrail=
+        cursorTrail.filter(p=>p.life>0);
+
+}
+
+
+/* =========================================================
+   INICIAR
+========================================================= */
+
+document.getElementById('startBtn')
+.addEventListener('click',()=>{
+
+    document.getElementById('startScreen')
+        .classList.add('hidden');
+
+    gameActive=true;
+
+    score=0;
+
+    timeLeft=CONFIG.INITIAL_TIME;
+
+    coinSpeed=CONFIG.INITIAL_COIN_SPEED;
+
+    coinY=-20;
+
+    coinTrail=[];
+    particles=[];
+    floatingTexts=[];
+
+    initConfetti();
+
+    clearInterval(timerInterval);
+
+    timerInterval=setInterval(()=>{
+
+        if(gameActive){
+
+            timeLeft--;
+
+            if(timeLeft<=0)
+                endGame();
+
         }
 
-        // Dibujar Partículas
-        particles.forEach((p, index) => {
-            p.x += p.vx; p.y += p.vy; p.life -= 0.04;
-            ctx.beginPath(); ctx.arc(p.x, p.y, p.size, 0, Math.PI * 2);
-            ctx.fillStyle = p.color; ctx.globalAlpha = Math.max(0, p.life); ctx.fill();
-            ctx.globalAlpha = 1.0;
-            if(p.life <= 0) particles.splice(index, 1);
-        });
+    },1000);
 
-        // Dibujar Texto Flotante (+10)
-        floatingTexts.forEach((ft, index) => {
-            ft.y += ft.vy; ft.alpha -= 0.03;
-            ctx.font = "bold 20px 'Courier New'";
-            ctx.fillStyle = ft.color;
-            ctx.globalAlpha = Math.max(0, ft.alpha);
-            ctx.fillText(ft.text, ft.x - 15, ft.y);
-            ctx.globalAlpha = 1.0;
-            if(ft.alpha <= 0) floatingTexts.splice(index, 1);
-        });
+    requestAnimationFrame(updateGame);
 
-        // Dibujar Moneda
-        activeCoinSkin.draw(ctx, coinX, coinY, CONFIG.COIN_RADIUS);
+});
 
-        // Dibujar Cesta
-        const skin = SHOP_ITEMS.skins.find(s => s.id === equippedSkin) || SHOP_ITEMS.skins[0];
-        skin.draw(ctx, basketX, basketY, CONFIG.BASKET_WIDTH, CONFIG.BASKET_HEIGHT);
 
-        // HUD Texto
-        ctx.fillStyle = "#ffffff";
-        ctx.font = "bold 18px 'Courier New'";
-        ctx.fillText(`Puntos: ${score}`, 20, 40);
-        ctx.fillText(`Tiempo: ${timeLeft}s`, 20, 65);
-        ctx.fillText(`Récord: ${highScore}`, 20, 90);
+/* =========================================================
+   FIN DEL JUEGO
+========================================================= */
 
-        requestAnimationFrame(updateGame);
+function endGame(){
+
+    gameActive=false;
+
+    clearInterval(timerInterval);
+
+    if(score>highScore){
+
+        highScore=score;
+
+        localStorage.setItem(
+            'coin_game_highscore',
+            highScore
+        );
+
     }
 
-    // ===== TIENDA =====
-    const shopModal = document.getElementById('shopModal');
-    document.getElementById('shopBtn').addEventListener('click', () => { updateShopUI(); shopModal.classList.add('active'); });
-    document.getElementById('shopClose').addEventListener('click', () => shopModal.classList.remove('active'));
+    localStorage.setItem(
+        'coin_game_coins',
+        coins
+    );
 
-    function updateShopUI() {
-        document.getElementById('playerCoins').innerText = coins;
-        const currentAvatar = SHOP_ITEMS.avatars.find(a => a.id === equippedAvatar);
-        document.getElementById('playerAvatar').innerText = currentAvatar ? currentAvatar.emoji : '🎂';
+    const screen=
+        document.getElementById('startScreen');
 
-        renderCategory('avatarsGrid', SHOP_ITEMS.avatars, 'selectAvatar');
-        renderCategory('skinsGrid', SHOP_ITEMS.skins, 'selectSkin');
-        renderCategory('coinSkinsGrid', SHOP_ITEMS.coinSkins, 'selectCoinSkin');
+    screen.querySelector('h1').innerText=
+        '¡TIEMPO AGOTADO!';
+
+    screen.querySelector('p').innerText=
+        `Puntos: ${score} | Máximo: ${highScore}`;
+
+    screen.classList.remove('hidden');
+
+}
+
+
+/* =========================================================
+   RECOMPENSA ANNIVERSARY
+========================================================= */
+
+function giveAnniversaryReward(){
+
+    const reward=100;
+
+    coins+=reward;
+
+    localStorage.setItem(
+        'coin_game_coins',
+        coins
+    );
+
+    addFloatingText(
+        basketX+CONFIG.BASKET_WIDTH/2,
+        canvas.height-110,
+        '+100 🪙',
+        '#ffd700'
+    );
+
+    updateShopUI();
+
+}
+
+
+/* =========================================================
+   LOOP PRINCIPAL
+========================================================= */
+
+function updateGame(){
+
+    if(!gameActive) return;
+
+    ctx.clearRect(
+        0,
+        0,
+        canvas.width,
+        canvas.height
+    );
+
+
+    /* FLASH */
+
+    if(flashAlpha>0){
+
+        ctx.fillStyle=
+            `rgba(255,255,255,${flashAlpha})`;
+
+        ctx.fillRect(
+            0,
+            0,
+            canvas.width,
+            canvas.height
+        );
+
+        flashAlpha-=.05;
     }
 
-    function renderCategory(containerId, items, selectFn) {
-        const grid = document.getElementById(containerId);
-        grid.innerHTML = '';
-        items.forEach(item => {
-            const div = document.createElement('div');
-            const isEquipped = (equippedAvatar === item.id || equippedSkin === item.id || equippedCoinSkin === item.id);
-            div.className = `shop-item ${isEquipped ? 'equipped' : ''}`;
-            div.innerHTML = `
-                <span class="item-emoji">${item.emoji || '🧺'}</span>
-                <div class="item-name">${item.name}</div>
-                <button class="item-btn ${isEquipped ? 'btn-equipped' : item.purchased ? 'btn-equip' : 'btn-buy'}" onclick="${selectFn}('${item.id}')">
-                    ${isEquipped ? 'Equipado' : item.purchased ? 'Usar' : (item.id === 'skin_peak' ? '🔒 /devbirthday' : item.price + ' 🪙')}
-                </button>
-            `;
-            grid.appendChild(div);
-        });
+
+    /* CONFETI */
+
+    confetti.forEach(p=>{
+
+        ctx.beginPath();
+
+        ctx.arc(
+            p.x,
+            p.y,
+            p.r,
+            0,
+            Math.PI*2
+        );
+
+        ctx.fillStyle=p.color;
+
+        ctx.fill();
+
+        p.y+=1;
+
+        if(p.y>canvas.height)
+            p.y=0;
+
+    });
+
+
+    /* ESTELA DE LA MONEDA */
+
+    coinTrail.push({
+        x:coinX,
+        y:coinY,
+        alpha:.6
+    });
+
+    if(coinTrail.length>10)
+        coinTrail.shift();
+
+
+    const activeCoinSkin=
+        SHOP_ITEMS.coinSkins.find(
+            c=>c.id===equippedCoinSkin
+        ) ||
+        SHOP_ITEMS.coinSkins[0];
+
+
+    coinTrail.forEach(t=>{
+
+        ctx.beginPath();
+
+        ctx.arc(
+            t.x,
+            t.y,
+            CONFIG.COIN_RADIUS*t.alpha,
+            0,
+            Math.PI*2
+        );
+
+        ctx.fillStyle=
+            activeCoinSkin.color || '#ffd700';
+
+        ctx.globalAlpha=t.alpha*.4;
+
+        ctx.fill();
+
+        ctx.globalAlpha=1;
+
+        t.alpha-=.05;
+
+    });
+
+
+    /* CAIDA */
+
+    coinY+=coinSpeed;
+
+    const basketY=
+        canvas.height-80;
+
+
+    /* COLISIÓN */
+
+    if(
+        coinY+CONFIG.COIN_RADIUS>=basketY &&
+        coinY-CONFIG.COIN_RADIUS<=
+            basketY+CONFIG.BASKET_HEIGHT &&
+        coinX>=basketX &&
+        coinX<=
+            basketX+CONFIG.BASKET_WIDTH
+    ){
+
+        let multiplier=1;
+
+        if(equippedSkin==='skin_peak')
+            multiplier=10;
+
+
+        score+=
+            CONFIG.SCORE_PER_COIN*
+            multiplier;
+
+
+        /*
+         * ANNIVERSARY:
+         * +100 MONEDAS REALES DEL SISTEMA
+         * DE LA TIENDA
+         */
+
+        if(equippedSkin==='skin_anniversary'){
+
+            giveAnniversaryReward();
+
+        }else{
+
+            coins+=5;
+
+            localStorage.setItem(
+                'coin_game_coins',
+                coins
+            );
+
+        }
+
+
+        coinSpeed+=CONFIG.SPEED_INCREMENT;
+
+        flashAlpha=.2;
+
+        createParticles(
+            coinX,
+            coinY,
+            activeCoinSkin.color
+        );
+
+        addFloatingText(
+            coinX,
+            basketY-10,
+            `+${CONFIG.SCORE_PER_COIN*multiplier}`,
+            activeCoinSkin.color
+        );
+
+        playCoinSound(score*2);
+
+
+        coinY=-20;
+
+        coinX=
+            Math.random()*
+            (canvas.width-60)+30;
+
     }
 
-    window.selectAvatar = id => {
-        const item = SHOP_ITEMS.avatars.find(a => a.id === id);
-        if(!item.purchased && coins >= item.price) { coins -= item.price; item.purchased = true; savePurchase(id); }
-        if(item.purchased) { equippedAvatar = id; localStorage.setItem('coin_game_avatar', id); }
-        updateShopUI();
-    };
 
-    window.selectSkin = id => {
-        const item = SHOP_ITEMS.skins.find(s => s.id === id);
-        if(!item.purchased && coins >= item.price) { coins -= item.price; item.purchased = true; savePurchase(id); }
-        if(item.purchased) { equippedSkin = id; localStorage.setItem('coin_game_skin', id); }
-        updateShopUI();
-    };
+    else if(coinY>canvas.height){
 
-    window.selectCoinSkin = id => {
-        const item = SHOP_ITEMS.coinSkins.find(c => c.id === id);
-        if(!item.purchased && coins >= item.price) { coins -= item.price; item.purchased = true; savePurchase(id); }
-        if(item.purchased) { equippedCoinSkin = id; localStorage.setItem('coin_game_coinskin', id); }
-        updateShopUI();
-    };
+        coinY=-20;
 
-    function savePurchase(id) {
-        const purchases = JSON.parse(localStorage.getItem('coin_game_purchases') || '[]');
+        coinX=
+            Math.random()*
+            (canvas.width-60)+30;
+
+    }
+
+
+    /* PARTICULAS */
+
+    particles.forEach((p,index)=>{
+
+        p.x+=p.vx;
+        p.y+=p.vy;
+
+        p.life-=.04;
+
+        ctx.beginPath();
+
+        ctx.arc(
+            p.x,
+            p.y,
+            p.size,
+            0,
+            Math.PI*2
+        );
+
+        ctx.fillStyle=p.color;
+
+        ctx.globalAlpha=
+            Math.max(0,p.life);
+
+        ctx.fill();
+
+        ctx.globalAlpha=1;
+
+        if(p.life<=0)
+            particles.splice(index,1);
+
+    });
+
+
+    /* TEXTOS */
+
+    floatingTexts.forEach((ft,index)=>{
+
+        ft.y+=ft.vy;
+
+        ft.alpha-=.03;
+
+        ctx.font=
+            "bold 20px 'Courier New'";
+
+        ctx.fillStyle=ft.color;
+
+        ctx.globalAlpha=
+            Math.max(0,ft.alpha);
+
+        ctx.fillText(
+            ft.text,
+            ft.x-15,
+            ft.y
+        );
+
+        ctx.globalAlpha=1;
+
+        if(ft.alpha<=0)
+            floatingTexts.splice(index,1);
+
+    });
+
+
+    /* MONEDA */
+
+    activeCoinSkin.draw(
+        ctx,
+        coinX,
+        coinY,
+        CONFIG.COIN_RADIUS
+    );
+
+
+    /* CESTA */
+
+    const skin=
+        SHOP_ITEMS.skins.find(
+            s=>s.id===equippedSkin
+        ) ||
+        SHOP_ITEMS.skins[0];
+
+    skin.draw(
+        ctx,
+        basketX,
+        basketY,
+        CONFIG.BASKET_WIDTH,
+        CONFIG.BASKET_HEIGHT
+    );
+
+
+    /* HUD */
+
+    ctx.fillStyle='#ffffff';
+
+    ctx.font=
+        "bold 18px 'Courier New'";
+
+    ctx.fillText(
+        `Puntos: ${score}`,
+        20,
+        40
+    );
+
+    ctx.fillText(
+        `Tiempo: ${timeLeft}s`,
+        20,
+        65
+    );
+
+    ctx.fillText(
+        `Récord: ${highScore}`,
+        20,
+        90
+    );
+
+    ctx.fillText(
+        `🪙 ${coins}`,
+        20,
+        115
+    );
+
+
+    /*
+     * RGB TRAIL:
+     * SE DIBUJA AL FINAL.
+     * NO PARTICIPA EN COLISIONES.
+     */
+
+    drawRGBTrail();
+
+
+    requestAnimationFrame(updateGame);
+
+}
+
+
+/* =========================================================
+   TIENDA
+========================================================= */
+
+const shopModal=
+    document.getElementById('shopModal');
+
+document.getElementById('shopBtn')
+.addEventListener('click',()=>{
+
+    updateShopUI();
+
+    shopModal.classList.add('active');
+
+});
+
+
+document.getElementById('shopClose')
+.addEventListener('click',()=>{
+
+    shopModal.classList.remove('active');
+
+});
+
+
+function updateShopUI(){
+
+    document.getElementById('playerCoins')
+        .innerText=coins;
+
+
+    const currentAvatar=
+        SHOP_ITEMS.avatars.find(
+            a=>a.id===equippedAvatar
+        );
+
+    document.getElementById('playerAvatar')
+        .innerText=
+            currentAvatar ?
+            currentAvatar.emoji :
+            '🎂';
+
+
+    document.getElementById('ownerShopNotice')
+        .style.display=
+            isOwnerMode ?
+            'block' :
+            'none';
+
+
+    renderCategory(
+        'avatarsGrid',
+        SHOP_ITEMS.avatars,
+        'selectAvatar'
+    );
+
+
+    renderCategory(
+        'skinsGrid',
+        SHOP_ITEMS.skins,
+        'selectSkin'
+    );
+
+
+    renderCategory(
+        'coinSkinsGrid',
+        SHOP_ITEMS.coinSkins,
+        'selectCoinSkin'
+    );
+
+
+    renderCategory(
+        'trailsGrid',
+        SHOP_ITEMS.trails,
+        'selectTrail'
+    );
+
+}
+
+
+function renderCategory(
+    containerId,
+    items,
+    selectFn
+){
+
+    const grid=
+        document.getElementById(containerId);
+
+    grid.innerHTML='';
+
+
+    items.forEach(item=>{
+
+        const div=
+            document.createElement('div');
+
+
+        const isEquipped=
+
+            (
+                equippedAvatar===item.id ||
+                equippedSkin===item.id ||
+                equippedCoinSkin===item.id ||
+                equippedTrail===item.id
+            );
+
+
+        div.className=
+            `shop-item
+            ${isEquipped?'equipped':''}
+            ${item.legacy?'legacy':''}`;
+
+
+        const price=
+            getItemPrice(item);
+
+
+        let buttonText;
+
+
+        if(isEquipped){
+
+            buttonText='Equipado';
+
+        }else if(item.purchased){
+
+            buttonText='Usar';
+
+        }else{
+
+            buttonText=
+                isOwnerMode ?
+                'GRATIS 👑' :
+                `${price} 🪙`;
+
+        }
+
+
+        div.innerHTML=`
+
+            <span class="item-emoji">
+                ${item.emoji || '🧺'}
+            </span>
+
+            <div class="item-name">
+                ${item.name}
+            </div>
+
+            ${
+                item.legacy
+                ?
+                '<span class="legacy-label">🏛️ LEGACY</span>'
+                :
+                ''
+            }
+
+            ${
+                isOwnerMode
+                ?
+                '<span class="owner-label">👑 GRATIS PARA OWNER</span>'
+                :
+                ''
+            }
+
+            <button
+                class="item-btn ${
+                    isEquipped
+                    ? 'btn-equipped'
+                    : item.purchased
+                    ? 'btn-equip'
+                    : 'btn-buy'
+                }"
+                onclick="${selectFn}('${item.id}')"
+            >
+                ${buttonText}
+            </button>
+
+        `;
+
+
+        grid.appendChild(div);
+
+    });
+
+}
+
+
+/* =========================================================
+   GUARDAR COMPRA
+========================================================= */
+
+function savePurchase(id){
+
+    const purchases=
+        JSON.parse(
+            localStorage.getItem(
+                'coin_game_purchases'
+            ) || '[]'
+        );
+
+
+    if(!purchases.includes(id))
         purchases.push(id);
-        localStorage.setItem('coin_game_purchases', JSON.stringify(purchases));
-        localStorage.setItem('coin_game_coins', coins);
-    }
 
-    // ===== CHAT MULTIJUGADOR Y COMANDO DE DUEÑO =====
-    const chatToggleBtn = document.getElementById('chatToggleBtn');
-    const chatContainer = document.getElementById('chatContainer');
-    const chatCloseBtn = document.getElementById('chatCloseBtn');
-    const chatMessages = document.getElementById('chatMessages');
-    const chatInput = document.getElementById('chatInput');
-    const chatSendBtn = document.getElementById('chatSendBtn');
 
-    const chatChannel = new BroadcastChannel('game_global_chat');
+    localStorage.setItem(
+        'coin_game_purchases',
+        JSON.stringify(purchases)
+    );
 
-    chatToggleBtn.addEventListener('click', () => { chatContainer.classList.remove('hidden'); chatToggleBtn.classList.add('hidden'); });
-    chatCloseBtn.addEventListener('click', () => { chatContainer.classList.add('hidden'); chatToggleBtn.classList.remove('hidden'); });
 
-    function appendMessage(username, text, isSystem = false) {
-        const msgDiv = document.createElement('div');
-        msgDiv.className = `chat-message ${isSystem ? 'system-msg' : ''}`;
-        msgDiv.innerHTML = `<div class="chat-message-username">${username}</div><div class="chat-message-text">${text}</div>`;
-        chatMessages.appendChild(msgDiv);
-        chatMessages.scrollTop = chatMessages.scrollHeight;
-    }
+    localStorage.setItem(
+        'coin_game_coins',
+        coins
+    );
 
-    function sendMessage() {
-        const text = chatInput.value.trim();
-        if(!text) return;
+}
 
-        const parts = text.split(/\s+/);
-        const command = parts[0].toLowerCase();
 
-        if(text === '/dueno' || text === '/admin') {
-            coins += 5000;
-            isOwnerMode = true;
-            localStorage.setItem('coin_game_is_owner', 'true');
-            localStorage.setItem('coin_game_coins', coins);
+/* =========================================================
+   AVATAR
+========================================================= */
 
-            SHOP_ITEMS.avatars.find(a => a.id === 'avatar_owner').purchased = true;
-            SHOP_ITEMS.skins.find(s => s.id === 'skin_owner').purchased = true;
-            SHOP_ITEMS.coinSkins.find(c => c.id === 'coin_owner').purchased = true;
+window.selectAvatar=id=>{
 
-            equippedAvatar = 'avatar_owner';
-            equippedSkin = 'skin_owner';
-            equippedCoinSkin = 'coin_owner';
-            localStorage.setItem('coin_game_avatar', 'avatar_owner');
-            localStorage.setItem('coin_game_skin', 'skin_owner');
-            localStorage.setItem('coin_game_coinskin', 'coin_owner');
+    const item=
+        SHOP_ITEMS.avatars.find(
+            a=>a.id===id
+        );
 
-            appendMessage('👑 SISTEMA', '¡Comando activado! Tienes +5,000 monedas y todos los ítems de Creador.', true);
-            chatInput.value = '';
-            updateShopUI();
+    if(!item) return;
+
+
+    const price=
+        getItemPrice(item);
+
+
+    if(!item.purchased){
+
+        if(coins<price){
+
+            appendMessage(
+                '🛒 TIENDA',
+                'No tienes suficientes monedas.',
+                true
+            );
+
             return;
         }
 
-        // ===== COMANDOS DEL OWNER =====
-        if(command.startsWith('/') && isOwnerMode) {
-            if(command === '/commands') {
-                appendMessage('👑 OWNER', '/money • /give 500 • /giveall • /setcoins 9999 • /giveitem ID • /devbirthday • /announce texto', true);
-                chatInput.value = '';
-                return;
-            }
 
-            if(command === '/money') {
-                appendMessage('👑 OWNER', `Tienes ${coins} 🪙`, true);
-                chatInput.value = '';
-                return;
-            }
+        coins-=price;
 
-            if(command === '/give') {
-                const amount = parseInt(parts[1], 10);
-                if(!Number.isFinite(amount)) {
-                    appendMessage('👑 OWNER', 'Uso: /give 500', true);
-                } else {
-                    coins += amount;
-                    localStorage.setItem('coin_game_coins', coins);
-                    appendMessage('👑 OWNER', `+${amount} 🪙`, true);
-                    updateShopUI();
-                }
-                chatInput.value = '';
-                return;
-            }
+        item.purchased=true;
 
-            if(command === '/giveall') {
-                coins += 10000;
-                localStorage.setItem('coin_game_coins', coins);
-                appendMessage('👑 OWNER', '+10,000 🪙', true);
-                updateShopUI();
-                chatInput.value = '';
-                return;
-            }
+        savePurchase(id);
 
-            if(command === '/setcoins') {
-                const amount = parseInt(parts[1], 10);
-                if(!Number.isFinite(amount)) {
-                    appendMessage('👑 OWNER', 'Uso: /setcoins 9999', true);
-                } else {
-                    coins = Math.max(0, amount);
-                    localStorage.setItem('coin_game_coins', coins);
-                    appendMessage('👑 OWNER', `Monedas establecidas en ${coins} 🪙`, true);
-                    updateShopUI();
-                }
-                chatInput.value = '';
-                return;
-            }
+    }
 
-            if(command === '/giveitem') {
-                const id = parts[1];
-                const item = SHOP_ITEMS.avatars.find(a => a.id === id) || SHOP_ITEMS.skins.find(s => s.id === id) || SHOP_ITEMS.coinSkins.find(c => c.id === id);
-                if(!item) {
-                    appendMessage('👑 OWNER', 'Item no encontrado. Usa /commands.', true);
-                } else {
-                    item.purchased = true;
-                    savePurchase(item.id);
-                    appendMessage('👑 OWNER', `${item.name} desbloqueado.`, true);
-                    updateShopUI();
-                }
-                chatInput.value = '';
-                return;
-            }
 
-            if(command === '/devbirthday') {
-                const peak = SHOP_ITEMS.skins.find(s => s.id === 'skin_peak');
-                if(peak) {
-                    peak.purchased = true;
-                    const purchases = JSON.parse(localStorage.getItem('coin_game_purchases') || '[]');
-                    if(!purchases.includes('skin_peak')) purchases.push('skin_peak');
-                    localStorage.setItem('coin_game_purchases', JSON.stringify(purchases));
-                    localStorage.setItem('peak_event_trollace', 'true');
-                    equippedSkin = 'skin_peak';
-                    localStorage.setItem('coin_game_skin', 'skin_peak');
-                    appendMessage('🏆 PEAK EVENT', '¡Trollace Dorada desbloqueada! Era Dorada activada. x10 por moneda.', true);
-                    updateShopUI();
-                }
-                chatInput.value = '';
-                return;
-            }
+    if(item.purchased){
 
-            if(command === '/announce') {
-                const announcement = parts.slice(1).join(' ').trim();
-                appendMessage('📢 OWNER', announcement || 'Uso: /announce mensaje', true);
-                chatInput.value = '';
-                return;
-            }
+        equippedAvatar=id;
+
+        localStorage.setItem(
+            'coin_game_avatar',
+            id
+        );
+
+    }
+
+
+    updateShopUI();
+
+};
+
+
+/* =========================================================
+   SKINS DE CESTA
+========================================================= */
+
+window.selectSkin=id=>{
+
+    const item=
+        SHOP_ITEMS.skins.find(
+            s=>s.id===id
+        );
+
+    if(!item) return;
+
+
+    /*
+     * LEGACY GOLDEN NO SE COMPRA
+     * SI NO ESTÁ DESBLOQUEADA.
+     */
+
+    if(item.legacy &&
+       !item.purchased &&
+       !isOwnerMode){
+
+        appendMessage(
+            '🏛️ LEGACY',
+            'Esta skin es Legacy y no está disponible para compra.',
+            true
+        );
+
+        return;
+    }
+
+
+    const price=
+        getItemPrice(item);
+
+
+    if(!item.purchased){
+
+        if(coins<price){
+
+            appendMessage(
+                '🛒 TIENDA',
+                'No tienes suficientes monedas.',
+                true
+            );
+
+            return;
         }
 
-        const currentAvatar = SHOP_ITEMS.avatars.find(a => a.id === equippedAvatar);
-        const username = `${currentAvatar ? currentAvatar.emoji : '👤'} ${isOwnerMode ? '[CREADOR]' : 'Jugador_' + Math.floor(Math.random() * 899 + 100)}`;
-        const messageData = { username, text };
 
-        appendMessage(username, text);
-        chatChannel.postMessage(messageData);
-        chatInput.value = '';
+        coins-=price;
+
+        item.purchased=true;
+
+        savePurchase(id);
+
     }
 
-    chatChannel.onmessage = e => appendMessage(e.data.username, e.data.text);
-    chatSendBtn.addEventListener('click', sendMessage);
-    chatInput.addEventListener('keypress', e => { if(e.key === 'Enter') sendMessage(); });
 
-    // ===== CONTROLES =====
-    document.getElementById('fullscreenBtn').addEventListener('click', () => {
-        if(!document.fullscreenElement) document.documentElement.requestFullscreen();
-        else document.exitFullscreen();
-    });
+    if(item.purchased){
 
-    const adminPanel = document.getElementById('adminPanel');
-    document.getElementById('adminBtn').addEventListener('click', () => adminPanel.classList.toggle('active'));
-    document.getElementById('applyBtn').addEventListener('click', () => {
-        CONFIG.INITIAL_TIME = parseInt(document.getElementById('initialTime').value) || 30;
-        CONFIG.INITIAL_COIN_SPEED = parseFloat(document.getElementById('initialSpeed').value) || 4;
-        adminPanel.classList.remove('active');
-    });
+        equippedSkin=id;
 
-    // ===== PEAK EVENT: recuperar desbloqueo guardado =====
-    if(localStorage.getItem('peak_event_trollace') === 'true') {
-        const peak = SHOP_ITEMS.skins.find(s => s.id === 'skin_peak');
-        if(peak) peak.purchased = true;
+        localStorage.setItem(
+            'coin_game_skin',
+            id
+        );
+
     }
 
+
+    updateShopUI();
+
+};
+
+
+/* =========================================================
+   SKIN MONEDA
+========================================================= */
+
+window.selectCoinSkin=id=>{
+
+    const item=
+        SHOP_ITEMS.coinSkins.find(
+            c=>c.id===id
+        );
+
+    if(!item) return;
+
+
+    const price=
+        getItemPrice(item);
+
+
+    if(!item.purchased){
+
+        if(coins<price){
+
+            appendMessage(
+                '🛒 TIENDA',
+                'No tienes suficientes monedas.',
+                true
+            );
+
+            return;
+        }
+
+
+        coins-=price;
+
+        item.purchased=true;
+
+        savePurchase(id);
+
+    }
+
+
+    if(item.purchased){
+
+        equippedCoinSkin=id;
+
+        localStorage.setItem(
+            'coin_game_coinskin',
+            id
+        );
+
+    }
+
+
+    updateShopUI();
+
+};
+
+
+/* =========================================================
+   RGB TRAIL
+========================================================= */
+
+window.selectTrail=id=>{
+
+    const item=
+        SHOP_ITEMS.trails.find(
+            t=>t.id===id
+        );
+
+    if(!item) return;
+
+
+    const price=
+        getItemPrice(item);
+
+
+    if(!item.purchased){
+
+        if(coins<price){
+
+            appendMessage(
+                '🛒 TIENDA',
+                'No tienes suficientes monedas.',
+                true
+            );
+
+            return;
+        }
+
+
+        coins-=price;
+
+        item.purchased=true;
+
+        savePurchase(id);
+
+    }
+
+
+    if(item.purchased){
+
+        equippedTrail=id;
+
+        localStorage.setItem(
+            'coin_game_trail',
+            id
+        );
+
+    }
+
+
+    updateShopUI();
+
+};
+
+
+/* =========================================================
+   CHAT
+========================================================= */
+
+const chatToggleBtn=
+    document.getElementById('chatToggleBtn');
+
+const chatContainer=
+    document.getElementById('chatContainer');
+
+const chatCloseBtn=
+    document.getElementById('chatCloseBtn');
+
+const chatMessages=
+    document.getElementById('chatMessages');
+
+const chatInput=
+    document.getElementById('chatInput');
+
+const chatSendBtn=
+    document.getElementById('chatSendBtn');
+
+
+const chatChannel=
+    new BroadcastChannel('game_global_chat');
+
+
+chatToggleBtn.addEventListener(
+    'click',
+    ()=>{
+        chatContainer.classList.remove('hidden');
+        chatToggleBtn.classList.add('hidden');
+    }
+);
+
+
+chatCloseBtn.addEventListener(
+    'click',
+    ()=>{
+        chatContainer.classList.add('hidden');
+        chatToggleBtn.classList.remove('hidden');
+    }
+);
+
+
+function appendMessage(
+    username,
+    text,
+    isSystem=false
+){
+
+    const msgDiv=
+        document.createElement('div');
+
+    msgDiv.className=
+        `chat-message ${
+            isSystem?'system-msg':''
+        }`;
+
+
+    msgDiv.innerHTML=`
+        <div class="chat-message-username">
+            ${username}
+        </div>
+        <div class="chat-message-text">
+            ${text}
+        </div>
+    `;
+
+
+    chatMessages.appendChild(msgDiv);
+
+    chatMessages.scrollTop=
+        chatMessages.scrollHeight;
+
+}
+
+
+/* =========================================================
+   COMANDOS
+========================================================= */
+
+function sendMessage(){
+
+    const text=
+        chatInput.value.trim();
+
+    if(!text) return;
+
+
+    const parts=
+        text.split(/\s+/);
+
+    const command=
+        parts[0].toLowerCase();
+
+
+    /* COMANDO DUEÑO */
+
+    if(
+        text==='/dueno' ||
+        text==='/admin'
+    ){
+
+        coins+=5000;
+
+        isOwnerMode=true;
+
+        localStorage.setItem(
+            'coin_game_is_owner',
+            'true'
+        );
+
+        localStorage.setItem(
+            'coin_game_coins',
+            coins
+        );
+
+
+        SHOP_ITEMS.avatars
+            .find(a=>a.id==='avatar_owner')
+            .purchased=true;
+
+        SHOP_ITEMS.skins
+            .find(s=>s.id==='skin_owner')
+            .purchased=true;
+
+        SHOP_ITEMS.coinSkins
+            .find(c=>c.id==='coin_owner')
+            .purchased=true;
+
+        /*
+         * TRAIL RGB GRATIS PARA OWNER
+         */
+
+        SHOP_ITEMS.trails
+            .find(t=>t.id==='trail_rgb')
+            .purchased=true;
+
+
+        equippedAvatar='avatar_owner';
+        equippedSkin='skin_owner';
+        equippedCoinSkin='coin_owner';
+        equippedTrail='trail_rgb';
+
+
+        localStorage.setItem(
+            'coin_game_avatar',
+            equippedAvatar
+        );
+
+        localStorage.setItem(
+            'coin_game_skin',
+            equippedSkin
+        );
+
+        localStorage.setItem(
+            'coin_game_coinskin',
+            equippedCoinSkin
+        );
+
+        localStorage.setItem(
+            'coin_game_trail',
+            equippedTrail
+        );
+
+
+        appendMessage(
+            '👑 SISTEMA',
+            '¡Owner activado! Toda la tienda es GRATIS para ti. 🌈',
+            true
+        );
+
+
+        chatInput.value='';
+
+        updateShopUI();
+
+        return;
+
+    }
+
+
+    /* SOLO OWNER */
+
+    if(
+        command.startsWith('/') &&
+        isOwnerMode
+    ){
+
+        if(command==='/commands'){
+
+            appendMessage(
+                '👑 OWNER',
+                '/money • /give 500 • /giveall • /setcoins 9999 • /giveitem ID • /anniversary • /devbirthday • /announce texto',
+                true
+            );
+
+            chatInput.value='';
+
+            return;
+        }
+
+
+        if(command==='/money'){
+
+            appendMessage(
+                '👑 OWNER',
+                `Tienes ${coins} 🪙`,
+                true
+            );
+
+            chatInput.value='';
+
+            return;
+        }
+
+
+        if(command==='/give'){
+
+            const amount=
+                parseInt(parts[1],10);
+
+
+            if(!Number.isFinite(amount)){
+
+                appendMessage(
+                    '👑 OWNER',
+                    'Uso: /give 500',
+                    true
+                );
+
+            }else{
+
+                coins+=amount;
+
+                localStorage.setItem(
+                    'coin_game_coins',
+                    coins
+                );
+
+                appendMessage(
+                    '👑 OWNER',
+                    `+${amount} 🪙`,
+                    true
+                );
+
+                updateShopUI();
+
+            }
+
+
+            chatInput.value='';
+
+            return;
+
+        }
+
+
+        if(command==='/giveall'){
+
+            coins+=10000;
+
+            localStorage.setItem(
+                'coin_game_coins',
+                coins
+            );
+
+            appendMessage(
+                '👑 OWNER',
+                '+10,000 🪙',
+                true
+            );
+
+            updateShopUI();
+
+            chatInput.value='';
+
+            return;
+
+        }
+
+
+        if(command==='/setcoins'){
+
+            const amount=
+                parseInt(parts[1],10);
+
+
+            if(!Number.isFinite(amount)){
+
+                appendMessage(
+                    '👑 OWNER',
+                    'Uso: /setcoins 9999',
+                    true
+                );
+
+            }else{
+
+                coins=Math.max(0,amount);
+
+                localStorage.setItem(
+                    'coin_game_coins',
+                    coins
+                );
+
+                appendMessage(
+                    '👑 OWNER',
+                    `Monedas establecidas en ${coins} 🪙`,
+                    true
+                );
+
+                updateShopUI();
+
+            }
+
+
+            chatInput.value='';
+
+            return;
+
+        }
+
+
+        if(command==='/giveitem'){
+
+            const id=parts[1];
+
+
+            const item=
+                SHOP_ITEMS.avatars.find(a=>a.id===id) ||
+                SHOP_ITEMS.skins.find(s=>s.id===id) ||
+                SHOP_ITEMS.coinSkins.find(c=>c.id===id) ||
+                SHOP_ITEMS.trails.find(t=>t.id===id);
+
+
+            if(!item){
+
+                appendMessage(
+                    '👑 OWNER',
+                    'Item no encontrado.',
+                    true
+                );
+
+            }else{
+
+                item.purchased=true;
+
+                savePurchase(item.id);
+
+                appendMessage(
+                    '👑 OWNER',
+                    `${item.name} desbloqueado GRATIS.`,
+                    true
+                );
+
+                updateShopUI();
+
+            }
+
+
+            chatInput.value='';
+
+            return;
+
+        }
+
+
+        /* =================================================
+           /ANNIVERSARY
+        ================================================= */
+
+        if(command==='/anniversary'){
+
+            const anniv=
+                SHOP_ITEMS.skins.find(
+                    s=>s.id==='skin_anniversary'
+                );
+
+
+            if(anniv){
+
+                anniv.purchased=true;
+
+                equippedSkin='skin_anniversary';
+
+                localStorage.setItem(
+                    'coin_game_skin',
+                    'skin_anniversary'
+                );
+
+
+                savePurchase(
+                    'skin_anniversary'
+                );
+
+
+                appendMessage(
+                    '🎉 ANNIVERSARY',
+                    '¡Anniversary Basket activada! La cesta entrega +100 🪙 por moneda atrapada.',
+                    true
+                );
+
+
+                updateShopUI();
+
+            }
+
+
+            chatInput.value='';
+
+            return;
+
+        }
+
+
+        /* =================================================
+           /DEVBIRTHDAY
+        ================================================= */
+
+        if(command==='/devbirthday'){
+
+            const peak=
+                SHOP_ITEMS.skins.find(
+                    s=>s.id==='skin_peak'
+                );
+
+
+            if(peak){
+
+                peak.purchased=true;
+
+                const purchases=
+                    JSON.parse(
+                        localStorage.getItem(
+                            'coin_game_purchases'
+                        ) || '[]'
+                    );
+
+
+                if(!purchases.includes('skin_peak'))
+                    purchases.push('skin_peak');
+
+
+                localStorage.setItem(
+                    'coin_game_purchases',
+                    JSON.stringify(purchases)
+                );
+
+
+                localStorage.setItem(
+                    'peak_event_trollace',
+                    'true'
+                );
+
+
+                equippedSkin='skin_peak';
+
+
+                localStorage.setItem(
+                    'coin_game_skin',
+                    'skin_peak'
+                );
+
+
+                appendMessage(
+                    '🏆 PEAK EVENT',
+                    '¡Trollace Dorada desbloqueada! Era Dorada activada. x10 por moneda.',
+                    true
+                );
+
+
+                updateShopUI();
+
+            }
+
+
+            chatInput.value='';
+
+            return;
+
+        }
+
+
+        if(command==='/announce'){
+
+            const announcement=
+                parts.slice(1).join(' ').trim();
+
+
+            appendMessage(
+                '📢 OWNER',
+                announcement ||
+                'Uso: /announce mensaje',
+                true
+            );
+
+
+            chatInput.value='';
+
+            return;
+
+        }
+
+    }
+
+
+    /* MENSAJE NORMAL */
+
+    const currentAvatar=
+        SHOP_ITEMS.avatars.find(
+            a=>a.id===equippedAvatar
+        );
+
+
+    const username=
+        `${
+            currentAvatar ?
+            currentAvatar.emoji :
+            '👤'
+        } ${
+            isOwnerMode ?
+            '[CREADOR]' :
+            'Jugador_'+
+            Math.floor(Math.random()*899+100)
+        }`;
+
+
+    const messageData={
+        username,
+        text
+    };
+
+
+    appendMessage(
+        username,
+        text
+    );
+
+
+    chatChannel.postMessage(
+        messageData
+    );
+
+
+    chatInput.value='';
+
+}
+
+
+chatChannel.onmessage=e=>
+    appendMessage(
+        e.data.username,
+        e.data.text
+    );
+
+
+chatSendBtn.addEventListener(
+    'click',
+    sendMessage
+);
+
+
+chatInput.addEventListener(
+    'keypress',
+    e=>{
+        if(e.key==='Enter')
+            sendMessage();
+    }
+);
+
+
+/* =========================================================
+   CONTROLES
+========================================================= */
+
+document.getElementById(
+    'fullscreenBtn'
+).addEventListener(
+    'click',
+    ()=>{
+        if(!document.fullscreenElement)
+            document.documentElement.requestFullscreen();
+        else
+            document.exitFullscreen();
+    }
+);
+
+
+const adminPanel=
+    document.getElementById('adminPanel');
+
+
+document.getElementById(
+    'adminBtn'
+).addEventListener(
+    'click',
+    ()=>{
+        adminPanel.classList.toggle('active');
+    }
+);
+
+
+document.getElementById(
+    'applyBtn'
+).addEventListener(
+    'click',
+    ()=>{
+
+        CONFIG.INITIAL_TIME=
+            parseInt(
+                document.getElementById(
+                    'initialTime'
+                ).value
+            ) || 30;
+
+
+        CONFIG.INITIAL_COIN_SPEED=
+            parseFloat(
+                document.getElementById(
+                    'initialSpeed'
+                ).value
+            ) || 4;
+
+
+        adminPanel.classList.remove(
+            'active'
+        );
+
+    }
+);
+
+
+/* =========================================================
+   RECUPERAR PEAK
+========================================================= */
+
+if(
+    localStorage.getItem(
+        'peak_event_trollace'
+    )==='true'
+){
+
+    const peak=
+        SHOP_ITEMS.skins.find(
+            s=>s.id==='skin_peak'
+        );
+
+    if(peak)
+        peak.purchased=true;
+
+}
+
+
+/* =========================================================
+   RECUPERAR ANNIVERSARY / TRAIL
+========================================================= */
+
+if(
+    localStorage.getItem(
+        'coin_game_trail'
+    )==='trail_rgb'
+){
+
+    const rgb=
+        SHOP_ITEMS.trails.find(
+            t=>t.id==='trail_rgb'
+        );
+
+    if(rgb)
+        rgb.purchased=true;
+
+}
+
+
+/* =========================================================
+   INICIALIZAR UI
+========================================================= */
+
+updateShopUI();
 
 </script>
+
 </body>
 </html>
+```
+
