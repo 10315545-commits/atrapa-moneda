@@ -1,3130 +1,1382 @@
-```html
 <!DOCTYPE html>
 <html lang="es">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Atrapa la Moneda - Ultra FX Anniversary Edition</title>
-
-<style>
-*{margin:0;padding:0;box-sizing:border-box}
-
-body{
-    background:#0a0a12;
-    display:flex;
-    justify-content:center;
-    align-items:center;
-    height:100vh;
-    overflow:hidden;
-    font-family:'Courier New',Courier,monospace;
-    user-select:none
-}
-
-#gameContainer{
-    position:relative;
-    width:100vw;
-    height:100vh;
-    background:radial-gradient(circle at center,#1f083a 0%,#0d0418 100%);
-    display:flex;
-    justify-content:center;
-    align-items:center
-}
-
-canvas{
-    width:100%;
-    height:100%;
-    display:block;
-    cursor:none
-}
-
-.anniversary-banner{
-    position:fixed;
-    top:15px;
-    left:50%;
-    transform:translateX(-50%);
-    background:linear-gradient(90deg,#ffd700,#ff00ff,#00ffff,#ffd700);
-    background-size:300% 300%;
-    animation:rainbow 3s linear infinite;
-    color:#000;
-    padding:8px 24px;
-    border-radius:20px;
-    font-weight:900;
-    font-size:13px;
-    box-shadow:0 0 20px rgba(255,0,255,.6);
-    z-index:90;
-    pointer-events:none
-}
-
-@keyframes rainbow{
-    0%{background-position:0% 50%}
-    50%{background-position:100% 50%}
-    100%{background-position:0% 50%}
-}
-
-.icon-btn{
-    position:fixed;
-    width:50px;
-    height:50px;
-    border:2px solid rgba(255,255,255,.2);
-    border-radius:50%;
-    color:white;
-    font-size:22px;
-    cursor:pointer;
-    box-shadow:0 0 15px rgba(0,0,0,.5);
-    transition:.2s;
-    z-index:99;
-    display:flex;
-    align-items:center;
-    justify-content:center
-}
-
-.icon-btn:hover{
-    transform:scale(1.15) rotate(5deg);
-    box-shadow:0 0 25px rgba(255,215,0,.8)
-}
-
-#fullscreenBtn{top:20px;right:20px;background:linear-gradient(135deg,#667eea,#764ba2)}
-#shopBtn{top:20px;left:20px;background:linear-gradient(135deg,#ffa500,#ff6b00)}
-#chatToggleBtn{bottom:20px;left:20px;background:linear-gradient(135deg,#00c6ff,#0072ff)}
-#adminBtn{bottom:20px;right:20px;background:linear-gradient(135deg,#f12711,#f5af19)}
-
-.modal{
-    position:fixed;
-    top:0;left:0;
-    width:100%;height:100%;
-    background:rgba(0,0,0,.88);
-    backdrop-filter:blur(8px);
-    display:none;
-    justify-content:center;
-    align-items:center;
-    z-index:200
-}
-
-.modal.active{display:flex}
-
-.modal-content{
-    background:#12121a;
-    border:2px solid #ffd700;
-    box-shadow:0 0 30px rgba(255,215,0,.3);
-    border-radius:20px;
-    padding:25px;
-    max-width:800px;
-    width:90%;
-    max-height:85vh;
-    overflow-y:auto;
-    color:white
-}
-
-.modal-header{
-    display:flex;
-    justify-content:space-between;
-    align-items:center;
-    margin-bottom:20px;
-    border-bottom:2px solid #ffd700;
-    padding-bottom:10px
-}
-
-.modal-close{
-    background:none;
-    border:none;
-    color:#ffd700;
-    font-size:28px;
-    cursor:pointer
-}
-
-.player-info{
-    background:#1c1c28;
-    border-radius:12px;
-    padding:15px;
-    margin-bottom:20px;
-    display:flex;
-    justify-content:space-around;
-    text-align:center;
-    border:1px solid #333
-}
-
-.items-grid{
-    display:grid;
-    grid-template-columns:repeat(auto-fill,minmax(130px,1fr));
-    gap:12px;
-    margin-bottom:20px
-}
-
-.shop-item{
-    background:#1a1a24;
-    border:2px solid #333;
-    border-radius:12px;
-    padding:12px;
-    text-align:center;
-    transition:.2s
-}
-
-.shop-item.equipped{
-    border-color:#FFD700;
-    background:#2a250a;
-    box-shadow:0 0 15px rgba(255,215,0,.3)
-}
-
-.shop-item.legacy{
-    border-color:#777;
-}
-
-.item-emoji{
-    font-size:38px;
-    margin-bottom:5px;
-    display:block
-}
-
-.item-name{
-    font-size:11px;
-    color:#87CEEB;
-    margin-bottom:8px;
-    font-weight:bold
-}
-
-.legacy-label{
-    display:block;
-    color:#aaa;
-    font-size:9px;
-    margin-bottom:5px
-}
-
-.owner-label{
-    display:block;
-    color:#ffd700;
-    font-size:9px;
-    font-weight:bold;
-    margin-bottom:5px
-}
-
-.item-btn{
-    width:100%;
-    padding:8px;
-    border:none;
-    border-radius:6px;
-    font-size:11px;
-    font-weight:bold;
-    cursor:pointer
-}
-
-.btn-buy{background:#ff6b00;color:white}
-.btn-equip{background:#2196F3;color:white}
-.btn-equipped{background:#4caf50;color:white}
-
-.chat-container{
-    position:fixed;
-    bottom:80px;
-    left:20px;
-    width:330px;
-    height:360px;
-    background:rgba(18,18,26,.95);
-    border:2px solid #00c6ff;
-    box-shadow:0 0 20px rgba(0,198,255,.3);
-    border-radius:15px;
-    display:flex;
-    flex-direction:column;
-    z-index:98
-}
-
-.chat-container.hidden{display:none}
-
-.chat-header{
-    background:linear-gradient(135deg,#00c6ff,#0072ff);
-    color:white;
-    padding:10px;
-    display:flex;
-    justify-content:space-between;
-    font-weight:bold;
-    font-size:11px;
-    border-radius:12px 12px 0 0
-}
-
-.chat-messages{
-    flex:1;
-    overflow-y:auto;
-    padding:10px;
-    display:flex;
-    flex-direction:column;
-    gap:8px
-}
-
-.chat-message{
-    background:#222230;
-    padding:6px 10px;
-    border-radius:6px;
-    border-left:3px solid #00c6ff
-}
-
-.chat-message.system-msg{
-    background:#382c00;
-    border-left:3px solid #ffd700
-}
-
-.chat-message-username{
-    color:#87CEEB;
-    font-size:10px;
-    font-weight:bold
-}
-
-.chat-message-text{
-    color:#fff;
-    font-size:11px;
-    word-break:break-word
-}
-
-.chat-input-area{
-    display:flex;
-    gap:5px;
-    padding:8px;
-    background:#161620
-}
-
-.chat-input{
-    flex:1;
-    background:#0a0a10;
-    border:1px solid #00c6ff;
-    color:#fff;
-    padding:8px;
-    border-radius:6px;
-    font-size:11px
-}
-
-.chat-send-btn{
-    background:#00c6ff;
-    border:none;
-    color:white;
-    cursor:pointer;
-    padding:0 12px;
-    border-radius:6px
-}
-
-.admin-panel{
-    position:fixed;
-    bottom:80px;
-    right:20px;
-    width:280px;
-    background:#12121a;
-    border:2px solid #f12711;
-    box-shadow:0 0 20px rgba(241,39,17,.4);
-    border-radius:12px;
-    padding:15px;
-    display:none;
-    z-index:101;
-    color:white
-}
-
-.admin-panel.active{display:block}
-
-.config-group{margin-bottom:10px}
-.config-group label{
-    display:block;
-    font-size:10px;
-    color:#aaa;
-    margin-bottom:4px
-}
-
-.config-group input{
-    width:100%;
-    padding:6px;
-    background:#1f1f2e;
-    border:1px solid #444;
-    color:#fff;
-    border-radius:4px
-}
-
-.start-screen{
-    position:absolute;
-    width:100%;
-    height:100%;
-    background:rgba(10,10,18,.95);
-    display:flex;
-    flex-direction:column;
-    justify-content:center;
-    align-items:center;
-    z-index:50;
-    text-align:center;
-    color:white
-}
-
-.start-screen.hidden{display:none}
-
-.game-title{
-    font-size:42px;
-    color:#ffd700;
-    text-shadow:0 0 20px #ffd700,0 0 40px #ff00ff
-}
-
-.start-btn{
-    margin-top:25px;
-    padding:14px 40px;
-    background:linear-gradient(135deg,#ffd700,#ff00ff);
-    border:none;
-    border-radius:30px;
-    font-size:20px;
-    font-weight:900;
-    color:#000;
-    cursor:pointer;
-    box-shadow:0 0 25px rgba(255,215,0,.7);
-    transition:transform .2s
-}
-
-.start-btn:hover{transform:scale(1.1)}
-
-#ownerShopNotice{
-    display:none;
-    background:linear-gradient(90deg,#ffd700,#ff00ff,#00ffff);
-    color:#000;
-    font-weight:900;
-    padding:8px;
-    border-radius:10px;
-    text-align:center;
-    margin-bottom:15px
-}
-
-@media(max-width:600px){
-    .game-title{font-size:28px}
-    .anniversary-banner{
-        font-size:10px;
-        padding:7px 12px
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Atrapa la Moneda - Halloween Edition</title>
+  <style>
+    :root {
+      --bg-1:#090d18;
+      --bg-2:#180d22;
+      --panel:#101827;
+      --panel-2:#1a2438;
+      --gold:#ffd166;
+      --orange:#ff8a3d;
+      --pink:#ff4fd8;
+      --cyan:#38d9ff;
+      --purple:#a66cff;
+      --text:#f5f7ff;
+      --muted:#aab5d3;
+      --danger:#ff5f5f;
+      --shadow:rgba(0,0,0,.38);
     }
-    .chat-container{
-        width:calc(100% - 30px);
-        left:15px
+
+    * { box-sizing:border-box; }
+
+    html, body {
+      margin:0;
+      width:100%;
+      height:100%;
+      overflow:hidden;
+      background:
+        radial-gradient(circle at top, rgba(255,120,60,.18), transparent 30%),
+        radial-gradient(circle at bottom, rgba(74,210,255,.18), transparent 35%),
+        linear-gradient(160deg, var(--bg-1), var(--bg-2));
+      font-family:'Courier New', Courier, monospace;
+      color:var(--text);
+      user-select:none;
     }
-    .icon-btn{
-        width:45px;
-        height:45px
+
+    body { display:flex; justify-content:center; align-items:center; }
+
+    #gameContainer {
+      position:relative;
+      width:100vw;
+      height:100vh;
+      background:
+        radial-gradient(circle at center, rgba(93,30,108,.9) 0%, rgba(12,10,22,1) 70%);
+      overflow:hidden;
     }
-}
-</style>
+
+    canvas {
+      display:block;
+      width:100%;
+      height:100%;
+      cursor:none;
+      filter:saturate(1.12) contrast(1.08);
+    }
+
+    .anniversary-banner {
+      position:fixed;
+      top:16px;
+      left:50%;
+      transform:translateX(-50%);
+      z-index:90;
+      padding:10px 22px;
+      border-radius:999px;
+      font-size:12px;
+      font-weight:900;
+      letter-spacing:1px;
+      color:#120b16;
+      background:linear-gradient(90deg, #ffd166, #ff4fd8, #38d9ff, #ffd166);
+      background-size:300% 100%;
+      box-shadow:0 0 20px rgba(255,79,216,.45);
+      animation:rainbow 3.1s linear infinite;
+      pointer-events:none;
+      white-space:nowrap;
+    }
+
+    @keyframes rainbow {
+      0% { background-position:0% 50%; }
+      50% { background-position:100% 50%; }
+      100% { background-position:0% 50%; }
+    }
+
+    .start-screen {
+      position:absolute;
+      inset:0;
+      z-index:50;
+      display:flex;
+      flex-direction:column;
+      align-items:center;
+      justify-content:center;
+      text-align:center;
+      background:rgba(8,11,22,.7);
+      backdrop-filter:blur(10px);
+      transition:opacity .25s ease, visibility .25s ease;
+    }
+
+    .start-screen.hidden {
+      opacity:0;
+      visibility:hidden;
+      pointer-events:none;
+    }
+
+    .game-title {
+      margin:0;
+      font-size:clamp(2.4rem, 5vw, 4.2rem);
+      color:var(--gold);
+      text-shadow:0 0 20px rgba(255,209,102,.8), 0 0 34px rgba(255,79,216,.75);
+    }
+
+    .game-subtitle {
+      margin:12px 0 0;
+      color:#ff4fd8;
+      font-weight:900;
+      letter-spacing:.05em;
+    }
+
+    .coin-icon {
+      margin:20px 0;
+      font-size:clamp(4rem, 10vw, 7rem);
+      filter:drop-shadow(0 0 16px rgba(255,209,102,.9));
+    }
+
+    .start-btn {
+      border:none;
+      border-radius:999px;
+      padding:16px 42px;
+      background:linear-gradient(135deg, #ffd166, #ff5ec4, #36d7ff);
+      color:#101827;
+      font-size:1.15rem;
+      font-weight:900;
+      letter-spacing:.04em;
+      cursor:pointer;
+      box-shadow:0 0 25px rgba(255,209,102,.55);
+      transition:transform .18s ease, box-shadow .18s ease;
+    }
+
+    .start-btn:hover {
+      transform:translateY(-2px) scale(1.03);
+      box-shadow:0 0 35px rgba(255,79,216,.7);
+    }
+
+    .icon-btn {
+      position:fixed;
+      z-index:99;
+      width:54px;
+      height:54px;
+      border:none;
+      border-radius:50%;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      color:white;
+      font-size:1.35rem;
+      cursor:pointer;
+      box-shadow:0 12px 24px rgba(0,0,0,.28), 0 0 18px rgba(255,255,255,.08);
+      transition:transform .18s ease, box-shadow .18s ease, filter .18s ease;
+    }
+
+    .icon-btn:hover {
+      transform:translateY(-2px) scale(1.08);
+      box-shadow:0 16px 30px rgba(0,0,0,.35), 0 0 26px rgba(255,209,102,.45);
+      filter:brightness(1.08);
+    }
+
+    #fullscreenBtn { top:22px; right:22px; background:linear-gradient(135deg,#7168ff,#7d49d4); }
+    #shopBtn { top:22px; left:22px; background:linear-gradient(135deg,#ff9c1a,#ff5f5f); }
+    #chatToggleBtn { bottom:22px; left:22px; background:linear-gradient(135deg,#28d6ff,#0f72ff); }
+    #adminBtn { bottom:22px; right:22px; background:linear-gradient(135deg,#ff7f2a,#ffbf59); }
+
+    .modal {
+      position:fixed;
+      inset:0;
+      z-index:200;
+      display:none;
+      align-items:center;
+      justify-content:center;
+      background:rgba(0,0,0,.82);
+      backdrop-filter:blur(8px);
+    }
+
+    .modal.active { display:flex; }
+
+    .modal-content {
+      width:min(820px, 90vw);
+      max-height:85vh;
+      overflow-y:auto;
+      padding:24px 22px 18px;
+      border-radius:20px;
+      background:linear-gradient(180deg, rgba(18,25,38,.98), rgba(12,16,26,.98));
+      border:1px solid rgba(255,209,102,.6);
+      box-shadow:0 18px 44px rgba(0,0,0,.35), 0 0 20px rgba(255,209,102,.15);
+      color:var(--text);
+    }
+
+    .modal-content::-webkit-scrollbar { width:10px; }
+    .modal-content::-webkit-scrollbar-thumb {
+      border-radius:999px;
+      background:linear-gradient(180deg, var(--pink), var(--cyan));
+    }
+
+    .modal-header {
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap:12px;
+      padding-bottom:10px;
+      border-bottom:2px solid rgba(255,209,102,.7);
+      margin-bottom:18px;
+    }
+
+    .modal-header h2 {
+      margin:0;
+      font-size:1.3rem;
+    }
+
+    .modal-close {
+      width:34px;
+      height:34px;
+      border:none;
+      border-radius:50%;
+      background:rgba(255,209,102,.08);
+      color:var(--gold);
+      font-size:1.5rem;
+      cursor:pointer;
+      border:1px solid rgba(255,209,102,.5);
+    }
+
+    #ownerShopNotice {
+      display:none;
+      margin-bottom:18px;
+      padding:10px 12px;
+      border-radius:12px;
+      font-weight:900;
+      text-align:center;
+      background:linear-gradient(90deg, #ffd166, #ff4fd8, #38d9ff, #ffd166);
+      background-size:300% 100%;
+      color:#120b16;
+      animation:rainbow 3s linear infinite;
+    }
+
+    .player-info {
+      display:flex;
+      justify-content:space-around;
+      align-items:center;
+      gap:16px;
+      margin-bottom:22px;
+      padding:16px 12px;
+      border-radius:14px;
+      background:linear-gradient(180deg, rgba(26,32,48,.95), rgba(19,22,33,.95));
+      border:1px solid rgba(255,255,255,.08);
+    }
+
+    .player-block {
+      display:flex;
+      flex-direction:column;
+      align-items:center;
+      gap:6px;
+      min-width:90px;
+    }
+
+    .player-avatar {
+      font-size:2.2rem;
+      line-height:1;
+    }
+
+    .player-coin-value {
+      font-size:1.4rem;
+      font-weight:900;
+      color:var(--gold);
+    }
+
+    .label-mini {
+      font-size:10px;
+      color:var(--muted);
+      letter-spacing:.06em;
+      text-transform:uppercase;
+    }
+
+    .shop-section {
+      margin-top:18px;
+    }
+
+    .shop-section h3 {
+      margin:0 0 10px;
+      color:#ffb347;
+      font-size:14px;
+      letter-spacing:.04em;
+    }
+
+    .items-grid {
+      display:grid;
+      grid-template-columns:repeat(auto-fill, minmax(130px, 1fr));
+      gap:12px;
+      margin-bottom:18px;
+    }
+
+    .shop-item {
+      background:linear-gradient(180deg, rgba(25,29,44,.95), rgba(17,20,31,.95));
+      border:1px solid rgba(255,255,255,.08);
+      border-radius:12px;
+      padding:12px 10px;
+      text-align:center;
+      transition:transform .18s ease, border-color .18s ease, box-shadow .18s ease;
+    }
+
+    .shop-item:hover {
+      transform:translateY(-2px);
+      border-color:rgba(255,209,102,.45);
+    }
+
+    .shop-item.equipped {
+      border-color:rgba(255,209,102,.9);
+      background:linear-gradient(180deg, rgba(60,48,14,.72), rgba(18,21,31,.95));
+      box-shadow:0 0 18px rgba(255,209,102,.2);
+    }
+
+    .shop-item.legacy { border-color:rgba(255,255,255,.15); }
+
+    .item-emoji {
+      display:block;
+      margin-bottom:5px;
+      font-size:2.1rem;
+      line-height:1;
+    }
+
+    .item-name {
+      display:block;
+      min-height:34px;
+      font-size:11px;
+      font-weight:700;
+      color:#a9d9ff;
+      margin-bottom:6px;
+    }
+
+    .legacy-label, .owner-label {
+      display:block;
+      margin-bottom:5px;
+      font-size:9px;
+      font-weight:700;
+      letter-spacing:.04em;
+    }
+
+    .legacy-label { color:#b9b9c8; }
+    .owner-label { color:var(--gold); }
+
+    .item-btn {
+      width:100%;
+      padding:8px 10px;
+      border:none;
+      border-radius:8px;
+      font-size:11px;
+      font-weight:900;
+      cursor:pointer;
+      transition:filter .18s ease, transform .18s ease;
+    }
+
+    .item-btn:hover { filter:brightness(1.08); transform:translateY(-1px); }
+    .btn-buy { background:#ff7f2a; color:#fff; }
+    .btn-equip { background:#2d9df6; color:#fff; }
+    .btn-equipped { background:#49b65c; color:#fff; }
+
+    .chat-container {
+      position:fixed;
+      left:20px;
+      bottom:80px;
+      z-index:98;
+      display:flex;
+      flex-direction:column;
+      width:min(330px, calc(100vw - 30px));
+      height:360px;
+      background:rgba(15,18,27,.96);
+      border:1px solid rgba(56,217,255,.8);
+      border-radius:16px;
+      box-shadow:0 18px 28px rgba(0,0,0,.28), 0 0 18px rgba(56,217,255,.2);
+    }
+
+    .chat-container.hidden { display:none; }
+
+    .chat-header {
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap:8px;
+      padding:10px 12px;
+      background:linear-gradient(135deg,#2cdfff,#0f71ff);
+      border-radius:14px 14px 0 0;
+      font-size:11px;
+      font-weight:900;
+      color:white;
+    }
+
+    .chat-close-btn {
+      background:none;
+      border:none;
+      color:white;
+      font-size:1.25rem;
+      cursor:pointer;
+    }
+
+    .chat-messages {
+      flex:1;
+      overflow-y:auto;
+      padding:10px;
+      display:flex;
+      flex-direction:column;
+      gap:8px;
+      background:rgba(18,23,32,.7);
+    }
+
+    .chat-message {
+      background:rgba(34,41,58,.9);
+      border-left:3px solid rgba(56,217,255,.8);
+      border-radius:8px;
+      padding:7px 10px;
+    }
+
+    .chat-message.system-msg {
+      background:rgba(59,45,9,.8);
+      border-left:3px solid rgba(255,209,102,.9);
+    }
+
+    .chat-message-username {
+      display:block;
+      margin-bottom:4px;
+      color:#91d5ff;
+      font-size:9px;
+      font-weight:900;
+      letter-spacing:.05em;
+    }
+
+    .chat-message-text {
+      color:#fff;
+      font-size:11px;
+      line-height:1.4;
+      word-break:break-word;
+    }
+
+    .chat-input-area {
+      display:flex;
+      gap:6px;
+      padding:8px;
+      background:rgba(17,21,30,.9);
+      border-top:1px solid rgba(255,255,255,.08);
+    }
+
+    .chat-input {
+      flex:1;
+      min-width:0;
+      background:#0b0f17;
+      border:1px solid rgba(56,217,255,.6);
+      color:#fff;
+      border-radius:7px;
+      padding:8px 9px;
+      font-size:11px;
+      outline:none;
+    }
+
+    .chat-send-btn {
+      border:none;
+      background:var(--cyan);
+      color:#08131b;
+      border-radius:7px;
+      padding:0 12px;
+      font-weight:900;
+      cursor:pointer;
+    }
+
+    .admin-panel {
+      position:fixed;
+      right:20px;
+      bottom:80px;
+      z-index:101;
+      display:none;
+      width:290px;
+      padding:16px;
+      border-radius:14px;
+      background:rgba(18,18,29,.97);
+      border:1px solid rgba(255,95,95,.8);
+      box-shadow:0 18px 34px rgba(0,0,0,.35), 0 0 18px rgba(255,95,95,.2);
+      color:white;
+    }
+
+    .admin-panel.active { display:block; }
+
+    .admin-panel h3 {
+      margin:0 0 12px;
+      color:#ff5f5f;
+      font-size:1rem;
+    }
+
+    .config-group { margin-bottom:12px; }
+    .config-group label {
+      display:block;
+      margin-bottom:5px;
+      font-size:10px;
+      color:#b6bfd7;
+      letter-spacing:.05em;
+      text-transform:uppercase;
+    }
+    .config-group input {
+      width:100%;
+      background:#1d2433;
+      border:1px solid rgba(255,255,255,.12);
+      border-radius:6px;
+      color:white;
+      padding:7px 8px;
+      font-size:12px;
+    }
+
+    #applyBtn {
+      width:100%;
+      border:none;
+      border-radius:8px;
+      padding:9px 12px;
+      background:linear-gradient(135deg,#ff6d4d,#ff1b5f);
+      color:#fff;
+      font-weight:900;
+      cursor:pointer;
+    }
+
+    @media (max-width:600px) {
+      .game-title { font-size:2.2rem; }
+      .anniversary-banner { font-size:10px; padding:8px 14px; }
+      .icon-btn { width:46px; height:46px; }
+      .chat-container { width:calc(100vw - 18px); left:9px; bottom:72px; }
+      .admin-panel { width:calc(100vw - 18px); right:9px; }
+    }
+  </style>
 </head>
-
 <body>
-
-<div id="gameContainer">
-
-    <div class="anniversary-banner">
-        ✨ 1° ANIVERSARIO DELUXE - ULTRA FX ✨
-    </div>
+  <div id="gameContainer">
+    <div class="anniversary-banner" id="eventBanner">✨ 1° ANIVERSARIO DELUXE - ULTRA FX ✨</div>
 
     <div class="start-screen" id="startScreen">
-        <h1 class="game-title">🎮 ATRAPA LA MONEDA</h1>
-        <p style="color:#ff00ff;margin-top:8px;font-weight:bold;">
-            🔥 Con efectos Neón y Multijugador 🔥
-        </p>
-        <div style="font-size:70px;margin:20px;filter:drop-shadow(0 0 15px #ffd700);">
-            🪙
-        </div>
-        <button class="start-btn" id="startBtn">¡JUGAR AHORA!</button>
+      <h1 class="game-title">🎮 ATRAPA LA MONEDA</h1>
+      <p class="game-subtitle">🔥 Con efectos Neón y Multijugador 🔥</p>
+      <div class="coin-icon">🪙</div>
+      <button class="start-btn" id="startBtn">¡JUGAR AHORA!</button>
     </div>
 
     <canvas id="gameCanvas"></canvas>
-</div>
+  </div>
 
-<button class="icon-btn" id="fullscreenBtn" title="Pantalla Completa">⛶</button>
-<button class="icon-btn" id="shopBtn" title="Tienda">🛍️</button>
-<button class="icon-btn" id="chatToggleBtn" title="Chat Global">💬</button>
-<button class="icon-btn" id="adminBtn" title="Ajustes">⚙️</button>
+  <button class="icon-btn" id="fullscreenBtn" title="Pantalla Completa">⛶</button>
+  <button class="icon-btn" id="shopBtn" title="Tienda">🛍️</button>
+  <button class="icon-btn" id="chatToggleBtn" title="Chat Global">💬</button>
+  <button class="icon-btn" id="adminBtn" title="Ajustes">⚙️</button>
 
-<div class="modal" id="shopModal">
+  <div class="modal" id="shopModal">
     <div class="modal-content">
+      <div class="modal-header">
+        <h2>🛍️ Tienda Neón Deluxe</h2>
+        <button class="modal-close" id="shopClose" aria-label="Cerrar tienda">✕</button>
+      </div>
 
-        <div class="modal-header">
-            <h2>🛍️ Tienda Neón Deluxe</h2>
-            <button class="modal-close" id="shopClose">✕</button>
+      <div id="ownerShopNotice">👑 OWNER MODE — ¡TODA LA TIENDA ES GRATIS!</div>
+
+      <div class="player-info">
+        <div class="player-block">
+          <div class="player-avatar" id="playerAvatar">🎂</div>
+          <div class="label-mini">Avatar</div>
         </div>
-
-        <div id="ownerShopNotice">
-            👑 OWNER MODE — ¡TODA LA TIENDA ES GRATIS!
+        <div class="player-block">
+          <div class="player-coin-value" id="playerCoins">0</div>
+          <div class="label-mini">Monedas</div>
         </div>
+      </div>
 
-        <div class="player-info">
-            <div>
-                <div style="font-size:32px;" id="playerAvatar">🎂</div>
-                <div style="font-size:10px;color:#87CEEB;">Avatar</div>
-            </div>
-
-            <div>
-                <div style="font-size:24px;color:#FFD700;font-weight:bold;" id="playerCoins">0</div>
-                <div style="font-size:10px;color:#87CEEB;">Monedas</div>
-            </div>
-        </div>
-
-        <h3 style="color:#ffa500;font-size:14px;margin-bottom:10px;">
-            Avatares
-        </h3>
+      <div class="shop-section">
+        <h3>Avatares</h3>
         <div class="items-grid" id="avatarsGrid"></div>
+      </div>
 
-        <h3 style="color:#ffa500;font-size:14px;margin-bottom:10px;">
-            Cestas
-        </h3>
+      <div class="shop-section">
+        <h3>Cestas</h3>
         <div class="items-grid" id="skinsGrid"></div>
+      </div>
 
-        <h3 style="color:#ffa500;font-size:14px;margin-bottom:10px;">
-            Skins de Moneda
-        </h3>
+      <div class="shop-section">
+        <h3>Skins de Moneda</h3>
         <div class="items-grid" id="coinSkinsGrid"></div>
+      </div>
 
-        <h3 style="color:#ffa500;font-size:14px;margin-bottom:10px;">
-            Trails
-        </h3>
+      <div class="shop-section">
+        <h3>Trails</h3>
         <div class="items-grid" id="trailsGrid"></div>
-
+      </div>
     </div>
-</div>
+  </div>
 
-<div class="chat-container hidden" id="chatContainer">
-
+  <div class="chat-container hidden" id="chatContainer">
     <div class="chat-header">
-        <span>💬 Chat Global</span>
-        <button style="background:none;border:none;color:white;cursor:pointer;" id="chatCloseBtn">
-            ✕
-        </button>
+      <span>💬 Chat Global</span>
+      <button class="chat-close-btn" id="chatCloseBtn" aria-label="Cerrar chat">✕</button>
     </div>
-
     <div class="chat-messages" id="chatMessages"></div>
-
     <div class="chat-input-area">
-        <input type="text" id="chatInput" class="chat-input" placeholder="Mensaje o /anniversary...">
-        <button class="chat-send-btn" id="chatSendBtn">➤</button>
+      <input type="text" id="chatInput" class="chat-input" placeholder="Mensaje o /anniversary..." />
+      <button class="chat-send-btn" id="chatSendBtn">➤</button>
     </div>
+  </div>
 
-</div>
-
-<div class="admin-panel" id="adminPanel">
-
-    <h3 style="color:#f12711;margin-bottom:10px;">
-        ⚙️ Configuración
-    </h3>
-
+  <div class="admin-panel" id="adminPanel">
+    <h3>⚙️ Configuración</h3>
     <div class="config-group">
-        <label>Tiempo (s):</label>
-        <input type="number" id="initialTime" value="30">
+      <label>Tiempo (s):</label>
+      <input type="number" id="initialTime" value="30" />
     </div>
-
     <div class="config-group">
-        <label>Velocidad Inicial:</label>
-        <input type="number" id="initialSpeed" value="4">
+      <label>Velocidad inicial:</label>
+      <input type="number" id="initialSpeed" value="4" />
     </div>
+    <button id="applyBtn">Guardar ajustes</button>
+  </div>
 
-    <button
-        style="width:100%;padding:8px;background:#f12711;border:none;color:white;font-weight:bold;border-radius:6px;cursor:pointer;"
-        id="applyBtn">
-        Guardar Ajustes
-    </button>
+  <script>
+    (() => {
+      const CONFIG = {
+        INITIAL_TIME: 30,
+        INITIAL_COIN_SPEED: 4,
+        SPEED_INCREMENT: 0.25,
+        SCORE_PER_COIN: 10,
+        BASKET_WIDTH: 100,
+        BASKET_HEIGHT: 22,
+        COIN_RADIUS: 16,
+        HALLOWEEN_MULTIPLIER: 2
+      };
 
-</div>
+      const STORAGE = {
+        COINS: 'coin_game_coins',
+        HIGH_SCORE: 'coin_game_highscore',
+        AVATAR: 'coin_game_avatar',
+        SKIN: 'coin_game_skin',
+        COIN_SKIN: 'coin_game_coinskin',
+        TRAIL: 'coin_game_trail',
+        OWNER: 'coin_game_is_owner',
+        PURCHASES: 'coin_game_purchases',
+        HALLOWEEN: 'coin_game_halloween',
+        EVENT_LOG: 'coin_game_halloween_log'
+      };
 
-<script>
+      let coins = Number(localStorage.getItem(STORAGE.COINS)) || 100;
+      let highScore = Number(localStorage.getItem(STORAGE.HIGH_SCORE)) || 0;
+      let equippedAvatar = localStorage.getItem(STORAGE.AVATAR) || 'avatar_anniv';
+      let equippedSkin = localStorage.getItem(STORAGE.SKIN) || 'skin_anniversary';
+      let equippedCoinSkin = localStorage.getItem(STORAGE.COIN_SKIN) || 'coin_gold';
+      let equippedTrail = localStorage.getItem(STORAGE.TRAIL) || 'trail_none';
+      let isOwnerMode = localStorage.getItem(STORAGE.OWNER) === 'true';
+      let halloweenEnabled = localStorage.getItem(STORAGE.HALLOWEEN) === 'true' || isHalloweenSeason();
 
-/* =========================================================
-   CONFIGURACIÓN
-========================================================= */
+      const STORAGE_PURCHASES = JSON.parse(localStorage.getItem(STORAGE.PURCHASES) || '[]');
 
-const CONFIG = {
-    INITIAL_TIME:30,
-    INITIAL_COIN_SPEED:4,
-    SPEED_INCREMENT:.25,
-    SCORE_PER_COIN:10,
-    BASKET_WIDTH:100,
-    BASKET_HEIGHT:22,
-    COIN_RADIUS:16
-};
-
-
-/* =========================================================
-   DATOS GUARDADOS
-========================================================= */
-
-let coins = parseInt(localStorage.getItem('coin_game_coins')) || 100;
-
-let highScore =
-    parseInt(localStorage.getItem('coin_game_highscore')) || 0;
-
-let equippedAvatar =
-    localStorage.getItem('coin_game_avatar') || 'avatar_anniv';
-
-let equippedSkin =
-    localStorage.getItem('coin_game_skin') || 'skin_anniversary';
-
-let equippedCoinSkin =
-    localStorage.getItem('coin_game_coinskin') || 'coin_gold';
-
-let equippedTrail =
-    localStorage.getItem('coin_game_trail') || 'trail_none';
-
-let isOwnerMode =
-    localStorage.getItem('coin_game_is_owner') === 'true';
-
-
-/* =========================================================
-   TIENDA
-========================================================= */
-
-const SHOP_ITEMS = {
-
-avatars:[
-    {
-        id:'avatar_owner',
-        name:'👑 Dueño / Creador',
-        emoji:'👑',
-        price:9999,
-        purchased:isOwnerMode
-    },
-
-    {
-        id:'avatar_anniv',
-        name:'🎂 Cumpleañero',
-        emoji:'🎂',
-        price:0,
-        purchased:true
-    },
-
-    {
-        id:'avatar1',
-        name:'👤 Clásico',
-        emoji:'👤',
-        price:0,
-        purchased:true
-    },
-
-    {
-        id:'avatar2',
-        name:'😎 Frío',
-        emoji:'😎',
-        price:150
-    },
-
-    {
-        id:'avatar3',
-        name:'🤖 Robot',
-        emoji:'🤖',
-        price:200
-    }
-],
-
-
-skins:[
-
-    /* NUEVA ANNIVERSARY */
-
-    {
-        id:'skin_anniversary',
-        name:'🎉 Anniversary Basket',
-        emoji:'🎂',
-        price:500,
-        purchased:true,
-        legacy:true,
-        anniversary:true,
-
-        draw:(ctx,x,y,w,h)=>{
-
-            ctx.save();
-
-            ctx.shadowBlur=25;
-            ctx.shadowColor='#ff00ff';
-
-            const grad =
-                ctx.createLinearGradient(x,y,x+w,y);
-
-            grad.addColorStop(0,'#ffd700');
-            grad.addColorStop(.25,'#ff69b4');
-            grad.addColorStop(.5,'#ff00ff');
-            grad.addColorStop(.75,'#00ffff');
-            grad.addColorStop(1,'#ffd700');
-
-            ctx.fillStyle=grad;
-            ctx.fillRect(x,y,w,h);
-
-            ctx.fillStyle='#ffffff';
-            ctx.fillRect(x,y-4,w,4);
-
-            ctx.fillStyle='#ffd700';
-            ctx.fillRect(x+w/2-3,y-11,6,7);
-
-            ctx.fillStyle='#fff';
-
-            ctx.fillRect(x+10,y+5,5,5);
-            ctx.fillRect(x+w-15,y+5,5,5);
-
-            ctx.fillStyle='#ffd700';
-
-            ctx.fillRect(x+25,y+12,4,4);
-            ctx.fillRect(x+w-29,y+12,4,4);
-
+      const SHOP_ITEMS = {
+        avatars: [
+          { id:'avatar_owner', name:'👑 Dueño / Creador', emoji:'👑', price:9999, purchased:isOwnerMode },
+          { id:'avatar_anniv', name:'🎂 Cumpleañero', emoji:'🎂', price:0, purchased:true },
+          { id:'avatar1', name:'👤 Clásico', emoji:'👤', price:0, purchased:true },
+          { id:'avatar2', name:'😎 Frío', emoji:'😎', price:150 },
+          { id:'avatar3', name:'🤖 Robot', emoji:'🤖', price:200 },
+          { id:'avatar_witch', name:'🧙 Bruja', emoji:'🧙', price:250, event:true },
+          { id:'avatar_pumpkin', name:'🎃 Calabaza', emoji:'🎃', price:300, event:true }
+        ],
+        skins: [
+          {
+            id:'skin_anniversary',
+            name:'🎉 Anniversary Basket',
+            emoji:'🎂',
+            price:500,
+            purchased:true,
+            legacy:true,
+            anniversary:true,
+            draw(ctx, x, y, w, h) {
+              ctx.save();
+              ctx.shadowBlur = 25;
+              ctx.shadowColor = '#ff00ff';
+              const grad = ctx.createLinearGradient(x, y, x + w, y);
+              grad.addColorStop(0, '#ffd700');
+              grad.addColorStop(0.25, '#ff69b4');
+              grad.addColorStop(0.5, '#ff00ff');
+              grad.addColorStop(0.75, '#00ffff');
+              grad.addColorStop(1, '#ffd700');
+              ctx.fillStyle = grad;
+              ctx.fillRect(x, y, w, h);
+              ctx.fillStyle = '#fff';
+              ctx.fillRect(x, y - 4, w, 4);
+              ctx.fillStyle = '#ffd700';
+              ctx.fillRect(x + w / 2 - 3, y - 11, 6, 7);
+              ctx.fillStyle = '#fff';
+              ctx.fillRect(x + 10, y + 5, 5, 5);
+              ctx.fillRect(x + w - 15, y + 5, 5, 5);
+              ctx.fillStyle = '#ffd700';
+              ctx.fillRect(x + 25, y + 12, 4, 4);
+              ctx.fillRect(x + w - 29, y + 12, 4, 4);
+              ctx.restore();
+            }
+          },
+          {
+            id:'skin_pumpkin',
+            name:'🎃 Cesta Calabaza',
+            emoji:'🎃',
+            price:0,
+            purchased:halloweenEnabled,
+            event:true,
+            draw(ctx, x, y, w, h) {
+              ctx.save();
+              ctx.shadowBlur = 20;
+              ctx.shadowColor = '#ff8a3d';
+              const grad = ctx.createLinearGradient(x, y, x + w, y + h);
+              grad.addColorStop(0, '#ffbf69');
+              grad.addColorStop(0.5, '#ff8a3d');
+              grad.addColorStop(1, '#d95f00');
+              ctx.fillStyle = grad;
+              ctx.fillRect(x, y, w, h);
+              ctx.fillStyle = '#f7d39d';
+              ctx.fillRect(x + 8, y + 4, w - 16, 4);
+              ctx.fillStyle = '#0d0f1a';
+              ctx.fillRect(x + 18, y + 8, 6, 6);
+              ctx.fillRect(x + w - 24, y + 8, 6, 6);
+              ctx.fillStyle = '#ffe8b3';
+              ctx.fillRect(x + w / 2 - 3, y + 4, 6, 6);
+              ctx.restore();
+            }
+          },
+          {
+            id:'skin_owner',
+            name:'👑 Cesta Dueño',
+            emoji:'👑',
+            price:9999,
+            purchased:isOwnerMode,
+            draw(ctx, x, y, w, h) {
+              ctx.save();
+              ctx.shadowBlur = 18;
+              ctx.shadowColor = '#00ffff';
+              const grad = ctx.createLinearGradient(x, y, x + w, y);
+              grad.addColorStop(0, '#ffd700');
+              grad.addColorStop(0.5, '#ff00ff');
+              grad.addColorStop(1, '#00ffff');
+              ctx.fillStyle = grad;
+              ctx.fillRect(x, y, w, h);
+              ctx.fillStyle = '#fff';
+              ctx.font = 'bold 11px Courier';
+              ctx.fillText('👑 CREADOR', x + 8, y + 15);
+              ctx.restore();
+            }
+          },
+          { id:'skin1', name:'🧺 Clásica', emoji:'🧺', price:0, purchased:true, draw(ctx, x, y, w, h) { ctx.fillStyle='#8B4513'; ctx.fillRect(x, y, w, h); } },
+          { id:'skin2', name:'🔥 Cesta Fuego', emoji:'🔥', price:200, draw(ctx, x, y, w, h) {
+            ctx.save(); ctx.shadowBlur = 15; ctx.shadowColor = '#FF4500';
+            const grad = ctx.createLinearGradient(x, y, x, y + h);
+            grad.addColorStop(0, '#FFD700'); grad.addColorStop(1, '#FF4500');
+            ctx.fillStyle = grad; ctx.fillRect(x, y, w, h); ctx.restore();
+          } },
+          { id:'skin3', name:'✨ Cesta Mágica', emoji:'✨', price:180, draw(ctx, x, y, w, h) {
+            ctx.save(); ctx.shadowBlur = 18; ctx.shadowColor = '#b000ff';
+            const grad = ctx.createLinearGradient(x, y, x + w, y);
+            grad.addColorStop(0, '#7a00ff'); grad.addColorStop(0.5, '#ff00c8'); grad.addColorStop(1, '#00d9ff');
+            ctx.fillStyle = grad; ctx.fillRect(x, y, w, h); ctx.restore();
+          } },
+          { id:'skin4', name:'❄️ Cesta Hielo', emoji:'❄️', price:180, draw(ctx, x, y, w, h) {
+            ctx.save(); ctx.shadowBlur = 18; ctx.shadowColor = '#00d9ff';
+            const grad = ctx.createLinearGradient(x, y, x + w, y + h);
+            grad.addColorStop(0, '#e8ffff'); grad.addColorStop(0.5, '#72dfff'); grad.addColorStop(1, '#009fe8');
+            ctx.fillStyle = grad; ctx.fillRect(x, y, w, h); ctx.restore();
+          } },
+          { id:'skin5', name:'💎 Cesta Diamante', emoji:'💎', price:350, draw(ctx, x, y, w, h) {
+            ctx.save(); ctx.shadowBlur = 20; ctx.shadowColor = '#00ffff';
+            const grad = ctx.createLinearGradient(x, y, x, y + h);
+            grad.addColorStop(0, '#ffffff'); grad.addColorStop(0.4, '#8ffcff'); grad.addColorStop(1, '#4db5ff');
+            ctx.fillStyle = grad; ctx.fillRect(x, y, w, h); ctx.strokeStyle='#fff'; ctx.strokeRect(x+2, y+2, w-4,h-4); ctx.restore();
+          } }
+        ],
+        coinSkins: [
+          { id:'coin_gold', name:'🪙 Dorada', emoji:'🪙', price:0, purchased:true, color:'#FFD700', draw(ctx, x, y, r) {
+            ctx.save(); ctx.shadowBlur=16; ctx.shadowColor='#FFD700';
+            ctx.beginPath(); ctx.arc(x, y, r, 0, Math.PI * 2);
+            const grad = ctx.createRadialGradient(x-r*.35, y-r*.35, r*.1, x, y, r);
+            grad.addColorStop(0, '#fff7a8'); grad.addColorStop(0.35, '#ffd700'); grad.addColorStop(1, '#c98900');
+            ctx.fillStyle = grad; ctx.fill(); ctx.strokeStyle='#fff3b0'; ctx.lineWidth=2; ctx.stroke(); ctx.restore();
+          } },
+          { id:'coin_diamond', name:'💎 Diamante', emoji:'💎', price:150, color:'#00f0ff', draw(ctx, x, y, r) {
+            ctx.save(); ctx.shadowBlur=20; ctx.shadowColor='#00f0ff';
+            ctx.beginPath(); ctx.arc(x, y, r, 0, Math.PI * 2);
+            const grad = ctx.createLinearGradient(x-r, y-r, x+r, y+r);
+            grad.addColorStop(0, '#fff'); grad.addColorStop(0.35, '#9dfcff'); grad.addColorStop(1, '#00b7ff');
+            ctx.fillStyle = grad; ctx.fill(); ctx.strokeStyle='#dff9ff'; ctx.lineWidth=2; ctx.stroke(); ctx.restore();
+          } },
+          { id:'coin_fire', name:'🔥 Fuego', emoji:'🔥', price:250, color:'#ff5e2a', draw(ctx, x, y, r) {
+            ctx.save(); ctx.shadowBlur=18; ctx.shadowColor='#ff5e2a';
+            ctx.beginPath(); ctx.arc(x, y, r, 0, Math.PI * 2);
+            const grad = ctx.createRadialGradient(x-r*.35, y-r*.35, r*.1, x, y, r);
+            grad.addColorStop(0, '#fff6b1'); grad.addColorStop(0.35, '#ffb100'); grad.addColorStop(1, '#ff5e2a');
+            ctx.fillStyle=grad; ctx.fill(); ctx.strokeStyle='#ffe2b0'; ctx.lineWidth=2; ctx.stroke(); ctx.restore();
+          } },
+          { id:'coin_ghost', name:'👻 Fantasma', emoji:'👻', price:0, purchased:halloweenEnabled, color:'#e3f3ff', event:true, draw(ctx, x, y, r) {
+            ctx.save(); ctx.shadowBlur = 18; ctx.shadowColor = '#dfefff';
+            ctx.beginPath(); ctx.arc(x, y, r, 0, Math.PI * 2);
+            const grad = ctx.createRadialGradient(x-r*.4, y-r*.4, r*.1, x, y, r);
+            grad.addColorStop(0, '#ffffff'); grad.addColorStop(0.4, '#dfefff'); grad.addColorStop(1, '#bfd7ef');
+            ctx.fillStyle = grad; ctx.fill();
+            ctx.beginPath(); ctx.moveTo(x-r, y); ctx.lineTo(x-r*0.7, y-r*0.7); ctx.lineTo(x, y-r*1.15); ctx.lineTo(x+r*0.7, y-r*0.7); ctx.lineTo(x+r, y); ctx.closePath(); ctx.fillStyle='rgba(255,255,255,0.9)'; ctx.fill();
             ctx.restore();
+          } }
+        ],
+        trails: [
+          { id:'trail_none', name:'Sin Trail', emoji:'🚫', price:0, purchased:true },
+          { id:'trail_rgb', name:'🌈 RGB Cursor Trail', emoji:'🌈', price:400, purchased:false, rgb:true },
+          { id:'trail_witch', name:'🧙 Trail Mágico', emoji:'🧙', price:0, purchased:halloweenEnabled, event:true }
+        ]
+      };
+
+      for (const item of STORAGE_PURCHASES) {
+        const match = [...SHOP_ITEMS.avatars,...SHOP_ITEMS.skins,...SHOP_ITEMS.coinSkins,...SHOP_ITEMS.trails].find(entry => entry.id === item);
+        if (match) match.purchased = true;
+      }
+
+      function getItemPrice(item) {
+        if (isOwnerMode) return 0;
+        if (item && typeof item.price === 'number') return item.price;
+        return 0;
+      }
+
+      function isHalloweenSeason() {
+        return new Date().getMonth() === 9;
+      }
+
+      function updateHalloweenState(force) {
+        if (typeof force === 'boolean') {
+          halloweenEnabled = force;
+        } else {
+          halloweenEnabled = localStorage.getItem(STORAGE.HALLOWEEN) === 'true' || isHalloweenSeason();
         }
-    },
+        localStorage.setItem(STORAGE.HALLOWEEN, String(halloweenEnabled));
+        updateEventBanner();
+        updateOwnerShopNotice();
+        renderShop();
+      }
 
+      function updateEventBanner() {
+        const banner = document.getElementById('eventBanner');
+        if (!banner) return;
+        banner.textContent = halloweenEnabled
+          ? '🎃 EVENTO HALLOWEEN - +2x MONEDAS + BONUS ESPECIAL 🎃'
+          : '✨ 1° ANIVERSARIO DELUXE - ULTRA FX ✨';
+      }
 
-    /* TROLLFACE GOLDEN LEGACY */
+      function updateOwnerShopNotice() {
+        const notice = document.getElementById('ownerShopNotice');
+        if (!notice) return;
+        notice.style.display = isOwnerMode ? 'block' : 'none';
+      }
 
-    {
-        id:'skin_trollface_golden',
-        name:'👑 Trollface Golden — LEGACY',
-        emoji:'👑',
-        price:0,
-        purchased:false,
-        legacy:true,
-        golden:true,
+      const canvas = document.getElementById('gameCanvas');
+      const ctx = canvas.getContext('2d');
+      const startScreen = document.getElementById('startScreen');
+      const startBtn = document.getElementById('startBtn');
 
-        draw:(ctx,x,y,w,h)=>{
+      let gameActive = false;
+      let score = 0;
+      let timeLeft = CONFIG.INITIAL_TIME;
+      let coinSpeed = CONFIG.INITIAL_COIN_SPEED;
+      let basketX = canvas.width / 2 - CONFIG.BASKET_WIDTH / 2;
+      let coinX = Math.random() * (canvas.width - 60) + 30;
+      let coinY = -20;
+      let particles = [];
+      let floatingTexts = [];
+      let confetti = [];
+      let cursorTrail = [];
+      let flashAlpha = 0;
+      let timerInterval = null;
+      let animationFrame = null;
 
-            ctx.save();
+      function resizeCanvas() {
+        canvas.width = window.innerWidth;
+        canvas.height = window.innerHeight;
+        basketX = canvas.width / 2 - CONFIG.BASKET_WIDTH / 2;
+      }
 
-            ctx.shadowBlur=30;
-            ctx.shadowColor='#ffd700';
+      function randomRange(min, max) {
+        return Math.random() * (max - min) + min;
+      }
 
-            const grad =
-                ctx.createLinearGradient(x,y,x+w,y+h);
-
-            grad.addColorStop(0,'#fff8a8');
-            grad.addColorStop(.5,'#ffd700');
-            grad.addColorStop(1,'#a96f00');
-
-            ctx.fillStyle=grad;
-            ctx.fillRect(x,y,w,h);
-
-            ctx.strokeStyle='#fff8cf';
-            ctx.lineWidth=2;
-            ctx.strokeRect(x,y,w,h);
-
-            ctx.fillStyle='#000';
-            ctx.font='bold 10px Courier New';
-            ctx.fillText('TROLLFACE',x+8,y+15);
-
-            ctx.restore();
+      function createParticles(x, y, color) {
+        for (let i = 0; i < 18; i++) {
+          const angle = Math.random() * Math.PI * 2;
+          const speed = Math.random() * 4 + 2;
+          particles.push({
+            x, y,
+            vx: Math.cos(angle) * speed,
+            vy: Math.sin(angle) * speed,
+            life: 1,
+            color: color || '#ffd166',
+            size: Math.random() * 4 + 2
+          });
         }
-    },
+      }
 
+      function addFloatingText(x, y, text, color = '#ffd166') {
+        floatingTexts.push({ x, y, text, color, alpha: 1, vy: -2 });
+      }
 
-    {
-        id:'skin_owner',
-        name:'👑 Cesta Dueño',
-        emoji:'👑',
-        price:9999,
-        purchased:isOwnerMode,
-
-        draw:(ctx,x,y,w,h)=>{
-
-            ctx.save();
-
-            ctx.shadowBlur=20;
-            ctx.shadowColor='#00ffff';
-
-            const grad =
-                ctx.createLinearGradient(x,y,x+w,y);
-
-            grad.addColorStop(0,'#ffd700');
-            grad.addColorStop(.5,'#ff00ff');
-            grad.addColorStop(1,'#00ffff');
-
-            ctx.fillStyle=grad;
-            ctx.fillRect(x,y,w,h);
-
-            ctx.fillStyle='#ffffff';
-            ctx.font='bold 11px Courier';
-            ctx.fillText('👑 CREADOR',x+10,y+15);
-
-            ctx.restore();
+      function spawnConfetti() {
+        for (let i = 0; i < 45; i++) {
+          confetti.push({
+            x: randomRange(0, canvas.width),
+            y: randomRange(0, canvas.height * 0.4),
+            r: randomRange(3, 7),
+            color: ['#ffd166', '#ff4fd8', '#38d9ff', '#ff8a3d', '#89ff7a'][i % 5],
+            vy: randomRange(1.5, 3.5),
+            vx: randomRange(-1.8, 1.8),
+            alpha: 1
+          });
         }
-    },
+      }
 
+      function startGame() {
+        gameActive = true;
+        score = 0;
+        timeLeft = Number(document.getElementById('initialTime').value || CONFIG.INITIAL_TIME);
+        coinSpeed = Number(document.getElementById('initialSpeed').value || CONFIG.INITIAL_COIN_SPEED);
+        particles = [];
+        floatingTexts = [];
+        confetti = [];
+        cursorTrail = [];
+        coinX = randomRange(30, canvas.width - 30);
+        coinY = -20;
+        startScreen.classList.add('hidden');
+        clearInterval(timerInterval);
+        timerInterval = setInterval(() => {
+          if (gameActive) {
+            timeLeft -= 1;
+            if (timeLeft <= 0) endGame();
+          }
+        }, 1000);
+        if (animationFrame) cancelAnimationFrame(animationFrame);
+        animationFrame = requestAnimationFrame(updateGame);
+      }
 
-    {
-        id:'skin1',
-        name:'🧺 Clásica',
-        emoji:'🧺',
-        price:0,
-        purchased:true,
-
-        draw:(ctx,x,y,w,h)=>{
-            ctx.fillStyle='#8B4513';
-            ctx.fillRect(x,y,w,h);
+      function endGame() {
+        gameActive = false;
+        clearInterval(timerInterval);
+        if (score > highScore) {
+          highScore = score;
+          localStorage.setItem(STORAGE.HIGH_SCORE, String(highScore));
         }
-    },
+        localStorage.setItem(STORAGE.COINS, String(coins));
 
+        const screen = document.getElementById('startScreen');
+        screen.classList.remove('hidden');
+        const title = screen.querySelector('.game-title');
+        title.textContent = '🎮 PARTIDA TERMINADA';
+        const subtitle = screen.querySelector('.game-subtitle');
+        subtitle.textContent = `Puntaje: ${score} | Mejor: ${highScore}`;
+        startBtn.textContent = 'JUGAR DE NUEVO';
+        spawnConfetti();
+      }
 
-    {
-        id:'skin2',
-        name:'🔥 Cesta Fuego',
-        emoji:'🔥',
-        price:200,
+      function resetStartScreen() {
+        const title = document.querySelector('.game-title');
+        const subtitle = document.querySelector('.game-subtitle');
+        title.textContent = '🎮 ATRAPA LA MONEDA';
+        subtitle.textContent = halloweenEnabled ? '🔥 Evento Halloween: +2x monedas y bonus ocultos 🔥' : '🔥 Con efectos Neón y Multijugador 🔥';
+        startBtn.textContent = '¡JUGAR AHORA!';
+      }
 
-        draw:(ctx,x,y,w,h)=>{
+      function pickActiveCoinSkin() {
+        return SHOP_ITEMS.coinSkins.find(item => item.id === equippedCoinSkin) || SHOP_ITEMS.coinSkins[0];
+      }
 
-            ctx.save();
+      function pickActiveSkin() {
+        return SHOP_ITEMS.skins.find(item => item.id === equippedSkin) || SHOP_ITEMS.skins[0];
+      }
 
-            ctx.shadowBlur=15;
-            ctx.shadowColor='#FF4500';
+      function pickActiveTrail() {
+        return SHOP_ITEMS.trails.find(item => item.id === equippedTrail) || SHOP_ITEMS.trails[0];
+      }
 
-            const grad =
-                ctx.createLinearGradient(x,y,x,y+h);
-
-            grad.addColorStop(0,'#FFD700');
-            grad.addColorStop(1,'#FF4500');
-
-            ctx.fillStyle=grad;
-            ctx.fillRect(x,y,w,h);
-
-            ctx.restore();
+      function drawCursorTrail() {
+        const trailEnabled = equippedTrail === 'trail_rgb' || equippedTrail === 'trail_witch';
+        if (!trailEnabled) return;
+        for (let i = 0; i < cursorTrail.length; i++) {
+          const p = cursorTrail[i];
+          p.life -= 0.03;
+          if (p.life <= 0) continue;
+          ctx.save();
+          ctx.globalAlpha = p.life;
+          ctx.fillStyle = p.color;
+          ctx.beginPath();
+          ctx.arc(p.x, p.y, 6 + (1 - p.life) * 8, 0, Math.PI * 2);
+          ctx.fill();
+          ctx.restore();
         }
-    },
+        cursorTrail = cursorTrail.filter(p => p.life > 0);
+      }
 
-
-    {
-        id:'skin3',
-        name:'✨ Cesta Mágica',
-        emoji:'✨',
-        price:180,
-
-        draw:(ctx,x,y,w,h)=>{
-
-            ctx.save();
-
-            ctx.shadowBlur=18;
-            ctx.shadowColor='#b000ff';
-
-            const grad =
-                ctx.createLinearGradient(x,y,x+w,y);
-
-            grad.addColorStop(0,'#7a00ff');
-            grad.addColorStop(.5,'#ff00c8');
-            grad.addColorStop(1,'#00d9ff');
-
-            ctx.fillStyle=grad;
-            ctx.fillRect(x,y,w,h);
-
-            ctx.restore();
+      function drawConfetti() {
+        for (let i = confetti.length - 1; i >= 0; i--) {
+          const p = confetti[i];
+          p.y += p.vy;
+          p.x += p.vx;
+          p.alpha -= 0.008;
+          ctx.save();
+          ctx.globalAlpha = p.alpha;
+          ctx.fillStyle = p.color;
+          ctx.fillRect(p.x, p.y, 5, 10);
+          ctx.restore();
+          if (p.alpha <= 0) confetti.splice(i, 1);
         }
-    },
+      }
 
-
-    {
-        id:'skin4',
-        name:'❄️ Cesta Hielo',
-        emoji:'❄️',
-        price:180,
-
-        draw:(ctx,x,y,w,h)=>{
-
-            ctx.save();
-
-            ctx.shadowBlur=18;
-            ctx.shadowColor='#00d9ff';
-
-            const grad =
-                ctx.createLinearGradient(x,y,x+w,y+h);
-
-            grad.addColorStop(0,'#e8ffff');
-            grad.addColorStop(.5,'#72dfff');
-            grad.addColorStop(1,'#009fe8');
-
-            ctx.fillStyle=grad;
-            ctx.fillRect(x,y,w,h);
-
-            ctx.restore();
+      function drawCoin(x, y, r, skin) {
+        if (skin && skin.draw) {
+          skin.draw(ctx, x, y, r);
+          return;
         }
-    },
-
-
-    {
-        id:'skin5',
-        name:'💎 Cesta Diamante',
-        emoji:'💎',
-        price:350,
-
-        draw:(ctx,x,y,w,h)=>{
-
-            ctx.save();
-
-            ctx.shadowBlur=20;
-            ctx.shadowColor='#00ffff';
-
-            const grad =
-                ctx.createLinearGradient(x,y,x,y+h);
-
-            grad.addColorStop(0,'#ffffff');
-            grad.addColorStop(.4,'#8ffcff');
-            grad.addColorStop(1,'#4db5ff');
-
-            ctx.fillStyle=grad;
-            ctx.fillRect(x,y,w,h);
-
-            ctx.strokeStyle='#fff';
-            ctx.strokeRect(x+2,y+2,w-4,h-4);
-
-            ctx.restore();
-        }
-    },
-
-
-    {
-        id:'skin6',
-        name:'🌈 Cesta Arcoíris',
-        emoji:'🌈',
-        price:250,
-
-        draw:(ctx,x,y,w,h)=>{
-
-            ctx.save();
-
-            const grad =
-                ctx.createLinearGradient(x,y,x+w,y);
-
-            grad.addColorStop(0,'#ff003c');
-            grad.addColorStop(.2,'#ff8a00');
-            grad.addColorStop(.4,'#fff000');
-            grad.addColorStop(.6,'#00ff7b');
-            grad.addColorStop(.8,'#00c8ff');
-            grad.addColorStop(1,'#9b00ff');
-
-            ctx.fillStyle=grad;
-            ctx.fillRect(x,y,w,h);
-
-            ctx.restore();
-        }
-    },
-
-
-    {
-        id:'skin7',
-        name:'⚡ Cesta Neón',
-        emoji:'⚡',
-        price:300,
-
-        draw:(ctx,x,y,w,h)=>{
-
-            ctx.save();
-
-            ctx.shadowBlur=22;
-            ctx.shadowColor='#00ffff';
-
-            ctx.fillStyle='#00d9ff';
-            ctx.fillRect(x,y,w,h);
-
-            ctx.restore();
-        }
-    },
-
-
-    {
-        id:'skin8',
-        name:'👹 Cesta Trollace',
-        emoji:'👹',
-        price:450,
-
-        draw:(ctx,x,y,w,h)=>{
-
-            ctx.save();
-
-            ctx.shadowBlur=20;
-            ctx.shadowColor='#8b00ff';
-
-            ctx.fillStyle='#20102a';
-            ctx.fillRect(x,y,w,h);
-
-            ctx.strokeStyle='#b84cff';
-            ctx.lineWidth=3;
-            ctx.strokeRect(x,y,w,h);
-
-            ctx.restore();
-        }
-    },
-
-
-    {
-        id:'skin_peak',
-        name:'🏆 Trollace Dorada',
-        emoji:'🏆',
-        price:0,
-        purchased:false,
-        peak:true,
-
-        draw:(ctx,x,y,w,h)=>{
-
-            ctx.save();
-
-            ctx.shadowBlur=28;
-            ctx.shadowColor='#FFD700';
-
-            const grad =
-                ctx.createLinearGradient(x,y,x+w,y+h);
-
-            grad.addColorStop(0,'#fff6a0');
-            grad.addColorStop(.5,'#FFD700');
-            grad.addColorStop(1,'#a96f00');
-
-            ctx.fillStyle=grad;
-            ctx.fillRect(x,y,w,h);
-
-            ctx.strokeStyle='#fff8cf';
-            ctx.lineWidth=2;
-            ctx.strokeRect(x,y,w,h);
-
-            ctx.restore();
-        }
-    }
-],
-
-
-coinSkins:[
-
-    {
-        id:'coin_gold',
-        name:'🪙 Dorada',
-        emoji:'🪙',
-        price:0,
-        purchased:true,
-        color:'#FFD700',
-
-        draw:(ctx,x,y,r)=>{
-
-            ctx.save();
-
-            ctx.shadowBlur=16;
-            ctx.shadowColor='#FFD700';
-
-            ctx.beginPath();
-            ctx.arc(x,y,r,0,Math.PI*2);
-
-            const grad =
-                ctx.createRadialGradient(
-                    x-r*.35,y-r*.35,r*.1,
-                    x,y,r
-                );
-
-            grad.addColorStop(0,'#fff7a8');
-            grad.addColorStop(.35,'#ffd700');
-            grad.addColorStop(1,'#c98900');
-
-            ctx.fillStyle=grad;
-            ctx.fill();
-
-            ctx.strokeStyle='#fff4b0';
-            ctx.lineWidth=2;
-            ctx.stroke();
-
-            ctx.restore();
-        }
-    },
-
-
-    {
-        id:'coin_diamond',
-        name:'💎 Diamante',
-        emoji:'💎',
-        price:150,
-        color:'#00FFFF',
-
-        draw:(ctx,x,y,r)=>{
-
-            ctx.save();
-
-            ctx.shadowBlur=20;
-            ctx.shadowColor='#00FFFF';
-
-            ctx.beginPath();
-            ctx.arc(x,y,r,0,Math.PI*2);
-
-            const grad =
-                ctx.createLinearGradient(x-r,y-r,x+r,y+r);
-
-            grad.addColorStop(0,'#fff');
-            grad.addColorStop(.35,'#a9ffff');
-            grad.addColorStop(.7,'#00d8ff');
-            grad.addColorStop(1,'#0077ff');
-
-            ctx.fillStyle=grad;
-            ctx.fill();
-
-            ctx.strokeStyle='#fff';
-            ctx.lineWidth=2;
-            ctx.stroke();
-
-            ctx.restore();
-        }
-    },
-
-
-    {
-        id:'coin_fire',
-        name:'🔥 Fuego',
-        emoji:'🔥',
-        price:250,
-        color:'#FF4500',
-
-        draw:(ctx,x,y,r)=>{
-
-            ctx.save();
-
-            ctx.shadowBlur=22;
-            ctx.shadowColor='#FF4500';
-
-            ctx.beginPath();
-            ctx.arc(x,y,r,0,Math.PI*2);
-
-            const grad =
-                ctx.createRadialGradient(
-                    x,y-r*.35,r*.1,
-                    x,y,r
-                );
-
-            grad.addColorStop(0,'#fff36a');
-            grad.addColorStop(.35,'#ffb000');
-            grad.addColorStop(1,'#ff2b00');
-
-            ctx.fillStyle=grad;
-            ctx.fill();
-
-            ctx.strokeStyle='#FFD700';
-            ctx.lineWidth=2;
-            ctx.stroke();
-
-            ctx.restore();
-        }
-    },
-
-
-    {
-        id:'coin_owner',
-        name:'👑 Moneda Creador',
-        emoji:'👑',
-        price:9999,
-        purchased:isOwnerMode,
-        color:'#ff00ff',
-
-        draw:(ctx,x,y,r)=>{
-
-            ctx.save();
-
-            ctx.shadowBlur=25;
-            ctx.shadowColor='#ff00ff';
-
-            ctx.beginPath();
-            ctx.arc(x,y,r,0,Math.PI*2);
-
-            const grad =
-                ctx.createRadialGradient(
-                    x-r*.35,y-r*.35,r*.15,
-                    x,y,r
-                );
-
-            grad.addColorStop(0,'#fff');
-            grad.addColorStop(.25,'#ff8cff');
-            grad.addColorStop(1,'#ff00aa');
-
-            ctx.fillStyle=grad;
-            ctx.fill();
-
-            ctx.strokeStyle='#00ffff';
-            ctx.lineWidth=3;
-            ctx.stroke();
-
-            ctx.restore();
-        }
-    },
-
-
-    {
-        id:'coin_rainbow',
-        name:'🌈 Arcoíris',
-        emoji:'🌈',
-        price:300,
-        color:'#ff00ff',
-
-        draw:(ctx,x,y,r)=>{
-
-            ctx.save();
-
-            const grad =
-                ctx.createLinearGradient(x-r,y-r,x+r,y+r);
-
-            grad.addColorStop(0,'#ff003c');
-            grad.addColorStop(.2,'#ff8a00');
-            grad.addColorStop(.4,'#fff000');
-            grad.addColorStop(.6,'#00ff7b');
-            grad.addColorStop(.8,'#00c8ff');
-            grad.addColorStop(1,'#9b00ff');
-
-            ctx.beginPath();
-            ctx.arc(x,y,r,0,Math.PI*2);
-            ctx.fillStyle=grad;
-            ctx.fill();
-
-            ctx.strokeStyle='#fff';
-            ctx.lineWidth=2;
-            ctx.stroke();
-
-            ctx.restore();
-        }
-    },
-
-
-    {
-        id:'coin_ice',
-        name:'❄️ Hielo',
-        emoji:'❄️',
-        price:200,
-        color:'#6ee7ff',
-
-        draw:(ctx,x,y,r)=>{
-
-            ctx.save();
-
-            ctx.shadowBlur=18;
-            ctx.shadowColor='#00eaff';
-
-            ctx.beginPath();
-            ctx.arc(x,y,r,0,Math.PI*2);
-
-            ctx.fillStyle='#8feaff';
-            ctx.fill();
-
-            ctx.strokeStyle='#fff';
-            ctx.stroke();
-
-            ctx.restore();
-        }
-    },
-
-
-    {
-        id:'coin_neon',
-        name:'⚡ Neón',
-        emoji:'⚡',
-        price:350,
-        color:'#00ffff',
-
-        draw:(ctx,x,y,r)=>{
-
-            ctx.save();
-
-            ctx.shadowBlur=25;
-            ctx.shadowColor='#00ffff';
-
-            ctx.beginPath();
-            ctx.arc(x,y,r,0,Math.PI*2);
-
-            ctx.fillStyle='#00ffff';
-            ctx.fill();
-
-            ctx.strokeStyle='#fff';
-            ctx.lineWidth=2;
-            ctx.stroke();
-
-            ctx.restore();
-        }
-    }
-],
-
-
-trails:[
-
-    {
-        id:'trail_none',
-        name:'🚫 Sin Trail',
-        emoji:'🚫',
-        price:0,
-        purchased:true
-    },
-
-    {
-        id:'trail_rgb',
-        name:'🌈 RGB Cursor Trail',
-        emoji:'🌈',
-        price:400,
-        purchased:false,
-        rgb:true
-    }
-]
-
-};
-
-
-/* =========================================================
-   COMPRAS GUARDADAS
-========================================================= */
-
-const savedPurchases =
-    JSON.parse(localStorage.getItem('coin_game_purchases') || '[]');
-
-savedPurchases.forEach(id=>{
-
-    const item =
-        SHOP_ITEMS.avatars.find(a=>a.id===id) ||
-        SHOP_ITEMS.skins.find(s=>s.id===id) ||
-        SHOP_ITEMS.coinSkins.find(c=>c.id===id) ||
-        SHOP_ITEMS.trails.find(t=>t.id===id);
-
-    if(item) item.purchased=true;
-});
-
-
-/* =========================================================
-   OWNER = TODO GRATIS
-========================================================= */
-
-function getItemPrice(item){
-
-    if(isOwnerMode) return 0;
-
-    return Number(item.price) || 0;
-}
-
-
-/* =========================================================
-   AUDIO
-========================================================= */
-
-const audioCtx =
-    new(window.AudioContext || window.webkitAudioContext)();
-
-function playCoinSound(pitchBoost=0){
-
-    if(audioCtx.state==='suspended')
-        audioCtx.resume();
-
-    const osc=audioCtx.createOscillator();
-    const gain=audioCtx.createGain();
-
-    osc.type='triangle';
-
-    osc.frequency.setValueAtTime(
-        800+pitchBoost,
-        audioCtx.currentTime
-    );
-
-    osc.frequency.exponentialRampToValueAtTime(
-        1600+pitchBoost,
-        audioCtx.currentTime+.12
-    );
-
-    gain.gain.setValueAtTime(
-        .15,
-        audioCtx.currentTime
-    );
-
-    gain.gain.exponentialRampToValueAtTime(
-        .001,
-        audioCtx.currentTime+.12
-    );
-
-    osc.connect(gain);
-    gain.connect(audioCtx.destination);
-
-    osc.start();
-    osc.stop(audioCtx.currentTime+.12);
-}
-
-
-/* =========================================================
-   CANVAS
-========================================================= */
-
-const canvas=document.getElementById('gameCanvas');
-const ctx=canvas.getContext('2d');
-
-function resizeCanvas(){
-
-    canvas.width=window.innerWidth;
-    canvas.height=window.innerHeight;
-
-}
-
-window.addEventListener('resize',resizeCanvas);
-
-resizeCanvas();
-
-
-/* =========================================================
-   VARIABLES DEL JUEGO
-========================================================= */
-
-let gameActive=false;
-let score=0;
-
-let timeLeft=CONFIG.INITIAL_TIME;
-let coinSpeed=CONFIG.INITIAL_COIN_SPEED;
-
-let basketX=
-    canvas.width/2-CONFIG.BASKET_WIDTH/2;
-
-let coinX=
-    Math.random()*(canvas.width-60)+30;
-
-let coinY=-20;
-
-let particles=[];
-let coinTrail=[];
-let floatingTexts=[];
-let confetti=[];
-
-let cursorTrail=[];
-
-let flashAlpha=0;
-let timerInterval;
-
-
-/* =========================================================
-   PARTICULAS
-========================================================= */
-
-function createParticles(x,y,color){
-
-    for(let i=0;i<18;i++){
-
-        const angle=Math.random()*Math.PI*2;
-        const speed=Math.random()*7+2;
-
-        particles.push({
-            x,
-            y,
-            vx:Math.cos(angle)*speed,
-            vy:Math.sin(angle)*speed,
-            life:1,
-            color:color||'#FFD700',
-            size:Math.random()*4+2
-        });
-    }
-}
-
-
-function addFloatingText(x,y,text,color){
-
-    floatingTexts.push({
-        x,
-        y,
-        text,
-        color,
-        alpha:1,
-        vy:-2
-    });
-
-}
-
-
-/* =========================================================
-   CONFETI
-========================================================= */
-
-function initConfetti(){
-
-    confetti=Array.from({length:45},()=>({
-
-        x:Math.random()*canvas.width,
-        y:Math.random()*canvas.height,
-        r:Math.random()*6+2,
-        color:`hsl(${Math.random()*360},100%,60%)`
-
-    }));
-
-}
-
-
-/* =========================================================
-   MOVIMIENTO DEL JUGADOR
-========================================================= */
-
-window.addEventListener('mousemove',e=>{
-
-    basketX=
-        e.clientX-CONFIG.BASKET_WIDTH/2;
-
-    if(e.clientX<0) basketX=0;
-
-    if(e.clientX>canvas.width)
-        basketX=canvas.width-CONFIG.BASKET_WIDTH;
-
-
-    /* RGB TRAIL SOLO VISUAL */
-
-    if(e.clientX!==undefined){
-
-        cursorTrail.push({
-            x:e.clientX,
-            y:e.clientY,
-            hue:(Date.now()/3)%360,
-            life:1
-        });
-
-        if(cursorTrail.length>35)
-            cursorTrail.shift();
-
-    }
-
-});
-
-
-window.addEventListener('touchmove',e=>{
-
-    if(e.touches.length>0){
-
-        basketX=
-            e.touches[0].clientX-CONFIG.BASKET_WIDTH/2;
-
-    }
-
-});
-
-
-/* =========================================================
-   DIBUJAR RGB CURSOR TRAIL
-   NO TIENE COLISIONES
-========================================================= */
-
-function drawRGBTrail(){
-
-    if(equippedTrail!=='trail_rgb')
-        return;
-
-    for(let i=0;i<cursorTrail.length;i++){
-
-        const p=cursorTrail[i];
-
-        p.life-=.035;
-
-        if(p.life<=0) continue;
-
-        const size=
-            12*(i/cursorTrail.length)+3;
-
         ctx.save();
-
-        ctx.globalAlpha=
-            Math.max(0,p.life*.7);
-
-        ctx.shadowBlur=15;
-
-        ctx.shadowColor=
-            `hsl(${p.hue},100%,60%)`;
-
-        ctx.fillStyle=
-            `hsl(${p.hue},100%,60%)`;
-
-        ctx.beginPath();
-
-        ctx.arc(
-            p.x,
-            p.y,
-            size,
-            0,
-            Math.PI*2
-        );
-
-        ctx.fill();
-
+        ctx.beginPath(); ctx.arc(x, y, r, 0, Math.PI * 2);
+        ctx.fillStyle = '#FFD700'; ctx.fill();
+        ctx.strokeStyle = '#fff8c6'; ctx.lineWidth = 2; ctx.stroke();
         ctx.restore();
-    }
+      }
 
-    cursorTrail=
-        cursorTrail.filter(p=>p.life>0);
+      function drawBasket() {
+        const skin = pickActiveSkin();
+        const x = basketX;
+        const y = canvas.height - 80;
+        const w = CONFIG.BASKET_WIDTH;
+        const h = CONFIG.BASKET_HEIGHT;
+        if (skin && skin.draw) {
+          skin.draw(ctx, x, y, w, h);
+        } else {
+          ctx.fillStyle = '#8B4513'; ctx.fillRect(x, y, w, h);
+        }
+      }
 
-}
+      function updateGame() {
+        if (!gameActive) return;
 
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
 
-/* =========================================================
-   INICIAR
-========================================================= */
-
-document.getElementById('startBtn')
-.addEventListener('click',()=>{
-
-    document.getElementById('startScreen')
-        .classList.add('hidden');
-
-    gameActive=true;
-
-    score=0;
-
-    timeLeft=CONFIG.INITIAL_TIME;
-
-    coinSpeed=CONFIG.INITIAL_COIN_SPEED;
-
-    coinY=-20;
-
-    coinTrail=[];
-    particles=[];
-    floatingTexts=[];
-
-    initConfetti();
-
-    clearInterval(timerInterval);
-
-    timerInterval=setInterval(()=>{
-
-        if(gameActive){
-
-            timeLeft--;
-
-            if(timeLeft<=0)
-                endGame();
-
+        if (flashAlpha > 0) {
+          ctx.fillStyle = `rgba(255,255,255,${flashAlpha})`;
+          ctx.fillRect(0, 0, canvas.width, canvas.height);
+          flashAlpha *= 0.9;
         }
 
-    },1000);
-
-    requestAnimationFrame(updateGame);
-
-});
-
-
-/* =========================================================
-   FIN DEL JUEGO
-========================================================= */
-
-function endGame(){
-
-    gameActive=false;
-
-    clearInterval(timerInterval);
-
-    if(score>highScore){
-
-        highScore=score;
-
-        localStorage.setItem(
-            'coin_game_highscore',
-            highScore
-        );
-
-    }
-
-    localStorage.setItem(
-        'coin_game_coins',
-        coins
-    );
-
-    const screen=
-        document.getElementById('startScreen');
-
-    screen.querySelector('h1').innerText=
-        '¡TIEMPO AGOTADO!';
-
-    screen.querySelector('p').innerText=
-        `Puntos: ${score} | Máximo: ${highScore}`;
-
-    screen.classList.remove('hidden');
-
-}
-
-
-/* =========================================================
-   RECOMPENSA ANNIVERSARY
-========================================================= */
-
-function giveAnniversaryReward(){
-
-    const reward=100;
-
-    coins+=reward;
-
-    localStorage.setItem(
-        'coin_game_coins',
-        coins
-    );
-
-    addFloatingText(
-        basketX+CONFIG.BASKET_WIDTH/2,
-        canvas.height-110,
-        '+100 🪙',
-        '#ffd700'
-    );
-
-    updateShopUI();
-
-}
-
-
-/* =========================================================
-   LOOP PRINCIPAL
-========================================================= */
-
-function updateGame(){
-
-    if(!gameActive) return;
-
-    ctx.clearRect(
-        0,
-        0,
-        canvas.width,
-        canvas.height
-    );
-
-
-    /* FLASH */
-
-    if(flashAlpha>0){
-
-        ctx.fillStyle=
-            `rgba(255,255,255,${flashAlpha})`;
-
-        ctx.fillRect(
-            0,
-            0,
-            canvas.width,
-            canvas.height
-        );
-
-        flashAlpha-=.05;
-    }
-
-
-    /* CONFETI */
-
-    confetti.forEach(p=>{
-
-        ctx.beginPath();
-
-        ctx.arc(
-            p.x,
-            p.y,
-            p.r,
-            0,
-            Math.PI*2
-        );
-
-        ctx.fillStyle=p.color;
-
-        ctx.fill();
-
-        p.y+=1;
-
-        if(p.y>canvas.height)
-            p.y=0;
-
-    });
-
-
-    /* ESTELA DE LA MONEDA */
-
-    coinTrail.push({
-        x:coinX,
-        y:coinY,
-        alpha:.6
-    });
-
-    if(coinTrail.length>10)
-        coinTrail.shift();
-
-
-    const activeCoinSkin=
-        SHOP_ITEMS.coinSkins.find(
-            c=>c.id===equippedCoinSkin
-        ) ||
-        SHOP_ITEMS.coinSkins[0];
-
-
-    coinTrail.forEach(t=>{
-
-        ctx.beginPath();
-
-        ctx.arc(
-            t.x,
-            t.y,
-            CONFIG.COIN_RADIUS*t.alpha,
-            0,
-            Math.PI*2
-        );
-
-        ctx.fillStyle=
-            activeCoinSkin.color || '#ffd700';
-
-        ctx.globalAlpha=t.alpha*.4;
-
-        ctx.fill();
-
-        ctx.globalAlpha=1;
-
-        t.alpha-=.05;
-
-    });
-
-
-    /* CAIDA */
-
-    coinY+=coinSpeed;
-
-    const basketY=
-        canvas.height-80;
-
-
-    /* COLISIÓN */
-
-    if(
-        coinY+CONFIG.COIN_RADIUS>=basketY &&
-        coinY-CONFIG.COIN_RADIUS<=
-            basketY+CONFIG.BASKET_HEIGHT &&
-        coinX>=basketX &&
-        coinX<=
-            basketX+CONFIG.BASKET_WIDTH
-    ){
-
-        let multiplier=1;
-
-        if(equippedSkin==='skin_peak')
-            multiplier=10;
-
-
-        score+=
-            CONFIG.SCORE_PER_COIN*
-            multiplier;
-
-
-        /*
-         * ANNIVERSARY:
-         * +100 MONEDAS REALES DEL SISTEMA
-         * DE LA TIENDA
-         */
-
-        if(equippedSkin==='skin_anniversary'){
-
-            giveAnniversaryReward();
-
-        }else{
-
-            coins+=5;
-
-            localStorage.setItem(
-                'coin_game_coins',
-                coins
-            );
-
+        for (let i = particles.length - 1; i >= 0; i--) {
+          const p = particles[i];
+          p.x += p.vx;
+          p.y += p.vy;
+          p.life -= 0.04;
+          ctx.save();
+          ctx.globalAlpha = p.life;
+          ctx.fillStyle = p.color;
+          ctx.fillRect(p.x, p.y, p.size, p.size);
+          ctx.restore();
+          if (p.life <= 0) particles.splice(i, 1);
         }
 
-
-        coinSpeed+=CONFIG.SPEED_INCREMENT;
-
-        flashAlpha=.2;
-
-        createParticles(
-            coinX,
-            coinY,
-            activeCoinSkin.color
-        );
-
-        addFloatingText(
-            coinX,
-            basketY-10,
-            `+${CONFIG.SCORE_PER_COIN*multiplier}`,
-            activeCoinSkin.color
-        );
-
-        playCoinSound(score*2);
-
-
-        coinY=-20;
-
-        coinX=
-            Math.random()*
-            (canvas.width-60)+30;
-
-    }
-
-
-    else if(coinY>canvas.height){
-
-        coinY=-20;
-
-        coinX=
-            Math.random()*
-            (canvas.width-60)+30;
-
-    }
-
-
-    /* PARTICULAS */
-
-    particles.forEach((p,index)=>{
-
-        p.x+=p.vx;
-        p.y+=p.vy;
-
-        p.life-=.04;
-
-        ctx.beginPath();
-
-        ctx.arc(
-            p.x,
-            p.y,
-            p.size,
-            0,
-            Math.PI*2
-        );
-
-        ctx.fillStyle=p.color;
-
-        ctx.globalAlpha=
-            Math.max(0,p.life);
-
-        ctx.fill();
-
-        ctx.globalAlpha=1;
-
-        if(p.life<=0)
-            particles.splice(index,1);
-
-    });
-
-
-    /* TEXTOS */
-
-    floatingTexts.forEach((ft,index)=>{
-
-        ft.y+=ft.vy;
-
-        ft.alpha-=.03;
-
-        ctx.font=
-            "bold 20px 'Courier New'";
-
-        ctx.fillStyle=ft.color;
-
-        ctx.globalAlpha=
-            Math.max(0,ft.alpha);
-
-        ctx.fillText(
-            ft.text,
-            ft.x-15,
-            ft.y
-        );
-
-        ctx.globalAlpha=1;
-
-        if(ft.alpha<=0)
-            floatingTexts.splice(index,1);
-
-    });
-
-
-    /* MONEDA */
-
-    activeCoinSkin.draw(
-        ctx,
-        coinX,
-        coinY,
-        CONFIG.COIN_RADIUS
-    );
-
-
-    /* CESTA */
-
-    const skin=
-        SHOP_ITEMS.skins.find(
-            s=>s.id===equippedSkin
-        ) ||
-        SHOP_ITEMS.skins[0];
-
-    skin.draw(
-        ctx,
-        basketX,
-        basketY,
-        CONFIG.BASKET_WIDTH,
-        CONFIG.BASKET_HEIGHT
-    );
-
-
-    /* HUD */
-
-    ctx.fillStyle='#ffffff';
-
-    ctx.font=
-        "bold 18px 'Courier New'";
-
-    ctx.fillText(
-        `Puntos: ${score}`,
-        20,
-        40
-    );
-
-    ctx.fillText(
-        `Tiempo: ${timeLeft}s`,
-        20,
-        65
-    );
-
-    ctx.fillText(
-        `Récord: ${highScore}`,
-        20,
-        90
-    );
-
-    ctx.fillText(
-        `🪙 ${coins}`,
-        20,
-        115
-    );
-
-
-    /*
-     * RGB TRAIL:
-     * SE DIBUJA AL FINAL.
-     * NO PARTICIPA EN COLISIONES.
-     */
-
-    drawRGBTrail();
-
-
-    requestAnimationFrame(updateGame);
-
-}
-
-
-/* =========================================================
-   TIENDA
-========================================================= */
-
-const shopModal=
-    document.getElementById('shopModal');
-
-document.getElementById('shopBtn')
-.addEventListener('click',()=>{
-
-    updateShopUI();
-
-    shopModal.classList.add('active');
-
-});
-
-
-document.getElementById('shopClose')
-.addEventListener('click',()=>{
-
-    shopModal.classList.remove('active');
-
-});
-
-
-function updateShopUI(){
-
-    document.getElementById('playerCoins')
-        .innerText=coins;
-
-
-    const currentAvatar=
-        SHOP_ITEMS.avatars.find(
-            a=>a.id===equippedAvatar
-        );
-
-    document.getElementById('playerAvatar')
-        .innerText=
-            currentAvatar ?
-            currentAvatar.emoji :
-            '🎂';
-
-
-    document.getElementById('ownerShopNotice')
-        .style.display=
-            isOwnerMode ?
-            'block' :
-            'none';
-
-
-    renderCategory(
-        'avatarsGrid',
-        SHOP_ITEMS.avatars,
-        'selectAvatar'
-    );
-
-
-    renderCategory(
-        'skinsGrid',
-        SHOP_ITEMS.skins,
-        'selectSkin'
-    );
-
-
-    renderCategory(
-        'coinSkinsGrid',
-        SHOP_ITEMS.coinSkins,
-        'selectCoinSkin'
-    );
-
-
-    renderCategory(
-        'trailsGrid',
-        SHOP_ITEMS.trails,
-        'selectTrail'
-    );
-
-}
-
-
-function renderCategory(
-    containerId,
-    items,
-    selectFn
-){
-
-    const grid=
-        document.getElementById(containerId);
-
-    grid.innerHTML='';
-
-
-    items.forEach(item=>{
-
-        const div=
-            document.createElement('div');
-
-
-        const isEquipped=
-
-            (
-                equippedAvatar===item.id ||
-                equippedSkin===item.id ||
-                equippedCoinSkin===item.id ||
-                equippedTrail===item.id
-            );
-
-
-        div.className=
-            `shop-item
-            ${isEquipped?'equipped':''}
-            ${item.legacy?'legacy':''}`;
-
-
-        const price=
-            getItemPrice(item);
-
-
-        let buttonText;
-
-
-        if(isEquipped){
-
-            buttonText='Equipado';
-
-        }else if(item.purchased){
-
-            buttonText='Usar';
-
-        }else{
-
-            buttonText=
-                isOwnerMode ?
-                'GRATIS 👑' :
-                `${price} 🪙`;
-
+        for (let i = floatingTexts.length - 1; i >= 0; i--) {
+          const t = floatingTexts[i];
+          t.y += t.vy;
+          t.alpha -= 0.02;
+          ctx.save();
+          ctx.globalAlpha = t.alpha;
+          ctx.fillStyle = t.color;
+          ctx.font = 'bold 20px Courier New';
+          ctx.fillText(t.text, t.x, t.y);
+          ctx.restore();
+          if (t.alpha <= 0) floatingTexts.splice(i, 1);
         }
 
+        coinY += coinSpeed;
+        if (coinY > canvas.height) {
+          coinX = randomRange(30, canvas.width - 30);
+          coinY = -20;
+        }
 
-        div.innerHTML=`
+        const activeCoinSkin = pickActiveCoinSkin();
+        drawCoin(coinX, coinY, CONFIG.COIN_RADIUS, activeCoinSkin);
 
-            <span class="item-emoji">
-                ${item.emoji || '🧺'}
-            </span>
+        const basketY = canvas.height - 80;
+        const basketLeft = basketX;
+        const basketRight = basketX + CONFIG.BASKET_WIDTH;
+        const basketTop = basketY;
+        const basketBottom = basketY + CONFIG.BASKET_HEIGHT;
 
-            <div class="item-name">
-                ${item.name}
-            </div>
+        if (coinY + CONFIG.COIN_RADIUS >= basketTop && coinY - CONFIG.COIN_RADIUS <= basketBottom && coinX >= basketLeft && coinX <= basketRight) {
+          const multiplier = halloweenEnabled ? CONFIG.HALLOWEEN_MULTIPLIER : 1;
+          score += CONFIG.SCORE_PER_COIN * multiplier;
+          coins += 5 + (halloweenEnabled ? 10 : 0);
+          localStorage.setItem(STORAGE.COINS, String(coins));
+          flashAlpha = 0.25;
+          createParticles(coinX, coinY, activeCoinSkin.color || '#ffd166');
+          addFloatingText(coinX, coinY - 20, `+${CONFIG.SCORE_PER_COIN * multiplier}`, '#ffd166');
+          if (halloweenEnabled) {
+            addFloatingText(coinX, coinY - 45, '🎃 BONUS', '#ff8a3d');
+          }
+          coinX = randomRange(30, canvas.width - 30);
+          coinY = -20;
+          coinSpeed += CONFIG.SPEED_INCREMENT;
+          document.getElementById('playerCoins').textContent = coins;
+          document.getElementById('playerCoins').style.color = '#FFD700';
+        }
 
-            ${
-                item.legacy
-                ?
-                '<span class="legacy-label">🏛️ LEGACY</span>'
-                :
-                ''
+        drawBasket();
+        drawCursorTrail();
+        drawConfetti();
+
+        ctx.fillStyle = '#fff';
+        ctx.font = 'bold 20px Courier New';
+        ctx.fillText(`Puntaje: ${score}`, 24, 36);
+        ctx.fillText(`Tiempo: ${timeLeft}s`, 24, 64);
+        ctx.fillText(`Mejor: ${highScore}`, 24, 92);
+
+        if (halloweenEnabled) {
+          ctx.fillStyle = '#ff8a3d';
+          ctx.fillText('🎃 HalloweEN ON', canvas.width - 200, 36);
+        }
+
+        animationFrame = requestAnimationFrame(updateGame);
+      }
+
+      function savePurchase(id) {
+        const current = JSON.parse(localStorage.getItem(STORAGE.PURCHASES) || '[]');
+        if (!current.includes(id)) current.push(id);
+        localStorage.setItem(STORAGE.PURCHASES, JSON.stringify(current));
+      }
+
+      function ensureOwnedItem(id) {
+        const current = JSON.parse(localStorage.getItem(STORAGE.PURCHASES) || '[]');
+        return current.includes(id);
+      }
+
+      function renderShop() {
+        const renderCategory = (containerId, items, selectorFn) => {
+          const grid = document.getElementById(containerId);
+          grid.innerHTML = '';
+          for (const item of items) {
+            const isEquipped = selectorFn(item);
+            const isOwned = item.purchased || ensureOwnedItem(item.id) || isOwnerMode;
+            const price = isOwnerMode ? 0 : Number(item.price || 0);
+
+            const wrapper = document.createElement('div');
+            wrapper.className = 'shop-item' + (isEquipped ? ' equipped' : '') + (item.legacy ? ' legacy' : '');
+
+            const emoji = document.createElement('span');
+            emoji.className = 'item-emoji';
+            emoji.textContent = item.emoji || '✨';
+
+            const name = document.createElement('span');
+            name.className = 'item-name';
+            name.textContent = item.name || 'Item';
+
+            const legacyLabel = item.legacy ? document.createElement('span') : null;
+            if (legacyLabel) {
+              legacyLabel.className = 'legacy-label';
+              legacyLabel.textContent = 'LEGACY';
             }
 
-            ${
-                isOwnerMode
-                ?
-                '<span class="owner-label">👑 GRATIS PARA OWNER</span>'
-                :
-                ''
+            const ownerLabel = item.event ? document.createElement('span') : null;
+            if (ownerLabel) {
+              ownerLabel.className = 'owner-label';
+              ownerLabel.textContent = 'EVENTO';
             }
 
-            <button
-                class="item-btn ${
-                    isEquipped
-                    ? 'btn-equipped'
-                    : item.purchased
-                    ? 'btn-equip'
-                    : 'btn-buy'
-                }"
-                onclick="${selectFn}('${item.id}')"
-            >
-                ${buttonText}
-            </button>
-
-        `;
-
-
-        grid.appendChild(div);
-
-    });
-
-}
-
-
-/* =========================================================
-   GUARDAR COMPRA
-========================================================= */
-
-function savePurchase(id){
-
-    const purchases=
-        JSON.parse(
-            localStorage.getItem(
-                'coin_game_purchases'
-            ) || '[]'
-        );
-
-
-    if(!purchases.includes(id))
-        purchases.push(id);
-
-
-    localStorage.setItem(
-        'coin_game_purchases',
-        JSON.stringify(purchases)
-    );
-
-
-    localStorage.setItem(
-        'coin_game_coins',
-        coins
-    );
-
-}
-
-
-/* =========================================================
-   AVATAR
-========================================================= */
-
-window.selectAvatar=id=>{
-
-    const item=
-        SHOP_ITEMS.avatars.find(
-            a=>a.id===id
-        );
-
-    if(!item) return;
-
-
-    const price=
-        getItemPrice(item);
-
-
-    if(!item.purchased){
-
-        if(coins<price){
-
-            appendMessage(
-                '🛒 TIENDA',
-                'No tienes suficientes monedas.',
-                true
-            );
-
-            return;
-        }
-
-
-        coins-=price;
-
-        item.purchased=true;
-
-        savePurchase(id);
-
-    }
-
-
-    if(item.purchased){
-
-        equippedAvatar=id;
-
-        localStorage.setItem(
-            'coin_game_avatar',
-            id
-        );
-
-    }
-
-
-    updateShopUI();
-
-};
-
-
-/* =========================================================
-   SKINS DE CESTA
-========================================================= */
-
-window.selectSkin=id=>{
-
-    const item=
-        SHOP_ITEMS.skins.find(
-            s=>s.id===id
-        );
-
-    if(!item) return;
-
-
-    /*
-     * LEGACY GOLDEN NO SE COMPRA
-     * SI NO ESTÁ DESBLOQUEADA.
-     */
-
-    if(item.legacy &&
-       !item.purchased &&
-       !isOwnerMode){
-
-        appendMessage(
-            '🏛️ LEGACY',
-            'Esta skin es Legacy y no está disponible para compra.',
-            true
-        );
-
-        return;
-    }
-
-
-    const price=
-        getItemPrice(item);
-
-
-    if(!item.purchased){
-
-        if(coins<price){
-
-            appendMessage(
-                '🛒 TIENDA',
-                'No tienes suficientes monedas.',
-                true
-            );
-
-            return;
-        }
-
-
-        coins-=price;
-
-        item.purchased=true;
-
-        savePurchase(id);
-
-    }
-
-
-    if(item.purchased){
-
-        equippedSkin=id;
-
-        localStorage.setItem(
-            'coin_game_skin',
-            id
-        );
-
-    }
-
-
-    updateShopUI();
-
-};
-
-
-/* =========================================================
-   SKIN MONEDA
-========================================================= */
-
-window.selectCoinSkin=id=>{
-
-    const item=
-        SHOP_ITEMS.coinSkins.find(
-            c=>c.id===id
-        );
-
-    if(!item) return;
-
-
-    const price=
-        getItemPrice(item);
-
-
-    if(!item.purchased){
-
-        if(coins<price){
-
-            appendMessage(
-                '🛒 TIENDA',
-                'No tienes suficientes monedas.',
-                true
-            );
-
-            return;
-        }
-
-
-        coins-=price;
-
-        item.purchased=true;
-
-        savePurchase(id);
-
-    }
-
-
-    if(item.purchased){
-
-        equippedCoinSkin=id;
-
-        localStorage.setItem(
-            'coin_game_coinskin',
-            id
-        );
-
-    }
-
-
-    updateShopUI();
-
-};
-
-
-/* =========================================================
-   RGB TRAIL
-========================================================= */
-
-window.selectTrail=id=>{
-
-    const item=
-        SHOP_ITEMS.trails.find(
-            t=>t.id===id
-        );
-
-    if(!item) return;
-
-
-    const price=
-        getItemPrice(item);
-
-
-    if(!item.purchased){
-
-        if(coins<price){
-
-            appendMessage(
-                '🛒 TIENDA',
-                'No tienes suficientes monedas.',
-                true
-            );
-
-            return;
-        }
-
-
-        coins-=price;
-
-        item.purchased=true;
-
-        savePurchase(id);
-
-    }
-
-
-    if(item.purchased){
-
-        equippedTrail=id;
-
-        localStorage.setItem(
-            'coin_game_trail',
-            id
-        );
-
-    }
-
-
-    updateShopUI();
-
-};
-
-
-/* =========================================================
-   CHAT
-========================================================= */
-
-const chatToggleBtn=
-    document.getElementById('chatToggleBtn');
-
-const chatContainer=
-    document.getElementById('chatContainer');
-
-const chatCloseBtn=
-    document.getElementById('chatCloseBtn');
-
-const chatMessages=
-    document.getElementById('chatMessages');
-
-const chatInput=
-    document.getElementById('chatInput');
-
-const chatSendBtn=
-    document.getElementById('chatSendBtn');
-
-
-const chatChannel=
-    new BroadcastChannel('game_global_chat');
-
-
-chatToggleBtn.addEventListener(
-    'click',
-    ()=>{
-        chatContainer.classList.remove('hidden');
-        chatToggleBtn.classList.add('hidden');
-    }
-);
-
-
-chatCloseBtn.addEventListener(
-    'click',
-    ()=>{
-        chatContainer.classList.add('hidden');
-        chatToggleBtn.classList.remove('hidden');
-    }
-);
-
-
-function appendMessage(
-    username,
-    text,
-    isSystem=false
-){
-
-    const msgDiv=
-        document.createElement('div');
-
-    msgDiv.className=
-        `chat-message ${
-            isSystem?'system-msg':''
-        }`;
-
-
-    msgDiv.innerHTML=`
-        <div class="chat-message-username">
-            ${username}
-        </div>
-        <div class="chat-message-text">
-            ${text}
-        </div>
-    `;
-
-
-    chatMessages.appendChild(msgDiv);
-
-    chatMessages.scrollTop=
-        chatMessages.scrollHeight;
-
-}
-
-
-/* =========================================================
-   COMANDOS
-========================================================= */
-
-function sendMessage(){
-
-    const text=
-        chatInput.value.trim();
-
-    if(!text) return;
-
-
-    const parts=
-        text.split(/\s+/);
-
-    const command=
-        parts[0].toLowerCase();
-
-
-    /* COMANDO DUEÑO */
-
-    if(
-        text==='/dueno' ||
-        text==='/admin'
-    ){
-
-        coins+=5000;
-
-        isOwnerMode=true;
-
-        localStorage.setItem(
-            'coin_game_is_owner',
-            'true'
-        );
-
-        localStorage.setItem(
-            'coin_game_coins',
-            coins
-        );
-
-
-        SHOP_ITEMS.avatars
-            .find(a=>a.id==='avatar_owner')
-            .purchased=true;
-
-        SHOP_ITEMS.skins
-            .find(s=>s.id==='skin_owner')
-            .purchased=true;
-
-        SHOP_ITEMS.coinSkins
-            .find(c=>c.id==='coin_owner')
-            .purchased=true;
-
-        /*
-         * TRAIL RGB GRATIS PARA OWNER
-         */
-
-        SHOP_ITEMS.trails
-            .find(t=>t.id==='trail_rgb')
-            .purchased=true;
-
-
-        equippedAvatar='avatar_owner';
-        equippedSkin='skin_owner';
-        equippedCoinSkin='coin_owner';
-        equippedTrail='trail_rgb';
-
-
-        localStorage.setItem(
-            'coin_game_avatar',
-            equippedAvatar
-        );
-
-        localStorage.setItem(
-            'coin_game_skin',
-            equippedSkin
-        );
-
-        localStorage.setItem(
-            'coin_game_coinskin',
-            equippedCoinSkin
-        );
-
-        localStorage.setItem(
-            'coin_game_trail',
-            equippedTrail
-        );
-
-
-        appendMessage(
-            '👑 SISTEMA',
-            '¡Owner activado! Toda la tienda es GRATIS para ti. 🌈',
-            true
-        );
-
-
-        chatInput.value='';
-
-        updateShopUI();
-
-        return;
-
-    }
-
-
-    /* SOLO OWNER */
-
-    if(
-        command.startsWith('/') &&
-        isOwnerMode
-    ){
-
-        if(command==='/commands'){
-
-            appendMessage(
-                '👑 OWNER',
-                '/money • /give 500 • /giveall • /setcoins 9999 • /giveitem ID • /anniversary • /devbirthday • /announce texto',
-                true
-            );
-
-            chatInput.value='';
-
-            return;
-        }
-
-
-        if(command==='/money'){
-
-            appendMessage(
-                '👑 OWNER',
-                `Tienes ${coins} 🪙`,
-                true
-            );
-
-            chatInput.value='';
-
-            return;
-        }
-
-
-        if(command==='/give'){
-
-            const amount=
-                parseInt(parts[1],10);
-
-
-            if(!Number.isFinite(amount)){
-
-                appendMessage(
-                    '👑 OWNER',
-                    'Uso: /give 500',
-                    true
-                );
-
-            }else{
-
-                coins+=amount;
-
-                localStorage.setItem(
-                    'coin_game_coins',
-                    coins
-                );
-
-                appendMessage(
-                    '👑 OWNER',
-                    `+${amount} 🪙`,
-                    true
-                );
-
-                updateShopUI();
-
-            }
-
-
-            chatInput.value='';
-
-            return;
-
-        }
-
-
-        if(command==='/giveall'){
-
-            coins+=10000;
-
-            localStorage.setItem(
-                'coin_game_coins',
-                coins
-            );
-
-            appendMessage(
-                '👑 OWNER',
-                '+10,000 🪙',
-                true
-            );
-
-            updateShopUI();
-
-            chatInput.value='';
-
-            return;
-
-        }
-
-
-        if(command==='/setcoins'){
-
-            const amount=
-                parseInt(parts[1],10);
-
-
-            if(!Number.isFinite(amount)){
-
-                appendMessage(
-                    '👑 OWNER',
-                    'Uso: /setcoins 9999',
-                    true
-                );
-
-            }else{
-
-                coins=Math.max(0,amount);
-
-                localStorage.setItem(
-                    'coin_game_coins',
-                    coins
-                );
-
-                appendMessage(
-                    '👑 OWNER',
-                    `Monedas establecidas en ${coins} 🪙`,
-                    true
-                );
-
-                updateShopUI();
-
-            }
-
-
-            chatInput.value='';
-
-            return;
-
-        }
-
-
-        if(command==='/giveitem'){
-
-            const id=parts[1];
-
-
-            const item=
-                SHOP_ITEMS.avatars.find(a=>a.id===id) ||
-                SHOP_ITEMS.skins.find(s=>s.id===id) ||
-                SHOP_ITEMS.coinSkins.find(c=>c.id===id) ||
-                SHOP_ITEMS.trails.find(t=>t.id===id);
-
-
-            if(!item){
-
-                appendMessage(
-                    '👑 OWNER',
-                    'Item no encontrado.',
-                    true
-                );
-
-            }else{
-
-                item.purchased=true;
-
+            const button = document.createElement('button');
+            button.className = 'item-btn ' + (isEquipped ? 'btn-equipped' : (isOwned ? 'btn-equip' : 'btn-buy'));
+            button.textContent = isEquipped ? 'Equipado' : (isOwned ? 'Usar' : `Comprar · ${price}`);
+            button.addEventListener('click', () => {
+              if (item.id === 'avatar_owner' || item.id === 'skin_owner' || item.id === 'coin_ghost' || item.id === 'trail_witch') {
+                if (!isOwnerMode && !isOwned) {
+                  alert('Este item es de evento o de owner.');
+                  return;
+                }
+              }
+
+              if (!isOwned && !isOwnerMode) {
+                if (coins < price) {
+                  appendMessage('Sistema', 'No tienes suficientes monedas.', true);
+                  return;
+                }
+                coins -= price;
+                localStorage.setItem(STORAGE.COINS, String(coins));
+                item.purchased = true;
                 savePurchase(item.id);
+                document.getElementById('playerCoins').textContent = coins;
+              }
 
-                appendMessage(
-                    '👑 OWNER',
-                    `${item.name} desbloqueado GRATIS.`,
-                    true
-                );
+              if (containerId === 'avatarsGrid') { equippedAvatar = item.id; localStorage.setItem(STORAGE.AVATAR, item.id); }
+              if (containerId === 'skinsGrid') { equippedSkin = item.id; localStorage.setItem(STORAGE.SKIN, item.id); }
+              if (containerId === 'coinSkinsGrid') { equippedCoinSkin = item.id; localStorage.setItem(STORAGE.COIN_SKIN, item.id); }
+              if (containerId === 'trailsGrid') { equippedTrail = item.id; localStorage.setItem(STORAGE.TRAIL, item.id); }
 
-                updateShopUI();
+              renderShop();
+              updatePlayerUI();
+            });
 
-            }
+            wrapper.appendChild(emoji);
+            wrapper.appendChild(name);
+            if (legacyLabel) wrapper.appendChild(legacyLabel);
+            if (ownerLabel) wrapper.appendChild(ownerLabel);
+            wrapper.appendChild(button);
+            grid.appendChild(wrapper);
+          }
+        };
 
+        renderCategory('avatarsGrid', SHOP_ITEMS.avatars, (item) => item.id === equippedAvatar);
+        renderCategory('skinsGrid', SHOP_ITEMS.skins, (item) => item.id === equippedSkin);
+        renderCategory('coinSkinsGrid', SHOP_ITEMS.coinSkins, (item) => item.id === equippedCoinSkin);
+        renderCategory('trailsGrid', SHOP_ITEMS.trails, (item) => item.id === equippedTrail);
+        updatePlayerUI();
+      }
 
-            chatInput.value='';
+      function updatePlayerUI() {
+        const playerCoins = document.getElementById('playerCoins');
+        const playerAvatar = document.getElementById('playerAvatar');
+        if (playerCoins) playerCoins.textContent = coins;
+        if (playerAvatar) {
+          const avatar = SHOP_ITEMS.avatars.find(a => a.id === equippedAvatar);
+          playerAvatar.textContent = avatar ? avatar.emoji : '🎂';
+        }
+      }
 
-            return;
+      function appendMessage(username, text, isSystem = false) {
+        const chatMessages = document.getElementById('chatMessages');
+        const messageDiv = document.createElement('div');
+        messageDiv.className = 'chat-message' + (isSystem ? ' system-msg' : '');
 
+        const userDiv = document.createElement('div');
+        userDiv.className = 'chat-message-username';
+        userDiv.textContent = username;
+
+        const textDiv = document.createElement('div');
+        textDiv.className = 'chat-message-text';
+        textDiv.textContent = text;
+
+        messageDiv.appendChild(userDiv);
+        messageDiv.appendChild(textDiv);
+        chatMessages.appendChild(messageDiv);
+        chatMessages.scrollTop = chatMessages.scrollHeight;
+      }
+
+      function sendMessage() {
+        const input = document.getElementById('chatInput');
+        const text = input.value.trim();
+        if (!text) return;
+
+        const parts = text.split(/\s+/);
+        const command = parts[0].toLowerCase();
+
+        if (command === '/halloween') {
+          halloweenEnabled = !halloweenEnabled;
+          localStorage.setItem(STORAGE.HALLOWEEN, String(halloweenEnabled));
+          updateEventBanner();
+          updatePlayerUI();
+          appendMessage('Sistema', halloweenEnabled ? '🎃 Evento Halloween activado. Bonus +2x y skins especiales habilitadas.' : '🌙 Evento Halloween desactivado.', true);
+          const eventSkin = SHOP_ITEMS.coinSkins.find(item => item.id === 'coin_ghost');
+          if (eventSkin) eventSkin.purchased = halloweenEnabled;
+          if (halloweenEnabled && equippedCoinSkin === 'coin_gold') {
+            equippedCoinSkin = 'coin_ghost';
+            localStorage.setItem(STORAGE.COIN_SKIN, equippedCoinSkin);
+          }
+          renderShop();
+          input.value = '';
+          return;
         }
 
-
-        /* =================================================
-           /ANNIVERSARY
-        ================================================= */
-
-        if(command==='/anniversary'){
-
-            const anniv=
-                SHOP_ITEMS.skins.find(
-                    s=>s.id==='skin_anniversary'
-                );
-
-
-            if(anniv){
-
-                anniv.purchased=true;
-
-                equippedSkin='skin_anniversary';
-
-                localStorage.setItem(
-                    'coin_game_skin',
-                    'skin_anniversary'
-                );
-
-
-                savePurchase(
-                    'skin_anniversary'
-                );
-
-
-                appendMessage(
-                    '🎉 ANNIVERSARY',
-                    '¡Anniversary Basket activada! La cesta entrega +100 🪙 por moneda atrapada.',
-                    true
-                );
-
-
-                updateShopUI();
-
-            }
-
-
-            chatInput.value='';
-
-            return;
-
+        if (command === '/admin') {
+          document.getElementById('adminPanel').classList.toggle('active');
+          input.value = '';
+          return;
         }
 
-
-        /* =================================================
-           /DEVBIRTHDAY
-        ================================================= */
-
-        if(command==='/devbirthday'){
-
-            const peak=
-                SHOP_ITEMS.skins.find(
-                    s=>s.id==='skin_peak'
-                );
-
-
-            if(peak){
-
-                peak.purchased=true;
-
-                const purchases=
-                    JSON.parse(
-                        localStorage.getItem(
-                            'coin_game_purchases'
-                        ) || '[]'
-                    );
-
-
-                if(!purchases.includes('skin_peak'))
-                    purchases.push('skin_peak');
-
-
-                localStorage.setItem(
-                    'coin_game_purchases',
-                    JSON.stringify(purchases)
-                );
-
-
-                localStorage.setItem(
-                    'peak_event_trollace',
-                    'true'
-                );
-
-
-                equippedSkin='skin_peak';
-
-
-                localStorage.setItem(
-                    'coin_game_skin',
-                    'skin_peak'
-                );
-
-
-                appendMessage(
-                    '🏆 PEAK EVENT',
-                    '¡Trollace Dorada desbloqueada! Era Dorada activada. x10 por moneda.',
-                    true
-                );
-
-
-                updateShopUI();
-
-            }
-
-
-            chatInput.value='';
-
-            return;
-
+        if (command === '/coins' || command === '/money') {
+          const amount = Number(parts[1] || 100);
+          coins += amount;
+          localStorage.setItem(STORAGE.COINS, String(coins));
+          appendMessage('Sistema', `Monedas actualizadas: ${coins}`, true);
+          updatePlayerUI();
+          renderShop();
+          input.value = '';
+          return;
         }
 
-
-        if(command==='/announce'){
-
-            const announcement=
-                parts.slice(1).join(' ').trim();
-
-
-            appendMessage(
-                '📢 OWNER',
-                announcement ||
-                'Uso: /announce mensaje',
-                true
-            );
-
-
-            chatInput.value='';
-
-            return;
-
+        if (command === '/anniversary') {
+          appendMessage('Sistema', '✨ 1° ANIVERSARIO: Neón, glow y energía total en cada captura.', true);
+          input.value = '';
+          return;
         }
 
-    }
+        if (command === '/giveitem') {
+          const itemId = parts[1];
+          const allItems = [...SHOP_ITEMS.avatars, ...SHOP_ITEMS.skins, ...SHOP_ITEMS.coinSkins, ...SHOP_ITEMS.trails];
+          const item = allItems.find(x => x.id === itemId);
+          if (!item) {
+            appendMessage('Sistema', 'Item no encontrado.', true);
+            input.value = '';
+            return;
+          }
+          item.purchased = true;
+          savePurchase(item.id);
+          appendMessage('Sistema', `Item desbloqueado: ${item.name}`, true);
+          renderShop();
+          input.value = '';
+          return;
+        }
 
+        const username = localStorage.getItem('coin_game_chat_name') || 'Jugador';
+        appendMessage(username, text, false);
+        input.value = '';
+      }
 
-    /* MENSAJE NORMAL */
+      document.getElementById('startBtn').addEventListener('click', () => {
+        startGame();
+      });
 
-    const currentAvatar=
-        SHOP_ITEMS.avatars.find(
-            a=>a.id===equippedAvatar
-        );
+      document.getElementById('shopBtn').addEventListener('click', () => {
+        document.getElementById('shopModal').classList.add('active');
+        renderShop();
+      });
 
+      document.getElementById('shopClose').addEventListener('click', () => {
+        document.getElementById('shopModal').classList.remove('active');
+      });
 
-    const username=
-        `${
-            currentAvatar ?
-            currentAvatar.emoji :
-            '👤'
-        } ${
-            isOwnerMode ?
-            '[CREADOR]' :
-            'Jugador_'+
-            Math.floor(Math.random()*899+100)
-        }`;
+      document.getElementById('chatToggleBtn').addEventListener('click', () => {
+        document.getElementById('chatContainer').classList.toggle('hidden');
+      });
 
+      document.getElementById('chatCloseBtn').addEventListener('click', () => {
+        document.getElementById('chatContainer').classList.add('hidden');
+      });
 
-    const messageData={
-        username,
-        text
-    };
+      document.getElementById('chatSendBtn').addEventListener('click', sendMessage);
+      document.getElementById('chatInput').addEventListener('keydown', (e) => {
+        if (e.key === 'Enter') sendMessage();
+      });
 
+      document.getElementById('adminBtn').addEventListener('click', () => {
+        document.getElementById('adminPanel').classList.toggle('active');
+      });
 
-    appendMessage(
-        username,
-        text
-    );
+      document.getElementById('applyBtn').addEventListener('click', () => {
+        CONFIG.INITIAL_TIME = Number(document.getElementById('initialTime').value) || 30;
+        CONFIG.INITIAL_COIN_SPEED = Number(document.getElementById('initialSpeed').value) || 4;
+        document.getElementById('adminPanel').classList.remove('active');
+      });
 
+      document.getElementById('fullscreenBtn').addEventListener('click', () => {
+        if (!document.fullscreenElement) {
+          document.documentElement.requestFullscreen?.();
+        } else {
+          document.exitFullscreen?.();
+        }
+      });
 
-    chatChannel.postMessage(
-        messageData
-    );
+      window.addEventListener('resize', resizeCanvas);
+      window.addEventListener('pointermove', (e) => {
+        const trailEnabled = equippedTrail === 'trail_rgb' || equippedTrail === 'trail_witch';
+        if (!trailEnabled) return;
+        cursorTrail.push({ x:e.clientX, y:e.clientY, life:1, color: halloweenEnabled ? '#ff8a3d' : ['#ffd166','#ff4fd8','#38d9ff'][Math.floor(Math.random()*3)] });
+        if (cursorTrail.length > 30) cursorTrail.shift();
+      });
 
+      function init() {
+        resizeCanvas();
+        updateEventBanner();
+        updateOwnerShopNotice();
+        updatePlayerUI();
+        renderShop();
+        resetStartScreen();
+        appendMessage('Sistema', halloweenEnabled ? '🎃 El evento de Halloween está activo. ¡Busca bonus y skins especiales!' : '✨ Sitio cargado con animación premium y tienda neon.', true);
+        appendMessage('Sistema', 'Comandos: /halloween, /coins, /admin, /anniversary', true);
+      }
 
-    chatInput.value='';
-
-}
-
-
-chatChannel.onmessage=e=>
-    appendMessage(
-        e.data.username,
-        e.data.text
-    );
-
-
-chatSendBtn.addEventListener(
-    'click',
-    sendMessage
-);
-
-
-chatInput.addEventListener(
-    'keypress',
-    e=>{
-        if(e.key==='Enter')
-            sendMessage();
-    }
-);
-
-
-/* =========================================================
-   CONTROLES
-========================================================= */
-
-document.getElementById(
-    'fullscreenBtn'
-).addEventListener(
-    'click',
-    ()=>{
-        if(!document.fullscreenElement)
-            document.documentElement.requestFullscreen();
-        else
-            document.exitFullscreen();
-    }
-);
-
-
-const adminPanel=
-    document.getElementById('adminPanel');
-
-
-document.getElementById(
-    'adminBtn'
-).addEventListener(
-    'click',
-    ()=>{
-        adminPanel.classList.toggle('active');
-    }
-);
-
-
-document.getElementById(
-    'applyBtn'
-).addEventListener(
-    'click',
-    ()=>{
-
-        CONFIG.INITIAL_TIME=
-            parseInt(
-                document.getElementById(
-                    'initialTime'
-                ).value
-            ) || 30;
-
-
-        CONFIG.INITIAL_COIN_SPEED=
-            parseFloat(
-                document.getElementById(
-                    'initialSpeed'
-                ).value
-            ) || 4;
-
-
-        adminPanel.classList.remove(
-            'active'
-        );
-
-    }
-);
-
-
-/* =========================================================
-   RECUPERAR PEAK
-========================================================= */
-
-if(
-    localStorage.getItem(
-        'peak_event_trollace'
-    )==='true'
-){
-
-    const peak=
-        SHOP_ITEMS.skins.find(
-            s=>s.id==='skin_peak'
-        );
-
-    if(peak)
-        peak.purchased=true;
-
-}
-
-
-/* =========================================================
-   RECUPERAR ANNIVERSARY / TRAIL
-========================================================= */
-
-if(
-    localStorage.getItem(
-        'coin_game_trail'
-    )==='trail_rgb'
-){
-
-    const rgb=
-        SHOP_ITEMS.trails.find(
-            t=>t.id==='trail_rgb'
-        );
-
-    if(rgb)
-        rgb.purchased=true;
-
-}
-
-
-/* =========================================================
-   INICIALIZAR UI
-========================================================= */
-
-updateShopUI();
-
-</script>
-
+      init();
+    })();
+  </script>
 </body>
 </html>
-```
-
